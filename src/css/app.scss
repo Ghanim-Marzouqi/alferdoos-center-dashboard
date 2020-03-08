@@ -1,0 +1,16 @@
+// app global css in SCSS form
+/* arabic */
+@font-face {
+  font-family: "Cairo";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("Cairo"), local("Cairo-Regular"),
+    url(../fonts/Cairo-Regular.woff2) format("woff2");
+}
+
+*,
+html,
+body {
+  font-family: "Cairo";
+}
