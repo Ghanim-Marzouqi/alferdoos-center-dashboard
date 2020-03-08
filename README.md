@@ -1,22 +1,25 @@
-# Quasar App (alferdoos-center-dashboard)
+# Al-Ferdoos Center Dashboard (Quasar App)
 
-A Quasar Framework app
+A Quasar Framework Application For Al-Ferdoos Center
 
 ## Install the dependencies
+
 ```bash
 npm install
 ```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
+
 ```bash
 quasar dev
 ```
 
-
 ### Build the app for production
+
 ```bash
 quasar build
 ```
 
 ### Customize the configuration
+
 See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
