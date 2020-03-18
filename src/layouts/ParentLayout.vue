@@ -44,12 +44,16 @@
         </q-list>
       </q-scroll-area>
 
-      <q-img class="absolute-top" src="statics/images/drawer_bg.jpg" style="height: 150px">
-        <div class="absolute-center bg-transparent">
+      <q-img
+        class="absolute-top"
+        src="statics/images/drawer_bg.jpg"
+        style="height: 150px"
+      >
+        <div style="width: 100%" class="text-center bg-transparent">
           <q-avatar size="80px" class="q-mb-sm">
             <img src="statics/images/avatar.jpg" />
           </q-avatar>
-          <div class="text-weight-bold">اسم المستخدم</div>
+          <div class="text-weight-bold">{{ GET_PARENT.name }}</div>
         </div>
       </q-img>
     </q-drawer>
@@ -61,15 +65,10 @@
 </template>
 
 <script>
-import DrawerLink from "components/DrawerLink";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Layout",
-
-  components: {
-    DrawerLink
-  },
-
   data() {
     return {
       rightDrawerOpen: false,
@@ -77,18 +76,27 @@ export default {
         {
           title: "الرئيسية",
           icon: "o_home",
-          link: "/"
+          link: "/parent"
         }
       ]
     };
   },
-
+  computed: mapGetters("parents", ["GET_PARENT"]),
   methods: {
+    ...mapActions("parents", ["LOGOUT_PARENT"]),
     logout() {
-      // TODO: Sign Out User
-      console.log("جاري تسجيل الخروج...");
-      this.$router.replace("login");
+      this.LOGOUT_PARENT();
     }
+  },
+  watch: {
+    GET_PARENT: function(newState, oldState) {
+      if (Object.keys(newState).length === 0) {
+        this.$router.replace("/parent-login");
+      }
+    }
+  },
+  components: {
+    DrawerLink: () => import("components/DrawerLink")
   }
 };
 </script>

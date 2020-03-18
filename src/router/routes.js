@@ -2,15 +2,43 @@ const routes = [
   {
     path: "/",
     component: () => import("layouts/Layout.vue"),
-    children: [{ path: "", component: () => import("pages/PageHome.vue") }]
+    children: [
+      {
+        path: "",
+        component: () => import("pages/user/dashboard/PageHome.vue")
+      }
+    ]
   },
   {
     path: "/login",
-    component: () => import("pages/PageLogin.vue")
+    component: () => import("pages/user/PageLogin.vue")
   },
   {
     path: "/reset-password",
-    component: () => import("pages/PageResetPassword.vue")
+    component: () => import("pages/user/PageResetPassword.vue")
+  },
+  {
+    path: "/parent-login",
+    component: () => import("pages/parent/PageLogin.vue")
+  },
+  {
+    path: "/parent-register",
+    component: () => import("pages/parent/PageRegister.vue")
+  },
+  {
+    path: "/parent-reset-password",
+    component: () => import("pages/parent/PageResetPassword.vue")
+  },
+  {
+    path: "/parent",
+    component: () => import("layouts/ParentLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () =>
+          import("pages/parent/dashboard/PageStudentRegister.vue")
+      }
+    ]
   }
 ];
 
