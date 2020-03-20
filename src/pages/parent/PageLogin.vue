@@ -4,14 +4,15 @@
       <q-page class="bg-primary window-height window-width flex flex-center">
         <div class="column text-center">
           <div class="col">
-            <h4 class="text-white">مركز الفردوس الأعلى</h4>
-            <h6 class="text-white">تسجيل دخول ولي الأمر</h6>
+            <img src="~assets/images/logo.png" width="300px" height="auto" />
+            <p class="text-white text-h6 text-weight-bold">تسجيل دخول ولي الأمر</p>
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
-              <p class="text-red" v-if="GET_ERRORS.length > 0">
-                البريد الإلكتروني أو كلمة المرور غير صحيحة
-              </p>
+              <p
+                class="text-red"
+                v-if="GET_ERRORS.length > 0"
+              >البريد الإلكتروني أو كلمة المرور غير صحيحة</p>
               <q-form @submit="onSubmit" class="q-gutter-md">
                 <q-card-section>
                   <q-input
@@ -47,7 +48,7 @@
                     ]"
                   />
                 </q-card-section>
-                <q-card-actions class="q-px-md">
+                <q-card-actions class="q-px-md q-py-none q-my-none">
                   <q-btn
                     type="submit"
                     color="grey"
@@ -56,14 +57,14 @@
                     label="تسجيل الدخول"
                   />
                   <q-btn
-                    to="/parent-register"
+                    to="/parent/register"
                     color="blue"
                     size="lg"
                     class="full-width q-mt-xs text-subtitle2"
                     label="تسجيل جديد"
                   />
                   <q-btn
-                    to="/parent-reset-password"
+                    to="/parent/reset-password"
                     unelevated
                     class="full-width text-blue"
                     label="هل نسيت كلمة المرور؟"

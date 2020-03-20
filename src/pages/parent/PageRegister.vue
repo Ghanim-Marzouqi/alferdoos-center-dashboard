@@ -4,17 +4,13 @@
       <q-page class="bg-primary window-height window-width flex flex-center">
         <div class="column text-center">
           <div class="col">
-            <h4 class="text-white">مركز الفردوس الأعلى</h4>
-            <h6 class="text-white">تسجيل ولي أمر جديد</h6>
+            <img src="~assets/images/logo.png" width="300px" height="auto" />
+            <p class="text-white text-h6 text-weight-bold">تسجيل ولي أمر جديد</p>
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
-              <p class="text-red" v-if="GET_ERRORS.length > 0">
-                حدث خطأ أثناء التسجيل
-              </p>
-              <p class="text-green" v-if="GET_MESSAGES.length > 0">
-                تم التسجيل بنجاح
-              </p>
+              <p class="text-red" v-if="GET_ERRORS.length > 0">حدث خطأ أثناء التسجيل</p>
+              <p class="text-green" v-if="GET_MESSAGES.length > 0">تم التسجيل بنجاح</p>
               <q-form @submit="onSubmit">
                 <q-card-section>
                   <q-input
@@ -102,7 +98,7 @@
                     ]"
                   />
                 </q-card-section>
-                <q-card-actions>
+                <q-card-actions class="q-px-md q-py-none q-my-none">
                   <q-btn
                     type="submit"
                     color="grey"
@@ -155,7 +151,7 @@ export default {
     goToLoginPage() {
       // clear state
       this.CLEAR_ERRORS_AND_MESSAGES();
-      this.$router.replace("/parent-login");
+      this.$router.replace("/parent/login");
     }
   }
 };

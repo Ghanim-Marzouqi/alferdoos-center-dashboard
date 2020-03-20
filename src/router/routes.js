@@ -1,33 +1,25 @@
 const routes = [
   {
     path: "/",
-    component: () => import("layouts/Layout.vue"),
+    component: () => import("pages/PageMain.vue")
+  },
+  {
+    path: "/admin",
+    component: () => import("layouts/AdminLayout.vue"),
     children: [
       {
         path: "",
-        component: () => import("pages/user/dashboard/PageHome.vue")
+        component: () => import("pages/admin/dashboard/PageHome.vue")
       }
     ]
   },
   {
-    path: "/login",
-    component: () => import("pages/user/PageLogin.vue")
+    path: "/admin/login",
+    component: () => import("pages/admin/PageLogin.vue")
   },
   {
-    path: "/reset-password",
-    component: () => import("pages/user/PageResetPassword.vue")
-  },
-  {
-    path: "/parent-login",
-    component: () => import("pages/parent/PageLogin.vue")
-  },
-  {
-    path: "/parent-register",
-    component: () => import("pages/parent/PageRegister.vue")
-  },
-  {
-    path: "/parent-reset-password",
-    component: () => import("pages/parent/PageResetPassword.vue")
+    path: "/admin/reset-password",
+    component: () => import("pages/admin/PageResetPassword.vue")
   },
   {
     path: "/parent",
@@ -39,6 +31,36 @@ const routes = [
           import("pages/parent/dashboard/PageStudentRegister.vue")
       }
     ]
+  },
+  {
+    path: "/parent/login",
+    component: () => import("pages/parent/PageLogin.vue")
+  },
+  {
+    path: "/parent/register",
+    component: () => import("pages/parent/PageRegister.vue")
+  },
+  {
+    path: "/parent/reset-password",
+    component: () => import("pages/parent/PageResetPassword.vue")
+  },
+  {
+    path: "/teacher",
+    component: () => import("layouts/TeacherLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("pages/teacher/dashboard/PageHome.vue")
+      }
+    ]
+  },
+  {
+    path: "/teacher/login",
+    component: () => import("pages/teacher/PageLogin.vue")
+  },
+  {
+    path: "/teacher/reset-password",
+    component: () => import("pages/teacher/PageResetPassword.vue")
   }
 ];
 

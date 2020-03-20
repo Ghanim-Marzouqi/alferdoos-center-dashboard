@@ -45,11 +45,11 @@
       </q-scroll-area>
 
       <q-img class="absolute-top" src="statics/images/drawer_bg.jpg" style="height: 150px">
-        <div style="width: 100%" class="text-center bg-transparent">
+        <div class="absolute-center bg-transparent">
           <q-avatar size="80px" class="q-mb-sm">
             <img src="statics/images/avatar.jpg" />
           </q-avatar>
-          <div class="text-weight-bold">{{ GET_PARENT.name }}</div>
+          <div class="text-weight-bold">اسم المستخدم</div>
         </div>
       </q-img>
     </q-drawer>
@@ -61,10 +61,15 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import DrawerLink from "components/DrawerLink";
 
 export default {
   name: "Layout",
+
+  components: {
+    DrawerLink
+  },
+
   data() {
     return {
       rightDrawerOpen: false,
@@ -72,27 +77,18 @@ export default {
         {
           title: "الرئيسية",
           icon: "o_home",
-          link: "/parent"
+          link: "/"
         }
       ]
     };
   },
-  computed: mapGetters("parents", ["GET_PARENT"]),
+
   methods: {
-    ...mapActions("parents", ["LOGOUT_PARENT"]),
     logout() {
-      this.LOGOUT_PARENT();
+      // TODO: Sign Out User
+      console.log("جاري تسجيل الخروج...");
+      this.$router.replace("login");
     }
-  },
-  watch: {
-    GET_PARENT: function(newState, oldState) {
-      if (Object.keys(newState).length === 0) {
-        this.$router.replace("/parent/login");
-      }
-    }
-  },
-  components: {
-    DrawerLink: () => import("components/DrawerLink")
   }
 };
 </script>
