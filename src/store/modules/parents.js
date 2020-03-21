@@ -1,6 +1,6 @@
 import { FirebaseAuth, FirebaseDatabase } from "boot/firebase";
 import { VueCryptojs } from "boot/vue-cryptojs";
-import { PARENT_COLLECTION } from "../../config/constants";
+import { COLLECTIONS } from "../../config/constants";
 
 const state = {
   parent: {},
@@ -25,7 +25,7 @@ const actions = {
 
       // fetch user data from database
       if (auth_response.user.uid) {
-        let doc = await FirebaseDatabase.collection(PARENT_COLLECTION)
+        let doc = await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
           .doc(auth_response.user.uid)
           .get();
         if (doc.exists) {
@@ -49,17 +49,18 @@ const actions = {
       // register user in database
       if (auth_response.user.uid) {
         payload.id = auth_response.user.uid;
-        await FirebaseDatabase.collection(PARENT_COLLECTION)
+        await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
           .doc(payload.id)
           .set({
             id: payload.id,
             name: payload.name,
             email: payload.email,
             phone: payload.phone,
-            isEmailVerified: false,
-            isPhoneVerfied: false,
             isActive: true
           });
+
+        // send verification email
+        await auth_response.user.sendEmailVerification();
 
         // logout user
         await FirebaseAuth.signOut();
@@ -74,7 +75,7 @@ const actions = {
   TRIGGER_PARENT_STATE({ commit }) {
     FirebaseAuth.onAuthStateChanged(user => {
       if (user) {
-        FirebaseDatabase.collection(PARENT_COLLECTION)
+        FirebaseDatabase.collection(COLLECTIONS.PARENTS)
           .doc(user.uid)
           .get()
           .then(snapshot => {
