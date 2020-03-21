@@ -56,7 +56,6 @@ const actions = {
             name: payload.name,
             email: payload.email,
             phone: payload.phone,
-            password: payload.encryptedPassword,
             isEmailVerified: false,
             isPhoneVerfied: false,
             isActive: true
@@ -99,6 +98,9 @@ const actions = {
   },
   LOGOUT_PARENT({}) {
     FirebaseAuth.signOut();
+  },
+  LOG_ERROR({ commit }, error) {
+    commit("SET_ERROR", error);
   },
   CLEAR_ERRORS_AND_MESSAGES({ commit }) {
     commit("RESET_ERRORS_AND_MESSAGES");

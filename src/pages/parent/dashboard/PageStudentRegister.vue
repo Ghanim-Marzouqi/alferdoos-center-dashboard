@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <p>صفحة تسجيل طالب جديد</p>
+    <p class="text-h6">صفحة تسجيل طالب جديد</p>
   </q-page>
 </template>
 

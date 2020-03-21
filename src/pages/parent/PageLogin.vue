@@ -105,6 +105,8 @@ export default {
           return "البريد الإلكتروني غير مسجل";
         } else if (this.GET_ERRORS[0].code === "auth/wrong-password") {
           return "كلمة المرور غير صحيحة";
+        } else if (this.GET_ERRORS[0].code === "databse/user-inactive") {
+          return "حساب المستخدم موقوف";
         } else {
           return "حدث خطأ اثناء تسجيل الدخول";
         }
@@ -115,6 +117,7 @@ export default {
     ...mapActions("parents", [
       "TRIGGER_PARENT_STATE",
       "LOGIN_PARENT",
+      "LOG_ERROR",
       "CLEAR_ERRORS_AND_MESSAGES"
     ]),
     isEmailValid(email) {
@@ -136,7 +139,13 @@ export default {
   watch: {
     GET_PARENT: function(newState, oldState) {
       if (Object.keys(newState).length > 0) {
-        this.$router.replace("/parent");
+        if (newState.isActive) {
+          this.$router.replace("/parent");
+        } else {
+          this.LOG_ERROR({
+            code: "databse/user-inactive"
+          });
+        }
       }
     }
   }

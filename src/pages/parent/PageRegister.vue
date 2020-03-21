@@ -150,7 +150,7 @@ export default {
     getErrorMessage() {
       if (this.GET_ERRORS.length > 0) {
         if (this.GET_ERRORS[0].code === "auth/email-already-in-use") {
-          return "هذا المستخدم موجود بالفعل";
+          return "المستخدم مسجل بالفعل";
         } else {
           return "حدث خطأ أثناء التسجيل";
         }
@@ -168,11 +168,7 @@ export default {
         name: this.formData.name,
         email: this.formData.email,
         phone: `+968${this.formData.phone}`,
-        password: this.formData.password,
-        encryptedPassword: this.$CryptoJS.AES.encrypt(
-          process.env.SECRET_KEY,
-          this.formData.password
-        ).toString()
+        password: this.formData.password
       });
     },
     goToLoginPage() {
