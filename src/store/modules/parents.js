@@ -1,4 +1,5 @@
 import { FirebaseAuth, FirebaseDatabase } from "boot/firebase";
+import { VueCryptojs } from "boot/vue-cryptojs";
 import { PARENT_COLLECTION } from "../../config/constants";
 
 const state = {
@@ -33,6 +34,7 @@ const actions = {
         }
       }
     } catch (error) {
+      console.log(error);
       commit("SET_ERROR", error);
     }
   },
@@ -53,12 +55,20 @@ const actions = {
             id: payload.id,
             name: payload.name,
             email: payload.email,
-            phone: payload.phone
+            phone: payload.phone,
+            password: payload.encryptedPassword,
+            isEmailVerified: false,
+            isPhoneVerfied: false,
+            isActive: true
           });
+
+        // logout user
+        await FirebaseAuth.signOut();
 
         commit("SET_SUCCESS", payload);
       }
     } catch (error) {
+      console.log(error);
       commit("SET_ERROR", error);
     }
   },

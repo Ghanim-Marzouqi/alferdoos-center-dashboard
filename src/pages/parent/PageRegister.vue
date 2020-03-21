@@ -5,12 +5,18 @@
         <div class="column text-center">
           <div class="col">
             <img src="~assets/images/logo.png" width="300px" height="auto" />
-            <p class="text-white text-h6 text-weight-bold">تسجيل ولي أمر جديد</p>
+            <p class="text-white text-h6 text-weight-bold">
+              تسجيل ولي أمر جديد
+            </p>
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
-              <p class="text-red" v-if="GET_ERRORS.length > 0">حدث خطأ أثناء التسجيل</p>
-              <p class="text-green" v-if="GET_MESSAGES.length > 0">تم التسجيل بنجاح</p>
+              <p class="text-red" v-if="GET_ERRORS.length > 0">
+                {{ getErrorMessage }}
+              </p>
+              <p class="text-green" v-if="GET_MESSAGES.length > 0">
+                تم التسجيل بنجاح
+              </p>
               <q-form @submit="onSubmit">
                 <q-card-section>
                   <q-input
@@ -139,14 +145,35 @@ export default {
       reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
     };
   },
-  computed: mapGetters("parents", ["GET_ERRORS", "GET_MESSAGES"]),
+  computed: {
+    ...mapGetters("parents", ["GET_ERRORS", "GET_MESSAGES"]),
+    getErrorMessage() {
+      if (this.GET_ERRORS.length > 0) {
+        if (this.GET_ERRORS[0].code === "auth/email-already-in-use") {
+          return "هذا المستخدم موجود بالفعل";
+        } else {
+          return "حدث خطأ أثناء التسجيل";
+        }
+      }
+    }
+  },
   methods: {
     ...mapActions("parents", ["REGISTER_PARENT", "CLEAR_ERRORS_AND_MESSAGES"]),
     isEmailValid(email) {
       return email == "" ? "" : this.reg.test(email) ? true : false;
     },
     onSubmit() {
-      this.REGISTER_PARENT(this.formData);
+      this.CLEAR_ERRORS_AND_MESSAGES();
+      this.REGISTER_PARENT({
+        name: this.formData.name,
+        email: this.formData.email,
+        phone: `+968${this.formData.phone}`,
+        password: this.formData.password,
+        encryptedPassword: this.$CryptoJS.AES.encrypt(
+          process.env.SECRET_KEY,
+          this.formData.password
+        ).toString()
+      });
     },
     goToLoginPage() {
       // clear state

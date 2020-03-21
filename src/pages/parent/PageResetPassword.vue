@@ -5,14 +5,15 @@
         <div class="column text-center">
           <div class="col">
             <img src="~assets/images/logo.png" width="300px" height="auto" />
-            <p class="text-white text-h6 text-weight-bold">إعادة تعيين كلمة المرور</p>
+            <p class="text-white text-h6 text-weight-bold">
+              إعادة تعيين كلمة المرور
+            </p>
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
-              <p
-                class="text-red"
-                v-if="GET_ERRORS.length > 0"
-              >لم يتم العثور على البريد الإلكتروني المدخل</p>
+              <p class="text-red" v-if="GET_ERRORS.length > 0">
+                لم يتم العثور على البريد الإلكتروني المدخل
+              </p>
               <p class="text-green" v-if="GET_MESSAGES.length > 0">
                 تم الإرسال بنجاح. الرجاء تفقد البريد الخاص بك لإعادة تعيين كلمة
                 المرور
@@ -37,9 +38,15 @@
                   />
                 </q-card-section>
                 <q-card-actions class="q-px-md">
-                  <q-btn type="submit" color="grey" size="lg" class="full-width" label="إرسال" />
                   <q-btn
-                    to="/parent/login"
+                    type="submit"
+                    color="grey"
+                    size="lg"
+                    class="full-width"
+                    label="إرسال"
+                  />
+                  <q-btn
+                    @click="goToLoginPage"
                     unelevated
                     class="full-width text-blue"
                     label="الرجوع لصفحة تسجيل الدخول"
@@ -79,6 +86,10 @@ export default {
     onSubmit() {
       this.RESET_PARENT_PASSWORD(this.formData);
       this.CLEAR_ERRORS_AND_MESSAGES();
+    },
+    goToLoginPage() {
+      this.CLEAR_ERRORS_AND_MESSAGES();
+      this.$router.replace("/parent/login");
     }
   }
 };

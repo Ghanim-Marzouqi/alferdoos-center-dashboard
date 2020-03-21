@@ -29,7 +29,6 @@
         style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd"
       >
         <q-list>
-          <q-item-label header>روابط الموقع</q-item-label>
           <DrawerLink v-for="link in links" :key="link.title" v-bind="link" />
           <q-separator />
           <q-item clickable @click="logout">
@@ -70,12 +69,17 @@ export default {
       rightDrawerOpen: false,
       links: [
         {
-          title: "الرئيسية",
-          icon: "o_home",
+          title: "تسجيل طالب جديد",
+          icon: "o_create",
           link: "/parent"
         }
       ]
     };
+  },
+  mounted() {
+    if (Object.keys(this.GET_PARENT).length === 0) {
+      this.$router.replace("/parent/login");
+    }
   },
   computed: mapGetters("parents", ["GET_PARENT"]),
   methods: {
