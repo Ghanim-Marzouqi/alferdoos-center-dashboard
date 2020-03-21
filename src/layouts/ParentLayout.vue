@@ -22,7 +22,7 @@
       show-if-above
       bordered
       :width="280"
-      :breakpoint="400"
+      :breakpoint="767"
       content-class="bg-grey-9 text-white"
     >
       <q-scroll-area
@@ -43,7 +43,11 @@
         </q-list>
       </q-scroll-area>
 
-      <q-img class="absolute-top" src="statics/images/drawer_bg.jpg" style="height: 150px">
+      <q-img
+        class="absolute-top"
+        src="statics/images/drawer_bg.jpg"
+        style="height: 150px"
+      >
         <div style="width: 100%" class="text-center bg-transparent">
           <q-avatar size="80px" class="q-mb-sm">
             <img src="statics/images/avatar.jpg" />
