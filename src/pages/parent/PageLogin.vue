@@ -5,15 +5,11 @@
         <div class="column text-center">
           <div class="col">
             <img src="~assets/images/logo.png" width="300px" height="auto" />
-            <p class="text-white text-h6 text-weight-bold">
-              تسجيل دخول ولي الأمر
-            </p>
+            <p class="text-white text-h6 text-weight-bold">تسجيل دخول ولي الأمر</p>
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
-              <p class="text-red" v-if="GET_ERRORS.length > 0">
-                {{ getErrorMessage }}
-              </p>
+              <p class="text-red" v-if="GET_ERRORS.length > 0">{{ getErrorMessage }}</p>
               <q-form @submit="onSubmit" class="q-gutter-md">
                 <q-card-section>
                   <q-input
@@ -21,7 +17,6 @@
                     dense
                     square
                     outlined
-                    clearable
                     v-model="formData.email"
                     type="email"
                     label="البريد الإلكتروني"
@@ -38,16 +33,23 @@
                     dense
                     square
                     outlined
-                    clearable
                     v-model="formData.password"
-                    type="password"
+                    :type="formData.isPassword ? 'password' : 'text'"
                     label="كلمة المرور"
                     lazy-rules
                     :rules="[
                       val =>
                         (val && val.length > 5) || 'الرجاء كتابة كلمة المرور'
                     ]"
-                  />
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="formData.isPassword ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="formData.isPassword = !formData.isPassword"
+                      />
+                    </template>
+                  </q-input>
                 </q-card-section>
                 <q-card-actions class="q-px-md q-py-none q-my-none">
                   <q-btn
@@ -89,7 +91,8 @@ export default {
     return {
       formData: {
         email: "",
-        password: ""
+        password: "",
+        isPassword: true
       },
       reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
     };

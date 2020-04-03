@@ -2,21 +2,15 @@
   <q-page padding>
     <p class="text-h6 text-weight-bold">طلب تسجيل طالب جديد</p>
     <div class="q-pa-md">
-      <q-form>
-        <q-stepper
-          id="horizontal-stepper"
-          v-model="hStep"
-          ref="hStepper"
-          color="primary"
-          animated
+      <q-stepper id="horizontal-stepper" v-model="hStep" ref="hStepper" color="primary" animated>
+        <q-step
+          :name="1"
+          title="البيانات الأساسية"
+          icon="person"
+          active-icon="person"
+          :done="hStep > 1"
         >
-          <q-step
-            :name="1"
-            title="البيانات الأساسية"
-            icon="person"
-            active-icon="person"
-            :done="hStep > 1"
-          >
+          <q-form ref="hStudentInfoForm" @reset="onHorizontalFormReset">
             <div class="text-weight-bold">أسم الطالب:</div>
             <div class="row">
               <div class="col-3">
@@ -89,21 +83,9 @@
             <div class="row">
               <div class="q-gutter-sm">
                 <div class="text-weight-bold">انهى الصف:</div>
-                <q-radio
-                  v-model="studentForm.finishedClass"
-                  val="grade_seven"
-                  label="السابع"
-                />
-                <q-radio
-                  v-model="studentForm.finishedClass"
-                  val="grade_eight"
-                  label="الثامن"
-                />
-                <q-radio
-                  v-model="studentForm.finishedClass"
-                  val="grade_nine"
-                  label="التاسع"
-                />
+                <q-radio v-model="studentForm.finishedClass" val="grade_seven" label="السابع" />
+                <q-radio v-model="studentForm.finishedClass" val="grade_eight" label="الثامن" />
+                <q-radio v-model="studentForm.finishedClass" val="grade_nine" label="التاسع" />
               </div>
             </div>
             <div class="text-weight-bold q-mt-md">رقم ولي الأمر والإقامة:</div>
@@ -116,13 +98,11 @@
                   outlined
                   clearable
                   v-model="studentForm.parentPhone1"
-                  type="text"
+                  type="number"
                   label="رقم هاتف ولي الأمر الأول"
                   lazy-rules
                   :rules="[
-                    val =>
-                      (val && val.length > 0) ||
-                      'الرجاء ادخال رقم هاتف ولي الأمر الأول'
+                    val => (val && val.length > 0) || 'الرجاء ادخال رقم هاتف ولي الأمر الأول',
                   ]"
                 />
               </div>
@@ -134,7 +114,7 @@
                   outlined
                   clearable
                   v-model="studentForm.parentPhone2"
-                  type="text"
+                  type="number"
                   label="رقم هاتف ولي الأمر الثاني (إختياري)"
                 />
               </div>
@@ -149,18 +129,25 @@
                 />
               </div>
             </div>
-          </q-step>
+          </q-form>
+          <q-stepper-navigation>
+            <q-btn
+              label="متابعة"
+              color="primary"
+              @click="goToNextHorizontalStep(2, 'hStudentInfoForm')"
+            />
+          </q-stepper-navigation>
+        </q-step>
 
-          <q-step
-            :name="2"
-            title="بيانات المواد الدراسية والحفظ"
-            icon="local_library"
-            active-icon="local_library"
-            :done="hStep > 2"
-          >
-            <div class="text-weight-bold q-mt-md">
-              تقدير علامات المواد الدراسية:
-            </div>
+        <q-step
+          :name="2"
+          title="بيانات المواد الدراسية والحفظ"
+          icon="local_library"
+          active-icon="local_library"
+          :done="hStep > 2"
+        >
+          <q-form ref="hSubjectInfoForm" @reset="onHorizontalFormReset">
+            <div class="text-weight-bold q-mt-md">تقدير علامات المواد الدراسية:</div>
             <div class="row">
               <div class="col-6">
                 <q-input
@@ -169,11 +156,14 @@
                   square
                   outlined
                   clearable
-                  v-model="studentForm.subjectANumber"
+                  v-model.number="studentForm.subjectANumber"
                   type="number"
                   label="عدد المواد التي حصل الطالب فيها على تقدير (أ)"
                   lazy-rules
-                  :rules="[val => val >= 0 || 'عدد المواد غير صحيح']"
+                  :rules="[
+                    val => val >= 0 || 'عدد المواد غير صحيح',
+                    val => val !== '' || 'الرجاء كتابة عدد المواد'
+                  ]"
                 />
               </div>
               <div class="col-6">
@@ -183,17 +173,18 @@
                   square
                   outlined
                   clearable
-                  v-model="studentForm.subjectBNumber"
+                  v-model.number="studentForm.subjectBNumber"
                   type="number"
                   label="عدد المواد التي حصل الطالب فيها على تقدير (ب)"
                   lazy-rules
-                  :rules="[val => val >= 0 || 'عدد المواد غير صحيح']"
+                  :rules="[
+                    val => val >= 0 || 'عدد المواد غير صحيح',
+                    val => val !== '' || 'الرجاء كتابة عدد المواد'
+                  ]"
                 />
               </div>
             </div>
-            <div class="text-weight-bold q-mt-md">
-              الأجزاء التي يحفظها الطالب:
-            </div>
+            <div class="text-weight-bold q-mt-md">الأجزاء التي يحفظها الطالب:</div>
             <div class="row q-ma-sm">
               <div class="q-gutter-xs">
                 <q-chip
@@ -202,14 +193,10 @@
                   :selected.sync="surah.selected"
                   color="primary"
                   text-color="white"
-                >
-                  {{ surah.title }}
-                </q-chip>
+                >{{ surah.title }}</q-chip>
               </div>
             </div>
-            <div class="text-weight-bold q-mt-md">
-              السور التي يحفظها الطالب:
-            </div>
+            <div class="text-weight-bold q-mt-md">السور التي يحفظها الطالب:</div>
             <div class="row">
               <div class="col-4">
                 <q-select
@@ -232,12 +219,7 @@
                 />
               </div>
               <div class="col-4">
-                <q-btn
-                  class="q-ma-sm"
-                  label="إضافة"
-                  unelevated
-                  color="primary"
-                />
+                <q-btn class="q-ma-sm" label="إضافة" unelevated color="primary" />
               </div>
             </div>
             <div class="q-pa-md">
@@ -246,35 +228,15 @@
                   <tr>
                     <th class="text-left">الجزء</th>
                     <th class="text-left">السورة</th>
-                    <th class="text-center">
-                      حذف
-                    </th>
+                    <th class="text-center">حذف</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td class="text-left">الأول</td>
-                    <td class="text-left">الفاتحة</td>
+                  <tr v-for="(surah, i) in savedQuranSurahs" :key="i">
+                    <td class="text-left">{{ surah.chapterName }}</td>
+                    <td class="text-left">{{ surah.name }}</td>
                     <td class="text-center">
-                      <q-btn flat>
-                        <q-icon name="delete" color="red" />
-                      </q-btn>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-left">الأول</td>
-                    <td class="text-left">البقرة</td>
-                    <td class="text-center">
-                      <q-btn flat>
-                        <q-icon name="delete" color="red" />
-                      </q-btn>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-left">الأول</td>
-                    <td class="text-left">آل عمران</td>
-                    <td class="text-center">
-                      <q-btn flat>
+                      <q-btn flat @click="removeSurah(i)">
                         <q-icon name="delete" color="red" />
                       </q-btn>
                     </td>
@@ -282,31 +244,31 @@
                 </tbody>
               </q-markup-table>
             </div>
-          </q-step>
+          </q-form>
+          <q-stepper-navigation>
+            <q-btn
+              label="متابعة"
+              color="primary"
+              @click="goToNextHorizontalStep(3, 'hSubjectInfoForm')"
+            />
+            <q-btn
+              label="رجوع"
+              flat
+              type="reset"
+              color="primary"
+              class="q-ml-sm text-weight-bold"
+              @click="() => hStep = 1"
+            />
+          </q-stepper-navigation>
+        </q-step>
 
-          <q-step
-            :name="3"
-            title="بيانات إضافية"
-            icon="assignment"
-            active-icon="assignment"
-          >
-            Try out different ad text to see what brings in the most customers,
-            and learn how to enhance your ads using features like ad extensions.
-            If you run into any problems with your ads, find out how to tell if
-            they're running and how to resolve approval issues.
-          </q-step>
-
-          <template v-slot:navigation>
-            <q-stepper-navigation>
-              <q-btn
-                @click="$refs.hStepper.next()"
-                color="primary"
-                :label="hStep === 3 ? 'إرسال' : 'متابعة'"
-              />
-            </q-stepper-navigation>
-          </template>
-        </q-stepper>
-      </q-form>
+        <q-step :name="3" title="بيانات إضافية" icon="assignment" active-icon="assignment">
+          Try out different ad text to see what brings in the most customers,
+          and learn how to enhance your ads using features like ad extensions.
+          If you run into any problems with your ads, find out how to tell if
+          they're running and how to resolve approval issues.
+        </q-step>
+      </q-stepper>
 
       <q-form>
         <q-stepper
@@ -340,12 +302,7 @@
             keywords.
           </q-step>
 
-          <q-step
-            :name="3"
-            title="بيانات إضافية"
-            icon="assignment"
-            active-icon="assignment"
-          >
+          <q-step :name="3" title="بيانات إضافية" icon="assignment" active-icon="assignment">
             Try out different ad text to see what brings in the most customers,
             and learn how to enhance your ads using features like ad extensions.
             If you run into any problems with your ads, find out how to tell if
@@ -402,15 +359,15 @@ export default {
         "عز",
         "متان"
       ],
-      savedQuranChapters: [
+      chapters: [
         {
-          title: "الأول",
-          value: 1,
+          id: 1,
+          name: "الأول",
           selected: false
         },
         {
+          id: 2,
           title: "الثاني",
-          value: 2,
           selected: false
         },
         {
@@ -556,19 +513,22 @@ export default {
       ],
       savedQuranSurahs: [
         {
+          id: 1,
           name: "الفاتحة",
-          value: 1,
-          chapterId: 1
+          chapterId: 1,
+          chapterName: "الأول"
         },
         {
+          id: 2,
           name: "البقرة",
-          value: 2,
-          chapterId: 1
+          chapterId: 1,
+          chapterName: "الأول"
         },
         {
+          id: 3,
           name: "آل عمران",
-          value: 3,
-          chapterId: 1
+          chapterId: 1,
+          chapterName: "الأول"
         }
       ]
     };
@@ -580,6 +540,19 @@ export default {
   },
   computed: {
     ...mapGetters("parents", ["GET_PARENT"])
+  },
+  methods: {
+    async goToNextHorizontalStep(step, form) {
+      let valid = await this.$refs[form].validate();
+      console.log(valid);
+      if (valid) {
+        this.hStep = step;
+      }
+    },
+    removeSurah(index) {
+      this.savedQuranSurahs.splice(index, 1);
+    },
+    onHorizontalFormReset() {}
   }
 };
 </script>
