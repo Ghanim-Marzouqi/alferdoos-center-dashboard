@@ -188,52 +188,46 @@
             <div class="row q-ma-sm">
               <div class="q-gutter-xs">
                 <q-chip
-                  v-for="surah in savedQuranChapters"
-                  :key="surah.title"
-                  :selected.sync="surah.selected"
+                  v-for="chapter in savedChapters"
+                  :key="chapter.name"
+                  :selected.sync="chapter.selected"
                   color="primary"
                   text-color="white"
-                >{{ surah.title }}</q-chip>
+                >{{ chapter.name }}</q-chip>
               </div>
             </div>
-            <div class="text-weight-bold q-mt-md">السور التي يحفظها الطالب:</div>
+            <div class="text-weight-bold q-mt-md">السور التي يحفظها الطالب حالياً:</div>
             <div class="row">
-              <div class="col-4">
-                <q-select
-                  v-model="studentForm.quranChapter"
-                  class="q-ma-sm"
-                  dense
-                  outlined
-                  :options="savedQuranChapters.title"
-                  label="الجزء"
-                />
-              </div>
-              <div class="col-4">
+              <div class="col-6">
                 <q-select
                   v-model="studentForm.quranSurah"
                   class="q-ma-sm"
                   dense
                   outlined
-                  :options="savedQuranSurahs.name"
+                  :options="getAllSurahs"
                   label="السورة"
                 />
               </div>
-              <div class="col-4">
-                <q-btn class="q-ma-sm" label="إضافة" unelevated color="primary" />
+              <div class="col-6">
+                <q-btn
+                  class="q-ma-sm"
+                  label="إضافة"
+                  unelevated
+                  color="primary"
+                  @click="addSavedSurah(studentForm.quranSurah)"
+                />
               </div>
             </div>
             <div class="q-pa-md">
               <q-markup-table separator="horizontal" flat bordered>
                 <thead class="bg-grey-4">
                   <tr>
-                    <th class="text-left">الجزء</th>
                     <th class="text-left">السورة</th>
                     <th class="text-center">حذف</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(surah, i) in savedQuranSurahs" :key="i">
-                    <td class="text-left">{{ surah.chapterName }}</td>
+                  <tr v-for="(surah, i) in savedSurahs" :key="i">
                     <td class="text-left">{{ surah.name }}</td>
                     <td class="text-center">
                       <q-btn flat @click="removeSurah(i)">
@@ -263,10 +257,23 @@
         </q-step>
 
         <q-step :name="3" title="بيانات إضافية" icon="assignment" active-icon="assignment">
-          Try out different ad text to see what brings in the most customers,
-          and learn how to enhance your ads using features like ad extensions.
-          If you run into any problems with your ads, find out how to tell if
-          they're running and how to resolve approval issues.
+          <q-form>
+            Try out different ad text to see what brings in the most customers,
+            and learn how to enhance your ads using features like ad extensions.
+            If you run into any problems with your ads, find out how to tell if
+            they're running and how to resolve approval issues.
+          </q-form>
+          <q-stepper-navigation>
+            <q-btn label="إرسال" color="primary" />
+            <q-btn
+              label="رجوع"
+              flat
+              type="reset"
+              color="primary"
+              class="q-ml-sm text-weight-bold"
+              @click="() => hStep = 2"
+            />
+          </q-stepper-navigation>
         </q-step>
       </q-stepper>
 
@@ -325,7 +332,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "PageParentStudentRegister",
@@ -359,198 +366,47 @@ export default {
         "عز",
         "متان"
       ],
-      chapters: [
-        {
-          id: 1,
-          name: "الأول",
-          selected: false
-        },
-        {
-          id: 2,
-          title: "الثاني",
-          selected: false
-        },
-        {
-          title: "الثالث",
-          value: 3,
-          selected: false
-        },
-        {
-          title: "الرابع",
-          value: 4,
-          selected: false
-        },
-        {
-          title: "الخامس",
-          value: 5,
-          selected: false
-        },
-        {
-          title: "السادس",
-          value: 6,
-          selected: false
-        },
-        {
-          title: "السابع",
-          value: 7,
-          selected: false
-        },
-        {
-          title: "الثامن",
-          value: 8,
-          selected: false
-        },
-        {
-          title: "التاسع",
-          value: 9,
-          selected: false
-        },
-        {
-          title: "العاشر",
-          value: 10,
-          selected: false
-        },
-        {
-          title: "الحادي عشر",
-          value: 11,
-          selected: false
-        },
-        {
-          title: "الثاني عشر",
-          value: 12,
-          selected: false
-        },
-        {
-          title: "الثالث عشر",
-          value: 13,
-          selected: false
-        },
-        {
-          title: "الرابع عشر",
-          value: 14,
-          selected: false
-        },
-        {
-          title: "الخامس عشر",
-          value: 15,
-          selected: false
-        },
-        {
-          title: "السادس عشر",
-          value: 16,
-          selected: false
-        },
-        {
-          title: "السابع عشر",
-          value: 17,
-          selected: false
-        },
-        {
-          title: "الثامن عشر",
-          value: 18,
-          selected: false
-        },
-        {
-          title: "التاسع عشر",
-          value: 19,
-          selected: false
-        },
-        {
-          title: "العشرون",
-          value: 20,
-          selected: false
-        },
-        {
-          title: "الحادي والعشرون",
-          value: 21,
-          selected: false
-        },
-        {
-          title: "الثاني والعشرون",
-          value: 22,
-          selected: false
-        },
-        {
-          title: "الثالث والعشرون",
-          value: 23,
-          selected: false
-        },
-        {
-          title: "الرابع والعشرون",
-          value: 24,
-          selected: false
-        },
-        {
-          title: "الخامس والعشرون",
-          value: 25,
-          selected: false
-        },
-        {
-          title: "السادس والعشرون",
-          value: 26,
-          selected: false
-        },
-        {
-          title: "السابع والعشرون",
-          value: 27,
-          selected: false
-        },
-        {
-          title: "الثامن والعشرون",
-          value: 28,
-          selected: false
-        },
-        {
-          title: "التاسع والعشرون",
-          value: 29,
-          selected: false
-        },
-        {
-          title: "الثلاثون",
-          value: 30,
-          selected: false
-        }
-      ],
-      savedQuranSurahs: [
-        {
-          id: 1,
-          name: "الفاتحة",
-          chapterId: 1,
-          chapterName: "الأول"
-        },
-        {
-          id: 2,
-          name: "البقرة",
-          chapterId: 1,
-          chapterName: "الأول"
-        },
-        {
-          id: 3,
-          name: "آل عمران",
-          chapterId: 1,
-          chapterName: "الأول"
-        }
-      ]
+      savedChapters: [],
+      savedSurahs: []
     };
   },
+  created() {
+    this.FETCH_CHAPTERS();
+    this.FETCH_SURAHS();
+  },
   mounted() {
-    if (Object.keys(this.GET_PARENT).length > 0) {
-      this.studentForm.parentPhone1 = `${this.GET_PARENT.phone}`.slice(4);
+    if (Object.keys(this.GET_USER).length > 0) {
+      this.studentForm.parentPhone1 = `${this.GET_USER.phone}`.slice(4);
     }
+
+    // set chapters
+    this.savedChapters = this.GET_CHAPTERS;
   },
   computed: {
-    ...mapGetters("parents", ["GET_PARENT"])
+    ...mapGetters("parents", ["GET_USER", "GET_CHAPTERS", "GET_SURAHS"]),
+    getAllSurahs() {
+      let surahs = this.GET_SURAHS.map(surah => surah.name);
+      return surahs;
+    }
   },
   methods: {
+    ...mapActions("parents", ["FETCH_CHAPTERS", "FETCH_SURAHS"]),
     async goToNextHorizontalStep(step, form) {
       let valid = await this.$refs[form].validate();
-      console.log(valid);
       if (valid) {
         this.hStep = step;
       }
     },
+    addSavedSurah(surah) {
+      let found = this.GET_SURAHS.find(value => value.name === surah);
+
+      if (found) {
+        this.savedSurahs.push(found);
+        console.log(this.savedSurahs);
+      }
+    },
     removeSurah(index) {
-      this.savedQuranSurahs.splice(index, 1);
+      this.savedSurahs.splice(index, 1);
     },
     onHorizontalFormReset() {}
   }

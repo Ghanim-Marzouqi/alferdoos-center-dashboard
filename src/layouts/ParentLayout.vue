@@ -43,16 +43,12 @@
         </q-list>
       </q-scroll-area>
 
-      <q-img
-        class="absolute-top"
-        src="statics/images/drawer_bg.jpg"
-        style="height: 150px"
-      >
+      <q-img class="absolute-top" src="statics/images/drawer_bg.jpg" style="height: 150px">
         <div style="width: 100%" class="text-center bg-transparent">
           <q-avatar size="80px" class="q-mb-sm">
             <img src="statics/images/avatar.jpg" />
           </q-avatar>
-          <div class="text-weight-bold">{{ GET_PARENT.name }}</div>
+          <div class="text-weight-bold">{{ GET_USER.name }}</div>
         </div>
       </q-img>
     </q-drawer>
@@ -81,19 +77,19 @@ export default {
     };
   },
   mounted() {
-    if (Object.keys(this.GET_PARENT).length === 0) {
+    if (Object.keys(this.GET_USER).length === 0) {
       this.$router.replace("/parent/login");
     }
   },
-  computed: mapGetters("parents", ["GET_PARENT"]),
+  computed: mapGetters("parents", ["GET_USER"]),
   methods: {
-    ...mapActions("parents", ["LOGOUT_PARENT"]),
+    ...mapActions("parents", ["LOGOUT"]),
     logout() {
-      this.LOGOUT_PARENT();
+      this.LOGOUT();
     }
   },
   watch: {
-    GET_PARENT: function(newState, oldState) {
+    GET_USER: function(newState, oldState) {
       if (Object.keys(newState).length === 0) {
         this.$router.replace("/parent/login");
       }

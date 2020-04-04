@@ -5,15 +5,14 @@
         <div class="column text-center">
           <div class="col">
             <img src="~assets/images/logo.png" width="300px" height="auto" />
-            <p class="text-white text-h6 text-weight-bold">
-              إعادة تعيين كلمة المرور
-            </p>
+            <p class="text-white text-h6 text-weight-bold">إعادة تعيين كلمة المرور</p>
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
-              <p class="text-red" v-if="GET_ERRORS.length > 0">
-                لم يتم العثور على البريد الإلكتروني المدخل
-              </p>
+              <p
+                class="text-red"
+                v-if="GET_ERRORS.length > 0"
+              >لم يتم العثور على البريد الإلكتروني المدخل</p>
               <p class="text-green" v-if="GET_MESSAGES.length > 0">
                 تم الإرسال بنجاح. الرجاء تفقد البريد الخاص بك لإعادة تعيين كلمة
                 المرور
@@ -38,13 +37,7 @@
                   />
                 </q-card-section>
                 <q-card-actions class="q-px-md">
-                  <q-btn
-                    type="submit"
-                    color="grey"
-                    size="lg"
-                    class="full-width"
-                    label="إرسال"
-                  />
+                  <q-btn type="submit" color="grey" size="lg" class="full-width" label="إرسال" />
                   <q-btn
                     @click="goToLoginPage"
                     unelevated
@@ -76,15 +69,12 @@ export default {
   },
   computed: mapGetters("parents", ["GET_ERRORS", "GET_MESSAGES"]),
   methods: {
-    ...mapActions("parents", [
-      "RESET_PARENT_PASSWORD",
-      "CLEAR_ERRORS_AND_MESSAGES"
-    ]),
+    ...mapActions("parents", ["RESET_PASSWORD", "CLEAR_ERRORS_AND_MESSAGES"]),
     isEmailValid(email) {
       return email == "" ? "" : this.reg.test(email) ? true : false;
     },
     onSubmit() {
-      this.RESET_PARENT_PASSWORD(this.formData);
+      this.RESET_PASSWORD(this.formData);
       this.CLEAR_ERRORS_AND_MESSAGES();
     },
     goToLoginPage() {

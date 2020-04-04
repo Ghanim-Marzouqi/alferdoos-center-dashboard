@@ -1,20 +1,20 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import users from "./modules/users";
+import admins from "./modules/admins";
 import parents from "./modules/parents";
-import registered_students from "./modules/registered_students";
+import teachers from "./modules/teacher";
 
 Vue.use(Vuex);
 
-export default function(/* { ssrContext } */) {
+export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      users,
+      admins,
       parents,
-      registered_students
+      teachers,
     },
-    strict: process.env.DEV
+    strict: process.env.DEV,
   });
 
   return Store;

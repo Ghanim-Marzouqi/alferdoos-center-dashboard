@@ -98,10 +98,10 @@ export default {
     };
   },
   mounted() {
-    this.TRIGGER_PARENT_STATE();
+    this.TRIGGER_USER_STATE();
   },
   computed: {
-    ...mapGetters("parents", ["GET_PARENT", "GET_ERRORS", "GET_MESSAGES"]),
+    ...mapGetters("parents", ["GET_USER", "GET_ERRORS", "GET_MESSAGES"]),
     getErrorMessage() {
       if (this.GET_ERRORS.length > 0) {
         if (this.GET_ERRORS[0].code === "auth/user-not-found") {
@@ -118,8 +118,8 @@ export default {
   },
   methods: {
     ...mapActions("parents", [
-      "TRIGGER_PARENT_STATE",
-      "LOGIN_PARENT",
+      "TRIGGER_USER_STATE",
+      "LOGIN",
       "LOG_ERROR",
       "CLEAR_ERRORS_AND_MESSAGES"
     ]),
@@ -128,7 +128,7 @@ export default {
     },
     onSubmit() {
       this.CLEAR_ERRORS_AND_MESSAGES();
-      this.LOGIN_PARENT(this.formData);
+      this.LOGIN(this.formData);
     },
     goToRegisterPage() {
       this.CLEAR_ERRORS_AND_MESSAGES();
@@ -140,7 +140,7 @@ export default {
     }
   },
   watch: {
-    GET_PARENT: function(newState, oldState) {
+    GET_USER: function(newState, oldState) {
       if (Object.keys(newState).length > 0) {
         if (newState.isActive) {
           this.$router.replace("/parent");

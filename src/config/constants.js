@@ -5,8 +5,8 @@ const COLLECTIONS = {
   PARENTS: "parents",
   TEACHERS: "teachers",
   REGISTERED_STUDENTS: "registered_students",
-  SAVED_QURAN_CHAPTERS: "saved_quran_chapters",
-  SAVED_QURAN_SURAHS: "saved_quran_surahs"
+  QURAN_CHAPTERS: "quran_chapters",
+  QURAN_SURAHS: "quran_surahs",
 };
 
 // export objects / modules
