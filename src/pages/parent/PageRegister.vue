@@ -72,14 +72,22 @@
                     outlined
                     clearable
                     v-model="formData.password"
-                    type="password"
+                    :type="formData.isPassword ? 'password' : 'text'"
                     label="كلمة المرور"
                     lazy-rules
                     :rules="[
                       val =>
                         (val && val.length > 5) || 'الرجاء كتابة كلمة المرور'
                     ]"
-                  />
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="formData.isPassword ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="formData.isPassword = !formData.isPassword"
+                      />
+                    </template>
+                  </q-input>
                   <q-input
                     class="q-mt-sm"
                     dense
@@ -87,7 +95,7 @@
                     outlined
                     clearable
                     v-model="formData.confirmPassword"
-                    type="password"
+                    :type="formData.isPassword ? 'password' : 'text'"
                     label="تأكيد كلمة المرور"
                     lazy-rules
                     :rules="[
@@ -96,7 +104,15 @@
                       val =>
                         val === formData.password || 'كلمة المرور غير متطابقة'
                     ]"
-                  />
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="formData.isPassword ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="formData.isPassword = !formData.isPassword"
+                      />
+                    </template>
+                  </q-input>
                 </q-card-section>
                 <q-card-actions class="q-px-md q-py-none q-my-none">
                   <q-btn
@@ -134,7 +150,8 @@ export default {
         email: "",
         phone: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        isPassword: true
       },
       reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
     };

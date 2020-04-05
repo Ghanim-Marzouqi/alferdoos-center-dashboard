@@ -76,7 +76,7 @@ export default {
       ]
     };
   },
-  mounted() {
+  created() {
     if (Object.keys(this.GET_USER).length === 0) {
       this.$router.replace("/parent/login");
     }

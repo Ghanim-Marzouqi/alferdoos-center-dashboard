@@ -192,6 +192,7 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
 
     // Deactivate Loader And Display Success Message
     commit("SET_LOADER", false);
+    commit("SET_SUCCESS", "تم تقديم الطلب بنجاح");
 
     Notify.create({
       color: "blue",
