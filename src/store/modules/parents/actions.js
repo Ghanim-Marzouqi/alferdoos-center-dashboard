@@ -1,5 +1,5 @@
 import { FirebaseAuth, FirebaseDatabase } from "boot/firebase";
-import { COLLECTIONS } from "../../../config/constants";
+import { COLLECTIONS, URL } from "../../../config/constants";
 
 //#region AUTH
 const LOGIN = async ({ commit }, payload) => {
@@ -130,6 +130,49 @@ const FETCH_SURAHS = async ({ commit }) => {
 
   commit("SET_SURAHS", surahs);
 };
+
+const REGISTER_STUDENT = async ({ commit }, payload) => {
+  if (payload.image) {
+    // TODO: Upload Student Image
+  }
+
+  if (payload.certificates.length > 0) {
+    // TODO: Upload Student Certificates
+  }
+
+  const student = {
+    name: `${payload.firstName} بن ${payload.secondName} بن ${payload.thirdName} ${payload.familyName}`,
+    finishedClass: payload.finishedClass,
+    firstPhoneNumber: payload.parentPhone1,
+    secondPhoneNumber: payload.parentPhone2,
+    village: payload.village,
+    subjectANumber: payload.subjectANumber,
+    subjectBNumber: payload.subjectBNumber,
+    savedChapters: payload.savedChapters.map((chapter) => chapter.name),
+    savedSurahs: payload.savedSurahs.map((surah) => surah.name),
+    isLearntInCenterBefore: payload.isLearntInCenterBefore,
+    skills: payload.skills,
+    centerKnownBy: payload.centerKnownBy,
+    studentState: payload.studentState,
+    diseases: payload.diseases,
+    imageURL: `${URL}/RegisteredStudents/${payload.image.name}`,
+    certificates: payload.certificates.map(
+      (certificate) => `${URL}/RegisteredStudents/${certificate.name}`
+    ),
+    parentId: payload.parentId,
+  };
+
+  try {
+    await FirebaseDatabase.collection(COLLECTIONS.REGISTERED_STUDENTS)
+      .doc()
+      .set(student);
+
+    commit("SET_SUCCESS", "تم تسجيل المستخدم بنجاح");
+  } catch (error) {
+    console.log(error);
+    commit("SET_ERROR", "حدث خطأ اثناء التسجيل");
+  }
+};
 //#endregion
 
 const LOG_ERROR = ({ commit }, error) => {
@@ -150,4 +193,5 @@ export default {
   CLEAR_ERRORS_AND_MESSAGES,
   FETCH_CHAPTERS,
   FETCH_SURAHS,
+  REGISTER_STUDENT,
 };

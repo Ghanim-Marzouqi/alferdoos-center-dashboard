@@ -10,7 +10,7 @@
           active-icon="person"
           :done="hStep > 1"
         >
-          <q-form ref="hStudentInfoForm" @reset="onHorizontalFormReset">
+          <q-form ref="hStudentInfoForm">
             <div class="text-weight-bold">أسم الطالب:</div>
             <div class="row">
               <div class="col-3">
@@ -146,7 +146,7 @@
           active-icon="local_library"
           :done="hStep > 2"
         >
-          <q-form ref="hSubjectInfoForm" @reset="onHorizontalFormReset">
+          <q-form ref="hSubjectInfoForm">
             <div class="text-weight-bold q-mt-md">تقدير علامات المواد الدراسية:</div>
             <div class="row">
               <div class="col-6">
@@ -188,7 +188,7 @@
             <div class="row q-ma-sm">
               <div class="q-gutter-xs">
                 <q-chip
-                  v-for="chapter in savedChapters"
+                  v-for="chapter in studentForm.savedChapters"
                   :key="chapter.name"
                   :selected.sync="chapter.selected"
                   color="primary"
@@ -227,7 +227,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(surah, i) in savedSurahs" :key="i">
+                  <tr v-for="(surah, i) in studentForm.savedSurahs" :key="i">
                     <td class="text-left">{{ surah.name }}</td>
                     <td class="text-center">
                       <q-btn flat @click="removeSurah(i)">
@@ -257,14 +257,112 @@
         </q-step>
 
         <q-step :name="3" title="بيانات إضافية" icon="assignment" active-icon="assignment">
-          <q-form>
-            Try out different ad text to see what brings in the most customers,
-            and learn how to enhance your ads using features like ad extensions.
-            If you run into any problems with your ads, find out how to tell if
-            they're running and how to resolve approval issues.
+          <q-form ref="hMoretInfoForm">
+            <div class="row">
+              <div class="q-gutter-sm">
+                <div class="text-weight-bold">هل تعلم الطالب في مركز لحفظ القرآن في السنوات الماضية؟</div>
+                <q-radio v-model="studentForm.isLearntInCenterBefore" val="yes" label="نعم" />
+                <q-radio v-model="studentForm.isLearntInCenterBefore" val="no" label="لا" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="q-gutter-sm">
+                <div class="text-weight-bold">ما هي المهارات التي يمتلكها الطالب؟</div>
+                <div class="col-12">
+                  <q-input
+                    class="q-ma-sm"
+                    style="width: 400px;"
+                    dense
+                    square
+                    outlined
+                    :autogrow="false"
+                    clearable
+                    v-model="studentForm.skills"
+                    type="textarea"
+                    label="اكتب المهارات التي يمتلكها الطالب"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="q-gutter-sm">
+                <div class="text-weight-bold">الحالة الصحية للطالب ؟</div>
+                <q-radio v-model="studentForm.studentState" val="healthy" label="سليم" />
+                <q-radio v-model="studentForm.studentState" val="sick" label="مريض" />
+                <q-input
+                  v-if="studentForm.studentState === 'sick'"
+                  class="q-ma-sm"
+                  style="width: 400px"
+                  dense
+                  square
+                  outlined
+                  :autogrow="false"
+                  clearable
+                  v-model="studentForm.diseases"
+                  type="textarea"
+                  label="الأمراض او الأعراض التي يعاني منها الطالب"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="q-gutter-sm">
+                <div class="text-weight-bold">المرفقات</div>
+                <div class="col-6">
+                  <q-file
+                    v-model="studentForm.image"
+                    label="صورة الطالب"
+                    dense
+                    outlined
+                    use-chips
+                    style="width: 400px"
+                    class="q-ma-sm"
+                    accept=".jpg, image/*"
+                    lazy-rules
+                    :rules="[ val => !!val || 'الرجاء ارفاق صورة الطالب' ]"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="attach_file" />
+                    </template>
+                  </q-file>
+                </div>
+                <div class="col-6">
+                  <q-file
+                    v-model="studentForm.certificates"
+                    label="شهادات الطالب"
+                    dense
+                    outlined
+                    use-chips
+                    multiple
+                    style="width: 400px"
+                    class="q-ma-sm"
+                    accept=".pdf, .jpg, image/*"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="attach_file" />
+                    </template>
+                  </q-file>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="q-gutter-sm q-mt-sm">
+                <div class="text-weight-bold">كيف عرفت عن مركز الفردوس الاعلى ومن شجعك للتسجيل فيه؟</div>
+                <div class="col-6">
+                  <q-select
+                    v-model="studentForm.centerKnownBy"
+                    class="q-ma-sm"
+                    dense
+                    outlined
+                    :options="centerKnownList"
+                    label="طرق معرفة المركز"
+                    style="width: 400px"
+                  />
+                </div>
+              </div>
+            </div>
           </q-form>
           <q-stepper-navigation>
-            <q-btn label="إرسال" color="primary" />
+            <q-btn label="إرسال" color="primary" @click="onSubmit('hMoretInfoForm')" />
             <q-btn
               label="رجوع"
               flat
@@ -277,56 +375,54 @@
         </q-step>
       </q-stepper>
 
-      <q-form>
-        <q-stepper
-          id="vertical-stepper"
-          v-model="vStep"
-          ref="vStepper"
-          vertical
-          color="primary"
-          animated
+      <q-stepper
+        id="vertical-stepper"
+        v-model="vStep"
+        ref="vStepper"
+        vertical
+        color="primary"
+        animated
+      >
+        <q-step
+          :name="1"
+          title="البيانات الأساسية"
+          icon="person"
+          active-icon="person"
+          :done="vStep > 1"
         >
-          <q-step
-            :name="1"
-            title="البيانات الأساسية"
-            icon="person"
-            active-icon="person"
-            :done="vStep > 1"
-          >
-            For each ad campaign that you create, you can control how much
-            you're willing to spend on clicks and conversions, which networks
-            and geographical locations you want your ads to show on, and more.
-          </q-step>
+          For each ad campaign that you create, you can control how much
+          you're willing to spend on clicks and conversions, which networks
+          and geographical locations you want your ads to show on, and more.
+        </q-step>
 
-          <q-step
-            :name="2"
-            title="بيانات المواد الدراسية والحفظ"
-            icon="local_library"
-            active-icon="local_library"
-            :done="vStep > 2"
-          >
-            An ad group contains one or more ads which target a shared set of
-            keywords.
-          </q-step>
+        <q-step
+          :name="2"
+          title="بيانات المواد الدراسية والحفظ"
+          icon="local_library"
+          active-icon="local_library"
+          :done="vStep > 2"
+        >
+          An ad group contains one or more ads which target a shared set of
+          keywords.
+        </q-step>
 
-          <q-step :name="3" title="بيانات إضافية" icon="assignment" active-icon="assignment">
-            Try out different ad text to see what brings in the most customers,
-            and learn how to enhance your ads using features like ad extensions.
-            If you run into any problems with your ads, find out how to tell if
-            they're running and how to resolve approval issues.
-          </q-step>
+        <q-step :name="3" title="بيانات إضافية" icon="assignment" active-icon="assignment">
+          Try out different ad text to see what brings in the most customers,
+          and learn how to enhance your ads using features like ad extensions.
+          If you run into any problems with your ads, find out how to tell if
+          they're running and how to resolve approval issues.
+        </q-step>
 
-          <template v-slot:navigation>
-            <q-stepper-navigation>
-              <q-btn
-                @click="$refs.vStepper.next()"
-                color="primary"
-                :label="vStep === 3 ? 'إرسال' : 'متابعة'"
-              />
-            </q-stepper-navigation>
-          </template>
-        </q-stepper>
-      </q-form>
+        <template v-slot:navigation>
+          <q-stepper-navigation>
+            <q-btn
+              @click="$refs.vStepper.next()"
+              color="primary"
+              :label="vStep === 3 ? 'إرسال' : 'متابعة'"
+            />
+          </q-stepper-navigation>
+        </template>
+      </q-stepper>
     </div>
   </q-page>
 </template>
@@ -352,7 +448,16 @@ export default {
         subjectANumber: "",
         subjectBNumber: "",
         quranChapter: "",
-        quranSurah: ""
+        quranSurah: "",
+        savedChapters: [],
+        savedSurahs: [],
+        isLearntInCenterBefore: "no",
+        skills: "",
+        centerKnownBy: "",
+        studentState: "healthy",
+        diseases: "",
+        image: null,
+        certificates: []
       },
       villages: [
         "معمد",
@@ -366,8 +471,14 @@ export default {
         "عز",
         "متان"
       ],
-      savedChapters: [],
-      savedSurahs: []
+      centerKnownList: [
+        "مواقع التواصل الإجتماعي",
+        "إعلان",
+        "اصدقاء",
+        "ولي الأمر",
+        "الموقع",
+        "اخرى"
+      ]
     };
   },
   created() {
@@ -380,17 +491,27 @@ export default {
     }
 
     // set chapters
-    this.savedChapters = this.GET_CHAPTERS;
+    this.studentForm.savedChapters = this.GET_CHAPTERS;
   },
   computed: {
-    ...mapGetters("parents", ["GET_USER", "GET_CHAPTERS", "GET_SURAHS"]),
+    ...mapGetters("parents", [
+      "GET_USER",
+      "GET_CHAPTERS",
+      "GET_SURAHS",
+      "GET_MESSAGES",
+      "GET_ERRORS"
+    ]),
     getAllSurahs() {
       let surahs = this.GET_SURAHS.map(surah => surah.name);
       return surahs;
     }
   },
   methods: {
-    ...mapActions("parents", ["FETCH_CHAPTERS", "FETCH_SURAHS"]),
+    ...mapActions("parents", [
+      "FETCH_CHAPTERS",
+      "FETCH_SURAHS",
+      "REGISTER_STUDENT"
+    ]),
     async goToNextHorizontalStep(step, form) {
       let valid = await this.$refs[form].validate();
       if (valid) {
@@ -401,14 +522,74 @@ export default {
       let found = this.GET_SURAHS.find(value => value.name === surah);
 
       if (found) {
-        this.savedSurahs.push(found);
-        console.log(this.savedSurahs);
+        this.studentForm.savedSurahs.push(found);
+        console.log(this.studentForm.savedSurahs);
       }
     },
     removeSurah(index) {
-      this.savedSurahs.splice(index, 1);
+      this.studentForm.savedSurahs.splice(index, 1);
     },
-    onHorizontalFormReset() {}
+    async onSubmit(form) {
+      let valid = await this.$refs[form].validate();
+
+      if (valid) {
+        let chapters = [];
+        this.studentForm.savedChapters.forEach(chapter => {
+          if (chapter.selected === true) {
+            chapters.push(chapter);
+          }
+        });
+
+        this.REGISTER_STUDENT({
+          firstName: this.studentForm.firstName.trim(),
+          secondName: this.studentForm.secondName.trim(),
+          thirdName: this.studentForm.thirdName.trim(),
+          familyName: this.studentForm.familyName.trim(),
+          finishedClass: this.studentForm.finishedClass,
+          parentPhone1: this.studentForm.parentPhone1,
+          parentPhone2: this.studentForm.parentPhone2,
+          village: this.studentForm.village,
+          subjectANumber: this.studentForm.subjectANumber,
+          subjectBNumber: this.studentForm.subjectBNumber,
+          savedChapters: chapters,
+          savedSurahs: this.studentForm.savedSurahs,
+          isLearntInCenterBefore: this.studentForm.isLearntInCenterBefore,
+          skills: this.studentForm.skills.trim(),
+          centerKnownBy: this.studentForm.centerKnownBy,
+          studentState: this.studentForm.studentState,
+          diseases: this.studentForm.diseases.trim(),
+          image: this.studentForm.image,
+          certificates: this.studentForm.certificates,
+          parentId: this.GET_USER.id
+        });
+      }
+    }
+  },
+  watch: {
+    GET_MESSAGES: function(newState, oldState) {
+      if (newState.length > 0) {
+        this.$q
+          .dialog({
+            title: "تنبيه",
+            message: newState[0]
+          })
+          .onOk(() => {
+            console.log("OK");
+          });
+      }
+    },
+    GET_ERRORS: function(newState, oldState) {
+      if (newState.length > 0) {
+        this.$q
+          .dialog({
+            title: "تنبيه",
+            message: newState[0]
+          })
+          .onOk(() => {
+            console.log("OK");
+          });
+      }
+    }
   }
 };
 </script>

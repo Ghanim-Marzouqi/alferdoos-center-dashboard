@@ -9,5 +9,7 @@ const COLLECTIONS = {
   QURAN_SURAHS: "quran_surahs",
 };
 
+const URL = "gs://al-ferdoos-school.appspot.com";
+
 // export objects / modules
-export { COLLECTIONS };
+export { COLLECTIONS, URL };

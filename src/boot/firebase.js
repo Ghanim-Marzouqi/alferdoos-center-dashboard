@@ -14,7 +14,7 @@ const firebaseConfig = {
   storageBucket: "al-ferdoos-school.appspot.com",
   messagingSenderId: "765477839813",
   appId: "1:765477839813:web:7c5f17d521d9baf7f4e1ac",
-  measurementId: "G-ZW16G2T3G7"
+  measurementId: "G-ZW16G2T3G7",
 };
 
 // initialize firbase
@@ -22,6 +22,13 @@ let FirebaseApp = firebase.initializeApp(firebaseConfig);
 let FirebaseAnalytics = firebase.analytics();
 let FirebaseAuth = FirebaseApp.auth();
 let FirebaseDatabase = FirebaseApp.firestore();
+let FirebaseStorage = FirebaseApp.storage();
 
 // export firebase modules
-export { FirebaseApp, FirebaseAnalytics, FirebaseAuth, FirebaseDatabase };
+export {
+  FirebaseApp,
+  FirebaseAnalytics,
+  FirebaseAuth,
+  FirebaseDatabase,
+  FirebaseStorage,
+};
