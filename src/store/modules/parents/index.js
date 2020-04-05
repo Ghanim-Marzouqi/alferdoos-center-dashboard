@@ -8,6 +8,7 @@ const state = {
   messages: [],
   chapters: [],
   surahs: [],
+  loading: false,
 };
 
 export default {

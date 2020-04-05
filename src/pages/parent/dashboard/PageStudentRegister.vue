@@ -260,7 +260,7 @@
           <q-form ref="hMoretInfoForm">
             <div class="row">
               <div class="q-gutter-sm">
-                <div class="text-weight-bold">هل تعلم الطالب في مركز لحفظ القرآن في السنوات الماضية؟</div>
+                <div class="text-weight-bold">هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم؟</div>
                 <q-radio v-model="studentForm.isLearntInCenterBefore" val="yes" label="نعم" />
                 <q-radio v-model="studentForm.isLearntInCenterBefore" val="no" label="لا" />
               </div>
@@ -362,7 +362,12 @@
             </div>
           </q-form>
           <q-stepper-navigation>
-            <q-btn label="إرسال" color="primary" @click="onSubmit('hMoretInfoForm')" />
+            <q-btn
+              :loading="GET_LOADER"
+              label="إرسال"
+              color="primary"
+              @click="onSubmit('hMoretInfoForm')"
+            />
             <q-btn
               label="رجوع"
               flat
@@ -482,6 +487,7 @@ export default {
     };
   },
   created() {
+    this.CLEAR_ERRORS_AND_MESSAGES();
     this.FETCH_CHAPTERS();
     this.FETCH_SURAHS();
   },
@@ -499,7 +505,8 @@ export default {
       "GET_CHAPTERS",
       "GET_SURAHS",
       "GET_MESSAGES",
-      "GET_ERRORS"
+      "GET_ERRORS",
+      "GET_LOADER"
     ]),
     getAllSurahs() {
       let surahs = this.GET_SURAHS.map(surah => surah.name);
@@ -510,7 +517,8 @@ export default {
     ...mapActions("parents", [
       "FETCH_CHAPTERS",
       "FETCH_SURAHS",
-      "REGISTER_STUDENT"
+      "REGISTER_STUDENT",
+      "CLEAR_ERRORS_AND_MESSAGES"
     ]),
     async goToNextHorizontalStep(step, form) {
       let valid = await this.$refs[form].validate();
@@ -566,29 +574,31 @@ export default {
     }
   },
   watch: {
-    GET_MESSAGES: function(newState, oldState) {
-      if (newState.length > 0) {
-        this.$q
-          .dialog({
-            title: "تنبيه",
-            message: newState[0]
-          })
-          .onOk(() => {
-            console.log("OK");
-          });
-      }
+    GET_MESSAGES: function(value) {
+      console.log(value);
+      // if (typeof newState !== "undefined" && newState.length > 0) {
+      //   this.$q
+      //     .dialog({
+      //       title: "تنبيه",
+      //       message: newState[0]
+      //     })
+      //     .onOk(() => {
+      //       console.log("OK");
+      //     });
+      // }
     },
-    GET_ERRORS: function(newState, oldState) {
-      if (newState.length > 0) {
-        this.$q
-          .dialog({
-            title: "تنبيه",
-            message: newState[0]
-          })
-          .onOk(() => {
-            console.log("OK");
-          });
-      }
+    GET_ERRORS: function(value) {
+      console.log(value);
+      // if (typeof newState !== "undefined" && newState.length > 0) {
+      //   this.$q
+      //     .dialog({
+      //       title: "تنبيه",
+      //       message: newState[0]
+      //     })
+      //     .onOk(() => {
+      //       console.log("OK");
+      //     });
+      // }
     }
   }
 };

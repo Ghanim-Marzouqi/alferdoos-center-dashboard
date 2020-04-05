@@ -16,6 +16,8 @@ const SET_CHAPTERS = (state, chapters) => (state.chapters = chapters);
 
 const SET_SURAHS = (state, surahs) => (state.surahs = surahs);
 
+const SET_LOADER = (state, value) => (state.loading = value);
+
 export default {
   SET_USER,
   SET_SUCCESS,
@@ -23,4 +25,5 @@ export default {
   RESET_ERRORS_AND_MESSAGES,
   SET_CHAPTERS,
   SET_SURAHS,
+  SET_LOADER,
 };
