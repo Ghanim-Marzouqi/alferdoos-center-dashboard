@@ -493,7 +493,7 @@
                   clearable
                   v-model="studentForm.parentPhone2"
                   type="number"
-                  label="رقم هاتف ولي الأمر الثاني (إختياري)"
+                  label="هاتف ولي الأمر الثاني (إختياري)"
                   lazy-rules
                   :rules="[]"
                 />
@@ -534,7 +534,7 @@
                   clearable
                   v-model.number="studentForm.subjectANumber"
                   type="number"
-                  label="عدد المواد التي حصل الطالب فيها على تقدير (أ)"
+                  label="عدد المواد بتقدير (أ)"
                   lazy-rules
                   :rules="[
                     val => val >= 0 || 'عدد المواد غير صحيح',
@@ -551,7 +551,7 @@
                   clearable
                   v-model.number="studentForm.subjectBNumber"
                   type="number"
-                  label="عدد المواد التي حصل الطالب فيها على تقدير (ب)"
+                  label="عدد المواد بتقدير (ب)"
                   lazy-rules
                   :rules="[
                     val => val >= 0 || 'عدد المواد غير صحيح',
