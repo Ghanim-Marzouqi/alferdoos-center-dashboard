@@ -1,7 +1,7 @@
 const routes = [
   {
     path: "/",
-    component: () => import("pages/PageMain.vue")
+    component: () => import("pages/PageMain.vue"),
   },
   {
     path: "/admin",
@@ -9,17 +9,17 @@ const routes = [
     children: [
       {
         path: "",
-        component: () => import("pages/admin/dashboard/PageHome.vue")
-      }
-    ]
+        component: () => import("pages/admin/dashboard/PageHome.vue"),
+      },
+    ],
   },
   {
     path: "/admin/login",
-    component: () => import("pages/admin/PageLogin.vue")
+    component: () => import("pages/admin/auth/PageLogin.vue"),
   },
   {
     path: "/admin/reset-password",
-    component: () => import("pages/admin/PageResetPassword.vue")
+    component: () => import("pages/admin/auth/PageResetPassword.vue"),
   },
   {
     path: "/parent",
@@ -28,21 +28,26 @@ const routes = [
       {
         path: "",
         component: () =>
-          import("pages/parent/dashboard/PageStudentRegister.vue")
-      }
-    ]
+          import("pages/parent/dashboard/PageStudentRegister.vue"),
+      },
+      {
+        path: "registration-applications",
+        component: () =>
+          import("pages/parent/dashboard/PageRegistrationApplications.vue"),
+      },
+    ],
   },
   {
     path: "/parent/login",
-    component: () => import("pages/parent/PageLogin.vue")
+    component: () => import("pages/parent/auth/PageLogin.vue"),
   },
   {
     path: "/parent/register",
-    component: () => import("pages/parent/PageRegister.vue")
+    component: () => import("pages/parent/auth/PageRegister.vue"),
   },
   {
     path: "/parent/reset-password",
-    component: () => import("pages/parent/PageResetPassword.vue")
+    component: () => import("pages/parent/auth/PageResetPassword.vue"),
   },
   {
     path: "/teacher",
@@ -50,25 +55,25 @@ const routes = [
     children: [
       {
         path: "",
-        component: () => import("pages/teacher/dashboard/PageHome.vue")
-      }
-    ]
+        component: () => import("pages/teacher/dashboard/PageHome.vue"),
+      },
+    ],
   },
   {
     path: "/teacher/login",
-    component: () => import("pages/teacher/PageLogin.vue")
+    component: () => import("pages/teacher/auth/PageLogin.vue"),
   },
   {
     path: "/teacher/reset-password",
-    component: () => import("pages/teacher/PageResetPassword.vue")
-  }
+    component: () => import("pages/teacher/auth/PageResetPassword.vue"),
+  },
 ];
 
 // Always leave this as last one
 if (process.env.MODE !== "ssr") {
   routes.push({
     path: "*",
-    component: () => import("pages/PageError404.vue")
+    component: () => import("pages/PageError404.vue"),
   });
 }
 

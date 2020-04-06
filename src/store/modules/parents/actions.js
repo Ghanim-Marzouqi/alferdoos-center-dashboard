@@ -4,6 +4,9 @@ import { COLLECTIONS, URL } from "../../../config/constants";
 
 //#region AUTH
 const LOGIN = async ({ commit }, payload) => {
+  // Activate Loader
+  commit("SET_LOADER", true);
+
   try {
     // Autheticate User Using Firebase Authentication
     let auth_response = await FirebaseAuth.signInWithEmailAndPassword(
@@ -19,11 +22,13 @@ const LOGIN = async ({ commit }, payload) => {
       if (doc.exists) {
         commit("SET_SUCCESS", doc.data());
         commit("SET_USER", doc.data());
+        commit("SET_LOADER", false);
       }
     }
   } catch (error) {
     console.log(error);
     commit("SET_ERROR", error);
+    commit("SET_LOADER", false);
   }
 };
 

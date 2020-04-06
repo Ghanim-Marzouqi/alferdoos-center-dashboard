@@ -84,6 +84,7 @@
                       <q-icon
                         :name="formData.isPassword ? 'visibility_off' : 'visibility'"
                         class="cursor-pointer"
+                        color="primary"
                         @click="formData.isPassword = !formData.isPassword"
                       />
                     </template>
@@ -109,6 +110,7 @@
                       <q-icon
                         :name="formData.isPassword ? 'visibility_off' : 'visibility'"
                         class="cursor-pointer"
+                        color="primary"
                         @click="formData.isPassword = !formData.isPassword"
                       />
                     </template>
@@ -117,14 +119,14 @@
                 <q-card-actions class="q-px-md q-py-none q-my-none">
                   <q-btn
                     type="submit"
-                    color="grey"
+                    color="primary"
                     size="lg"
                     class="full-width text-weight-medium"
                     label="تسجيل جديد"
                   />
                   <q-btn
                     unelevated
-                    class="full-width text-blue text-weight-medium"
+                    class="full-width text-grey-7 text-weight-medium"
                     label="هل أنت مسجل مسبقا"
                     @click="goToLoginPage"
                   />

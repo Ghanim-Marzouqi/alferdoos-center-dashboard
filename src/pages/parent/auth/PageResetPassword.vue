@@ -37,11 +37,11 @@
                   />
                 </q-card-section>
                 <q-card-actions class="q-px-md">
-                  <q-btn type="submit" color="grey" size="lg" class="full-width" label="إرسال" />
+                  <q-btn type="submit" color="primary" size="lg" class="full-width" label="إرسال" />
                   <q-btn
                     @click="goToLoginPage"
                     unelevated
-                    class="full-width text-blue"
+                    class="full-width text-grey-7"
                     label="الرجوع لصفحة تسجيل الدخول"
                   />
                 </q-card-actions>

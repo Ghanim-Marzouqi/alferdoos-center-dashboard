@@ -1,5 +1,5 @@
 <template>
-  <q-item clickable :to="link" exact>
+  <q-item class="q-ma-xs" clickable :to="link" exact>
     <q-item-section v-if="icon" avatar>
       <q-icon :name="icon" />
     </q-item-section>
@@ -35,7 +35,7 @@ export default {
 <style lang="scss" scoped>
 .q-item.q-router-link--active {
   color: #fff;
-  background-color: #616161;
+  background-color: #ccae62;
   letter-spacing: 0.01785714em;
   font-size: 0.875rem;
   font-weight: 500;

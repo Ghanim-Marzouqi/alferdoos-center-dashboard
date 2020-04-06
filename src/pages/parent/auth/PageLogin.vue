@@ -46,6 +46,7 @@
                       <q-icon
                         :name="formData.isPassword ? 'visibility_off' : 'visibility'"
                         class="cursor-pointer"
+                        color="primary"
                         @click="formData.isPassword = !formData.isPassword"
                       />
                     </template>
@@ -54,14 +55,15 @@
                 <q-card-actions class="q-px-md q-py-none q-my-none">
                   <q-btn
                     type="submit"
-                    color="grey"
+                    color="primary"
                     size="lg"
                     class="full-width text-subtitle2"
                     label="تسجيل الدخول"
+                    :loading="GET_LOADER"
                   />
                   <q-btn
                     @click="goToRegisterPage"
-                    color="blue"
+                    color="grey"
                     size="lg"
                     class="full-width q-mt-xs text-subtitle2"
                     label="تسجيل جديد"
@@ -69,7 +71,7 @@
                   <q-btn
                     @click="goToResetPasswordPage"
                     unelevated
-                    class="full-width text-blue"
+                    class="full-width text-grey-7"
                     label="هل نسيت كلمة المرور؟"
                   />
                 </q-card-actions>
@@ -101,7 +103,12 @@ export default {
     this.TRIGGER_USER_STATE();
   },
   computed: {
-    ...mapGetters("parents", ["GET_USER", "GET_ERRORS", "GET_MESSAGES"]),
+    ...mapGetters("parents", [
+      "GET_USER",
+      "GET_ERRORS",
+      "GET_MESSAGES",
+      "GET_LOADER"
+    ]),
     getErrorMessage() {
       if (this.GET_ERRORS.length > 0) {
         if (this.GET_ERRORS[0].code === "auth/user-not-found") {

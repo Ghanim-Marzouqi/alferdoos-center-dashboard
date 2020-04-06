@@ -23,7 +23,8 @@
       bordered
       :width="280"
       :breakpoint="767"
-      content-class="bg-grey-9 text-white"
+      color="drawer"
+      content-style="background-color: #fff; color: #ccae62"
     >
       <q-scroll-area
         style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd"
@@ -43,7 +44,7 @@
         </q-list>
       </q-scroll-area>
 
-      <q-img class="absolute-top" src="statics/images/drawer_bg.jpg" style="height: 150px">
+      <q-img class="absolute-top" src="statics/images/bg.png" style="height: 150px">
         <div style="width: 100%" class="text-center bg-transparent">
           <q-avatar size="80px" class="q-mb-sm">
             <img src="statics/images/avatar.jpg" />
@@ -72,6 +73,11 @@ export default {
           title: "تسجيل طالب جديد",
           icon: "o_create",
           link: "/parent"
+        },
+        {
+          title: "طلبات التسجيل",
+          icon: "o_assignment",
+          link: "/parent/registration-applications"
         }
       ]
     };

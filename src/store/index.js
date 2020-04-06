@@ -4,6 +4,7 @@ import Vuex from "vuex";
 import admins from "./modules/admins";
 import parents from "./modules/parents";
 import teachers from "./modules/teacher";
+import shared from "./modules/shared";
 
 Vue.use(Vuex);
 
@@ -13,6 +14,7 @@ export default function (/* { ssrContext } */) {
       admins,
       parents,
       teachers,
+      shared,
     },
     strict: process.env.DEV,
   });
