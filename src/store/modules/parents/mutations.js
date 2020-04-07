@@ -7,7 +7,7 @@ const SET_SUCCESS = (state, payload) => {
 
 const SET_ERROR = (state, error) => state.errors.unshift(error);
 
-const RESET_ERRORS_AND_MESSAGES = (state) => {
+const RESET_ERRORS_AND_MESSAGES = state => {
   state.errors = [];
   state.messages = [];
 };
@@ -18,6 +18,8 @@ const SET_SURAHS = (state, surahs) => (state.surahs = surahs);
 
 const SET_LOADER = (state, value) => (state.loading = value);
 
+const SET_REGISTRATION = (state, value) => (state.is_user_registered = value);
+
 export default {
   SET_USER,
   SET_SUCCESS,
@@ -26,4 +28,5 @@ export default {
   SET_CHAPTERS,
   SET_SURAHS,
   SET_LOADER,
+  SET_REGISTRATION
 };

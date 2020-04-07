@@ -7,21 +7,33 @@ const LOGIN = async ({ commit }, payload) => {
   // Activate Loader
   commit("SET_LOADER", true);
 
+  // Declare Auth Response
+  let auth_response = null;
+
   try {
     // Autheticate User Using Firebase Authentication
-    let auth_response = await FirebaseAuth.signInWithEmailAndPassword(
+    auth_response = await FirebaseAuth.signInWithEmailAndPassword(
       payload.email,
       payload.password
     );
 
     // Fetch User Data From Firebase Firestore
     if (auth_response.user.uid) {
-      let doc = await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
-        .doc(auth_response.user.uid)
-        .get();
-      if (doc.exists) {
-        commit("SET_SUCCESS", doc.data());
-        commit("SET_USER", doc.data());
+      // Check If Email Verfied
+      if (auth_response.user.emailVerified) {
+        let doc = await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
+          .doc(auth_response.user.uid)
+          .get();
+        if (doc.exists) {
+          commit("SET_SUCCESS", doc.data());
+          commit("SET_USER", doc.data());
+          commit("SET_LOADER", false);
+        }
+      } else {
+        FirebaseAuth.signOut();
+        commit("SET_ERROR", {
+          code: "auth/email-not-verified"
+        });
         commit("SET_LOADER", false);
       }
     }
@@ -33,6 +45,9 @@ const LOGIN = async ({ commit }, payload) => {
 };
 
 const REGISTER = async ({ commit }, payload) => {
+  // Activate Loader
+  commit("SET_LOADER", true);
+
   try {
     // Register New User In Firebase Authentication
     let auth_response = await FirebaseAuth.createUserWithEmailAndPassword(
@@ -44,7 +59,8 @@ const REGISTER = async ({ commit }, payload) => {
       // Get User Id From Firebase Authentication
       payload.id = auth_response.user.uid;
 
-      // TODO: Register User Phone In Firebase Authentication
+      // Update User Display Name
+      await auth_response.user.updateProfile({ displayName: payload.name });
 
       // Register New User In Firebase Firestore
       await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
@@ -54,33 +70,42 @@ const REGISTER = async ({ commit }, payload) => {
           name: payload.name,
           email: payload.email,
           phone: payload.phone,
-          isActive: true,
+          isActive: true
         });
 
       // Send Verification Email
       await auth_response.user.sendEmailVerification();
 
-      // Sign Out User
-      await FirebaseAuth.signOut();
-
       commit("SET_SUCCESS", payload);
+      commit("SET_LOADER", false);
     }
   } catch (error) {
     console.log(error);
     commit("SET_ERROR", error);
+    commit("SET_LOADER", false);
   }
 };
 
+const TRIGGER_USER_REGISTRATION = ({ commit }) => {
+  FirebaseAuth.onAuthStateChanged(user => {
+    if (user && user.phoneNumber === null) {
+      commit("SET_REGISTRATION", true);
+    } else {
+      commit("SET_REGISTRATION", false);
+    }
+  });
+};
+
 const TRIGGER_USER_STATE = ({ commit }) => {
-  FirebaseAuth.onAuthStateChanged((user) => {
-    if (user) {
+  FirebaseAuth.onAuthStateChanged(user => {
+    if (user && user.emailVerified) {
       FirebaseDatabase.collection(COLLECTIONS.PARENTS)
         .doc(user.uid)
         .get()
-        .then((snapshot) => {
+        .then(snapshot => {
           commit("SET_USER", snapshot.data());
         })
-        .catch((error) => {
+        .catch(error => {
           commit("SET_ERROR", error);
         });
     } else {
@@ -90,11 +115,16 @@ const TRIGGER_USER_STATE = ({ commit }) => {
 };
 
 const RESET_PASSWORD = async ({ commit }, payload) => {
+  // Activate Loader
+  commit("SET_LOADER", true);
+
   try {
     await FirebaseAuth.sendPasswordResetEmail(payload.email);
     commit("SET_SUCCESS", { message: "success" });
+    commit("SET_LOADER", false);
   } catch (error) {
     commit("SET_ERROR", error);
+    commit("SET_LOADER", false);
   }
 };
 
@@ -111,10 +141,10 @@ const FETCH_CHAPTERS = async ({ commit }) => {
 
   let docs = response.docs;
 
-  let chapters = docs.map((chapter) => ({
+  let chapters = docs.map(chapter => ({
     id: chapter.data().id,
     name: chapter.data().name,
-    selected: false,
+    selected: false
   }));
 
   commit("SET_CHAPTERS", chapters);
@@ -127,11 +157,11 @@ const FETCH_SURAHS = async ({ commit }) => {
 
   let docs = response.docs;
 
-  let surahs = docs.map((surah) => ({
+  let surahs = docs.map(surah => ({
     id: surah.data().id,
     name: surah.data().name,
     chapter: surah.data().chapter,
-    phrases: surah.data().phrases,
+    phrases: surah.data().phrases
   }));
 
   commit("SET_SURAHS", surahs);
@@ -159,7 +189,7 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
 
     // Upload Student Certificates
     if (payload.certificates.length > 0) {
-      payload.certificates.forEach(async (certificate) => {
+      payload.certificates.forEach(async certificate => {
         let certificateRef = FirebaseStorageRef.child(
           `RegisteredStudents/Certificates/${certificate.name}_${Date.now()}`
         );
@@ -178,8 +208,8 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
       village: payload.village,
       subjectANumber: payload.subjectANumber,
       subjectBNumber: payload.subjectBNumber,
-      savedChapters: payload.savedChapters.map((chapter) => chapter.name),
-      savedSurahs: payload.savedSurahs.map((surah) => surah.name),
+      savedChapters: payload.savedChapters.map(chapter => chapter.name),
+      savedSurahs: payload.savedSurahs.map(surah => surah.name),
       isLearntInCenterBefore: payload.isLearntInCenterBefore,
       skills: payload.skills,
       centerKnownBy: payload.centerKnownBy,
@@ -187,7 +217,7 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
       diseases: payload.diseases,
       imageURL: payload.imageURL,
       certificates: payload.certificateURLs,
-      parentId: payload.parentId,
+      parentId: payload.parentId
     };
 
     // Insert Student Data Inside Firebase Firestore
@@ -204,7 +234,7 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
       textColor: "#FFF",
       timeout: 3000,
       position: "top",
-      message: "تم تقديم الطلب بنجاح",
+      message: "تم تقديم الطلب بنجاح"
     });
   } catch (error) {
     // Deactivate Loader And Display Error Message
@@ -216,7 +246,7 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
       textColor: "#FFF",
       timeout: 3000,
       position: "top",
-      message: "حدث خطأ اثناء التسجيل",
+      message: "حدث خطأ اثناء التسجيل"
     });
   }
 };
@@ -243,4 +273,5 @@ export default {
   FETCH_CHAPTERS,
   FETCH_SURAHS,
   REGISTER_STUDENT,
+  TRIGGER_USER_REGISTRATION
 };

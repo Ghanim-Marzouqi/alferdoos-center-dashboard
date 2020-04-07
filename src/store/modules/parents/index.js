@@ -9,6 +9,7 @@ const state = {
   chapters: [],
   surahs: [],
   loading: false,
+  is_user_registered: false
 };
 
 export default {
@@ -16,5 +17,5 @@ export default {
   state,
   actions,
   getters,
-  mutations,
+  mutations
 };

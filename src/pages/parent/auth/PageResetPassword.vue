@@ -4,7 +4,7 @@
       <q-page class="bg-primary window-height window-width flex flex-center">
         <div class="column text-center">
           <div class="col">
-            <img src="~assets/images/logo.png" width="300px" height="auto" />
+            <img src="~assets/images/logo_white.png" width="300px" height="auto" />
             <p class="text-white text-h6 text-weight-bold">إعادة تعيين كلمة المرور</p>
           </div>
           <div class="row">
@@ -37,7 +37,14 @@
                   />
                 </q-card-section>
                 <q-card-actions class="q-px-md">
-                  <q-btn type="submit" color="primary" size="lg" class="full-width" label="إرسال" />
+                  <q-btn
+                    type="submit"
+                    color="primary"
+                    size="lg"
+                    class="full-width"
+                    label="إرسال"
+                    :loading="GET_LOADER"
+                  />
                   <q-btn
                     @click="goToLoginPage"
                     unelevated
@@ -67,7 +74,7 @@ export default {
       reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
     };
   },
-  computed: mapGetters("parents", ["GET_ERRORS", "GET_MESSAGES"]),
+  computed: mapGetters("parents", ["GET_ERRORS", "GET_MESSAGES", "GET_LOADER"]),
   methods: {
     ...mapActions("parents", ["RESET_PASSWORD", "CLEAR_ERRORS_AND_MESSAGES"]),
     isEmailValid(email) {
