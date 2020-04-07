@@ -148,6 +148,10 @@
                     v-model="otpCode"
                     type="number"
                     label="رمز التحقق"
+                    lazy-rules
+                    :rules="[
+                      val => (val && val.length === 6) || 'الرجاء كتابة رمز التحقق'
+                    ]"
                   />
                 </q-card-section>
                 <q-card-actions class="q-px-md q-py-none q-my-none">
@@ -156,11 +160,8 @@
                     color="primary"
                     size="lg"
                     class="full-width text-weight-medium"
-                    label="تحقق"
-                    lazy-rules
-                    :rules="[
-                      val => (val && val.length === 6) || 'الرجاء كتابة رمز التحقق'
-                    ]"
+                    label="تحقق من الرمز"
+                    :loading="GET_LOADER"
                   />
                   <q-btn
                     unelevated
@@ -180,7 +181,9 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import firebase from "firebase";
+import { auth, firestore } from "firebase";
+import { FirebaseAuth } from "boot/firebase";
+import { COLLECTIONS } from "../../../config/constants";
 
 export default {
   name: "PageRegister",
@@ -203,14 +206,6 @@ export default {
   created() {
     this.TRIGGER_USER_REGISTRATION();
   },
-  mounted() {
-    // setTimeout(() => {
-    //   this.appVerifier = new firebase.auth.RecaptchaVerifier(
-    //     "recaptcha-container",
-    //     { size: "invisible" }
-    //   );
-    // }, 5000);
-  },
   computed: {
     ...mapGetters("parents", [
       "GET_ERRORS",
@@ -222,6 +217,10 @@ export default {
       if (this.GET_ERRORS.length > 0) {
         if (this.GET_ERRORS[0].code === "auth/email-already-in-use") {
           return "المستخدم مسجل بالفعل";
+        } else if (this.GET_ERRORS[0].code === "auth/otp-not-sent") {
+          return "لا يمكن إرسال رمز التحقق";
+        } else if (this.GET_ERRORS[0].code === "auth/otp-not-verified") {
+          return "لم يتم التحقق من الرمز";
         } else {
           return "حدث خطأ أثناء التسجيل";
         }
@@ -232,8 +231,9 @@ export default {
     ...mapActions("parents", [
       "REGISTER",
       "CLEAR_ERRORS_AND_MESSAGES",
-      "LOG_ERROR",
-      "TRIGGER_USER_REGISTRATION"
+      "SET_ERROR",
+      "TRIGGER_USER_REGISTRATION",
+      "SET_LOADER"
     ]),
     isEmailValid(email) {
       return email == "" ? "" : this.reg.test(email) ? true : false;
@@ -244,49 +244,82 @@ export default {
       this.REGISTER({
         name: this.formData.name.trim(),
         email: this.formData.email.trim(),
-        phone: `+968${this.formData.phone}`,
-        password: this.formData.password
+        password: this.formData.password.trim()
       });
     },
-    sendOTP(phone) {
-      firebase
-        .auth()
-        .signInWithPhoneNumber(`+968${phone}`, this.appVerifier)
-        .then(function(confirmationResult) {
-          window.confirmationResult = confirmationResult;
-        })
-        .catch(function(error) {
-          // Error; SMS not sent
-          console.log(error);
+    async sendOTP(phone) {
+      try {
+        window.confirmationResult = await FirebaseAuth.signInWithPhoneNumber(
+          `+968${phone}`,
+          this.appVerifier
+        );
+      } catch (error) {
+        this.SET_ERROR({
+          code: "auth/otp-not-sent"
         });
+      }
     },
     async verifyOTP() {
-      var credential = firebase.auth.PhoneAuthProvider.credential(
-        window.confirmationResult.verificationId,
-        this.otpCode
-      );
+      try {
+        // Clear Messages And Errors
+        this.CLEAR_ERRORS_AND_MESSAGES();
 
-      if (credential) {
-        let user = firebase.auth().currentUser;
+        // Activate Loader
+        this.SET_LOADER(true);
 
-        if (user) {
-          // Update User Phone Number
-          await user.updatePhoneNumber(credential);
+        // Set Language Code
+        FirebaseAuth.languageCode = "ar";
 
-          // Sign Out User
-          await firebase.auth().signOut();
+        // Verify User
+        let credential = auth.PhoneAuthProvider.credential(
+          window.confirmationResult.verificationId,
+          this.otpCode
+        );
 
-          // Go To Login Page
-          this.goToLoginPage();
+        if (credential) {
+          // Get Current Registered User
+          let user = FirebaseAuth.currentUser;
+
+          if (user) {
+            // Update User Phone Number
+            await user.updatePhoneNumber(credential);
+            await firestore()
+              .collection(COLLECTIONS.PARENTS)
+              .doc(user.uid)
+              .update({
+                phone: user.phoneNumber
+              });
+
+            // Sign Out User
+            await FirebaseAuth.signOut();
+
+            // Deactivate Loader
+            this.SET_LOADER(false);
+
+            // Go To Login Page
+            this.goToLoginPage();
+          }
+        } else {
+          console.log("Credentail Is Not Defined");
+          this.SET_ERROR({
+            code: "auth/otp-not-verified"
+          });
         }
+      } catch (error) {
+        console.log(error);
+        // Deactivate Loader
+        this.SET_LOADER(false);
+        this.SET_ERROR({
+          code: "auth/otp-not-verified"
+        });
       }
     },
     goToLoginPage() {
       this.CLEAR_ERRORS_AND_MESSAGES();
 
-      if (firebase.auth().currentUser) {
+      if (FirebaseAuth.currentUser) {
         // Sign Out User
-        firebase.auth().signOut();
+        FirebaseAuth.signOut();
       }
 
       this.$router.replace("/parent/login");
@@ -294,19 +327,20 @@ export default {
   },
   watch: {
     GET_USER_REGISTRATION: function(newState, oldState) {
-      console.log("USER Registration State", JSON.stringify(newState));
+      console.log("User Registered", JSON.stringify(newState));
       if (newState) {
+        // Enable OTP SMS Sending
         this.isOTPEnabled = true;
 
-        this.appVerifier = new firebase.auth.RecaptchaVerifier(
-          "recaptcha-container",
-          {
-            size: "invisible"
-          }
-        );
+        FirebaseAuth.languageCode = "ar";
+
+        // Verify App Using reCAPTCHA
+        this.appVerifier = new auth.RecaptchaVerifier("recaptcha-container", {
+          size: "normal"
+        });
 
         if (this.appVerifier !== null) {
-          // Send OTP
+          // Send OTP SMS
           this.sendOTP(this.formData.phone);
         }
       }

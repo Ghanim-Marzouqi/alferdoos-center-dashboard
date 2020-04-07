@@ -1,36 +1,45 @@
 import { Notify } from "quasar";
 import { FirebaseAuth, FirebaseDatabase, FirebaseStorage } from "boot/firebase";
-import { COLLECTIONS, URL } from "../../../config/constants";
+import { COLLECTIONS } from "../../../config/constants";
 
 //#region AUTH
 const LOGIN = async ({ commit }, payload) => {
   // Activate Loader
   commit("SET_LOADER", true);
 
-  // Declare Auth Response
-  let auth_response = null;
-
   try {
     // Autheticate User Using Firebase Authentication
-    auth_response = await FirebaseAuth.signInWithEmailAndPassword(
+    let response = await FirebaseAuth.signInWithEmailAndPassword(
       payload.email,
       payload.password
     );
 
     // Fetch User Data From Firebase Firestore
-    if (auth_response.user.uid) {
+    if (response.user.uid) {
       // Check If Email Verfied
-      if (auth_response.user.emailVerified) {
+      if (response.user.emailVerified) {
         let doc = await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
-          .doc(auth_response.user.uid)
+          .doc(response.user.uid)
           .get();
         if (doc.exists) {
-          commit("SET_SUCCESS", doc.data());
-          commit("SET_USER", doc.data());
-          commit("SET_LOADER", false);
+          if (doc.data().isActive === true) {
+            commit("SET_MESSAGE", doc.data());
+            commit("SET_USER", doc.data());
+          } else {
+            await FirebaseAuth.signOut();
+            commit("SET_ERROR", {
+              code: "databse/user-inactive"
+            });
+          }
+        } else {
+          await FirebaseAuth.signOut();
+          commit("SET_ERROR", {
+            code: "auth/user-not-found"
+          });
         }
+        commit("SET_LOADER", false);
       } else {
-        FirebaseAuth.signOut();
+        await FirebaseAuth.signOut();
         commit("SET_ERROR", {
           code: "auth/email-not-verified"
         });
@@ -49,18 +58,18 @@ const REGISTER = async ({ commit }, payload) => {
   commit("SET_LOADER", true);
 
   try {
-    // Register New User In Firebase Authentication
-    let auth_response = await FirebaseAuth.createUserWithEmailAndPassword(
+    // Register New User In Firebase Authentication Using Email And Password
+    let response = await FirebaseAuth.createUserWithEmailAndPassword(
       payload.email,
       payload.password
     );
 
-    if (auth_response.user.uid) {
+    if (response.user.uid) {
       // Get User Id From Firebase Authentication
-      payload.id = auth_response.user.uid;
+      payload.id = response.user.uid;
 
       // Update User Display Name
-      await auth_response.user.updateProfile({ displayName: payload.name });
+      await response.user.updateProfile({ displayName: payload.name });
 
       // Register New User In Firebase Firestore
       await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
@@ -69,14 +78,12 @@ const REGISTER = async ({ commit }, payload) => {
           id: payload.id,
           name: payload.name,
           email: payload.email,
-          phone: payload.phone,
           isActive: true
         });
 
       // Send Verification Email
-      await auth_response.user.sendEmailVerification();
+      await response.user.sendEmailVerification();
 
-      commit("SET_SUCCESS", payload);
       commit("SET_LOADER", false);
     }
   } catch (error) {
@@ -97,17 +104,23 @@ const TRIGGER_USER_REGISTRATION = ({ commit }) => {
 };
 
 const TRIGGER_USER_STATE = ({ commit }) => {
-  FirebaseAuth.onAuthStateChanged(user => {
-    if (user && user.emailVerified) {
-      FirebaseDatabase.collection(COLLECTIONS.PARENTS)
-        .doc(user.uid)
-        .get()
-        .then(snapshot => {
-          commit("SET_USER", snapshot.data());
-        })
-        .catch(error => {
-          commit("SET_ERROR", error);
+  FirebaseAuth.onAuthStateChanged(async user => {
+    if (user && (user.emailVerified || user.phoneNumber !== null)) {
+      try {
+        let doc = await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
+          .doc(user.uid)
+          .get();
+
+        if (doc.exists && doc.data().isActive === true) {
+          commit("SET_USER", doc.data());
+        } else {
+          commit("SET_USER", {});
+        }
+      } catch (error) {
+        commit("SET_ERROR", {
+          code: "auth/user-not-found"
         });
+      }
     } else {
       commit("SET_USER", {});
     }
@@ -120,7 +133,7 @@ const RESET_PASSWORD = async ({ commit }, payload) => {
 
   try {
     await FirebaseAuth.sendPasswordResetEmail(payload.email);
-    commit("SET_SUCCESS", { message: "success" });
+    commit("SET_MESSAGE", { message: "success" });
     commit("SET_LOADER", false);
   } catch (error) {
     commit("SET_ERROR", error);
@@ -227,7 +240,7 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
 
     // Deactivate Loader And Display Success Message
     commit("SET_LOADER", false);
-    commit("SET_SUCCESS", "تم تقديم الطلب بنجاح");
+    commit("SET_MESSAGE", "تم تقديم الطلب بنجاح");
 
     Notify.create({
       color: "blue",
@@ -253,8 +266,16 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
 //#endregion
 
 //#region GENERAL
-const LOG_ERROR = ({ commit }, error) => {
+const SET_MESSAGE = ({ commit }, payload) => {
+  commit("SET_MESSAGE", payload);
+};
+
+const SET_ERROR = ({ commit }, error) => {
   commit("SET_ERROR", error);
+};
+
+const SET_LOADER = ({ commit }, payload) => {
+  commit("SET_LOADER", payload);
 };
 
 const CLEAR_ERRORS_AND_MESSAGES = ({ commit }) => {
@@ -268,10 +289,12 @@ export default {
   TRIGGER_USER_STATE,
   RESET_PASSWORD,
   LOGOUT,
-  LOG_ERROR,
+  SET_ERROR,
   CLEAR_ERRORS_AND_MESSAGES,
   FETCH_CHAPTERS,
   FETCH_SURAHS,
   REGISTER_STUDENT,
-  TRIGGER_USER_REGISTRATION
+  TRIGGER_USER_REGISTRATION,
+  SET_LOADER,
+  SET_MESSAGE
 };

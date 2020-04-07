@@ -149,7 +149,7 @@
                         color="primary"
                         size="lg"
                         class="full-width text-subtitle2"
-                        label="إستكمال التحقق"
+                        label="تحقق من الرمز"
                         @click.prevent="verifyOTP"
                       />
                       <q-btn
@@ -179,7 +179,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import firebase from "firebase";
+import { auth, firestore } from "firebase";
 import { FirebaseAuth } from "boot/firebase";
 
 export default {
@@ -214,7 +214,9 @@ export default {
     getErrorMessage() {
       if (this.GET_ERRORS.length > 0) {
         if (this.GET_ERRORS[0].code === "auth/user-not-found") {
-          return "البريد الإلكتروني غير مسجل";
+          return "المستخدم غير مسجل";
+        } else if (this.GET_ERRORS[0].code === "auth/phone-not-found") {
+          return "رقم الهاتف غير مسجل";
         } else if (this.GET_ERRORS[0].code === "auth/wrong-password") {
           return "كلمة المرور غير صحيحة";
         } else if (this.GET_ERRORS[0].code === "databse/user-inactive") {
@@ -231,8 +233,9 @@ export default {
     ...mapActions("parents", [
       "TRIGGER_USER_STATE",
       "LOGIN",
-      "LOG_ERROR",
-      "CLEAR_ERRORS_AND_MESSAGES"
+      "SET_ERROR",
+      "CLEAR_ERRORS_AND_MESSAGES",
+      "SET_LOADER"
     ]),
     isEmailValid(email) {
       return email == "" ? "" : this.reg.test(email) ? true : false;
@@ -252,16 +255,42 @@ export default {
       this.CLEAR_ERRORS_AND_MESSAGES();
 
       if (valid) {
-        this.formData.isPhoneAuthChosen = true;
+        // Activate Loader
+        this.SET_LOADER(true);
 
-        this.appVerifier = new firebase.auth.RecaptchaVerifier(
-          "recaptcha-container",
-          { size: "invisible" }
+        // Check If Phone Is Registered
+        let querySnapShot = await firestore()
+          .collection("parents")
+          .get();
+
+        let docs = querySnapShot.docs;
+
+        let found = docs.find(
+          doc => doc.data().phone === `+968${this.formData.phone}`
         );
 
-        if (this.appVerifier !== null) {
-          // Send OTP
-          this.sendOTP(this.formData.phone);
+        if (found) {
+          // Enable Phone Authetication
+          this.formData.isPhoneAuthChosen = true;
+
+          // Verify App
+          this.appVerifier = new auth.RecaptchaVerifier("recaptcha-container", {
+            size: "invisible"
+          });
+
+          if (this.appVerifier !== null) {
+            // Send OTP SMS
+            this.sendOTP(this.formData.phone);
+          }
+
+          // Deactivate Loader
+          this.SET_LOADER(false);
+        } else {
+          // Deactivate Loader
+          this.SET_LOADER(false);
+          this.SET_ERROR({
+            code: "auth/phone-not-found"
+          });
         }
       }
     },
@@ -287,15 +316,25 @@ export default {
           console.log(error);
         });
     },
-    verifyOTP() {
-      window.confirmationResult
-        .confirm(this.otpCode)
-        .then(result => {
-          console.log(result.user);
-        })
-        .catch(error => {
-          console.log(error);
+    async verifyOTP() {
+      // Activate Loader
+      this.SET_LOADER(true);
+
+      try {
+        // Verify OTP
+        await window.confirmationResult.confirm(this.otpCode);
+
+        // Deactivate Loader
+        this.SET_LOADER(false);
+      } catch (error) {
+        console.log(error);
+
+        // Deactivate Loader
+        this.SET_LOADER(false);
+        this.SET_ERROR({
+          code: "auth/otp-not-verified"
         });
+      }
     }
   },
   watch: {
@@ -304,7 +343,7 @@ export default {
         if (newState.isActive) {
           this.$router.replace("/parent");
         } else {
-          this.LOG_ERROR({
+          this.SET_ERROR({
             code: "databse/user-inactive"
           });
         }
