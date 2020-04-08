@@ -162,6 +162,7 @@
                       />
                       <q-btn
                         @click.prevent="sendEmailToAdmin"
+                        v-if="appVerifier !== null"
                         unelevated
                         class="full-width text-grey-7"
                         label="لم أحصل على رمز التحقق!"

@@ -2,40 +2,57 @@
   <q-layout>
     <q-page-container>
       <q-page class="bg-primary window-height window-width flex flex-center">
-        <div class="column">
-          <div class="row flex-center">
-            <h4 class="text-white">مركز الفردوس الأعلى</h4>
+        <div class="column text-center">
+          <div class="col">
+            <img src="~assets/images/logo_white.png" width="300px" height="auto" />
+            <p class="text-white text-h6 text-weight-bold">إعادة تعيين كلمة المرور</p>
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
-              <q-card-section>
-                <q-form class="q-gutter-md">
+              <p
+                class="text-red"
+                v-if="GET_ERRORS.length > 0"
+              >لم يتم العثور على البريد الإلكتروني المدخل</p>
+              <p class="text-green" v-if="GET_MESSAGES.length > 0">
+                تم الإرسال بنجاح. الرجاء تفقد البريد الخاص بك لإعادة تعيين كلمة
+                المرور
+              </p>
+              <q-form @submit="onSubmit">
+                <q-card-section>
                   <q-input
+                    dense
                     square
-                    filled
+                    outlined
                     clearable
-                    v-model="email"
+                    v-model="formData.email"
                     type="email"
                     label="البريد الإلكتروني"
+                    lazy-rules
+                    :rules="[
+                      val =>
+                        (val && val.length > 0) ||
+                        'الرجاء كتابة البريد الإلكتروني',
+                      val => isEmailValid(val) || 'البريد الإلكتروني غير صحيح'
+                    ]"
                   />
-                </q-form>
-              </q-card-section>
-              <q-card-actions class="q-px-md">
-                <q-btn
-                  to="/login"
-                  color="grey"
-                  size="lg"
-                  class="full-width"
-                  label="إعادة تعيين كلمة المرور"
-                />
-                <q-btn
-                  to="/login"
-                  flat
-                  unelevated
-                  class="full-width text-blue"
-                  label="الرجوع لصفحة تسجيل الدخول"
-                />
-              </q-card-actions>
+                </q-card-section>
+                <q-card-actions class="q-px-md">
+                  <q-btn
+                    type="submit"
+                    color="primary"
+                    size="lg"
+                    class="full-width"
+                    label="إرسال"
+                    :loading="GET_LOADER"
+                  />
+                  <q-btn
+                    @click="goToLoginPage"
+                    unelevated
+                    class="full-width text-grey-7"
+                    label="الرجوع لصفحة تسجيل الدخول"
+                  />
+                </q-card-actions>
+              </q-form>
             </q-card>
           </div>
         </div>
@@ -45,12 +62,32 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+
 export default {
   name: "PageResetPassword",
   data() {
     return {
-      email: ""
+      formData: {
+        email: ""
+      },
+      reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
     };
+  },
+  computed: mapGetters("admins", ["GET_ERRORS", "GET_MESSAGES", "GET_LOADER"]),
+  methods: {
+    ...mapActions("admins", ["RESET_PASSWORD", "CLEAR_ERRORS_AND_MESSAGES"]),
+    isEmailValid(email) {
+      return email == "" ? "" : this.reg.test(email) ? true : false;
+    },
+    onSubmit() {
+      this.RESET_PASSWORD(this.formData);
+      this.CLEAR_ERRORS_AND_MESSAGES();
+    },
+    goToLoginPage() {
+      this.CLEAR_ERRORS_AND_MESSAGES();
+      this.$router.replace("/admin/login");
+    }
   }
 };
 </script>

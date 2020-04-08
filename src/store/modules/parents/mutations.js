@@ -12,10 +12,6 @@ const RESET_ERRORS_AND_MESSAGES = state => {
   state.messages = [];
 };
 
-const SET_CHAPTERS = (state, chapters) => (state.chapters = chapters);
-
-const SET_SURAHS = (state, surahs) => (state.surahs = surahs);
-
 const SET_LOADER = (state, value) => (state.loading = value);
 
 const SET_REGISTRATION = (state, value) => (state.is_user_registered = value);
@@ -25,8 +21,6 @@ export default {
   SET_MESSAGE,
   SET_ERROR,
   RESET_ERRORS_AND_MESSAGES,
-  SET_CHAPTERS,
-  SET_SURAHS,
   SET_LOADER,
   SET_REGISTRATION
 };

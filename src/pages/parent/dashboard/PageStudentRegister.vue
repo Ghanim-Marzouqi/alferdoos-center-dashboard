@@ -214,8 +214,8 @@
                   <tr v-for="(chapter, i) in studentForm.savedChapters" :key="i">
                     <td class="text-left">{{ chapter.name }}</td>
                     <td class="text-center">
-                      <q-btn flat @click="removeChapter(i)">
-                        <q-icon name="delete" color="red" />
+                      <q-btn dense flat @click="removeChapter(i)">
+                        <q-icon color="red" name="o_delete" />
                       </q-btn>
                     </td>
                   </tr>
@@ -256,8 +256,8 @@
                   <tr v-for="(surah, i) in studentForm.savedSurahs" :key="i">
                     <td class="text-left">{{ surah.name }}</td>
                     <td class="text-center">
-                      <q-btn flat @click="removeSurah(i)">
-                        <q-icon name="delete" color="red" />
+                      <q-btn dense flat @click="removeSurah(i)">
+                        <q-icon color="red" name="o_delete" />
                       </q-btn>
                     </td>
                   </tr>
@@ -638,8 +638,8 @@
                   <tr v-for="(chapter, i) in studentForm.savedChapters" :key="i">
                     <td class="text-left">{{ chapter.name }}</td>
                     <td class="text-center">
-                      <q-btn flat @click="removeChapter(i)">
-                        <q-icon name="delete" color="red" />
+                      <q-btn dense flat @click="removeChapter(i)">
+                        <q-icon color="red" name="o_delete" />
                       </q-btn>
                     </td>
                   </tr>
@@ -680,8 +680,8 @@
                   <tr v-for="(surah, i) in studentForm.savedSurahs" :key="i">
                     <td class="text-left">{{ surah.name }}</td>
                     <td class="text-center">
-                      <q-btn flat @click="removeSurah(i)">
-                        <q-icon name="delete" color="red" />
+                      <q-btn dense flat @click="removeSurah(i)">
+                        <q-icon color="red" name="o_delete" />
                       </q-btn>
                     </td>
                   </tr>

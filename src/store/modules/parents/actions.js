@@ -23,8 +23,25 @@ const LOGIN = async ({ commit }, payload) => {
           .get();
         if (doc.exists) {
           if (doc.data().isActive === true) {
-            commit("SET_MESSAGE", doc.data());
-            commit("SET_USER", doc.data());
+            commit("SET_MESSAGE", "تم تسجيل المستخدم بنجاح");
+            if (response.user.phoneNumber !== null) {
+              commit("SET_USER", {
+                id: doc.data().id,
+                name: doc.data().name,
+                email: doc.data().email,
+                phone: doc.data().phone,
+                isActive: doc.data().isActive,
+                isEmailVerified: true
+              });
+            } else {
+              commit("SET_USER", {
+                id: doc.data().id,
+                name: doc.data().name,
+                email: doc.data().email,
+                isActive: doc.data().isActive,
+                isEmailVerified: true
+              });
+            }
           } else {
             commit("SET_ERROR", {
               code: "databse/user-inactive"
@@ -119,6 +136,7 @@ const TRIGGER_USER_STATE = ({ commit }) => {
         if (doc.data().isActive === true) {
           if (user.emailVerified && user.phoneNumber !== null) {
             commit("SET_USER", {
+              id: doc.data().id,
               name: doc.data().name,
               email: doc.data().email,
               phone: doc.data().phone,
@@ -128,6 +146,7 @@ const TRIGGER_USER_STATE = ({ commit }) => {
             });
           } else if (user.emailVerified && user.phoneNumber === null) {
             commit("SET_USER", {
+              id: doc.data().id,
               name: doc.data().name,
               email: doc.data().email,
               isActive: doc.data().isActive,
@@ -136,6 +155,7 @@ const TRIGGER_USER_STATE = ({ commit }) => {
             });
           } else if (!user.emailVerified && user.phoneNumber !== null) {
             commit("SET_USER", {
+              id: doc.data().id,
               name: doc.data().name,
               email: doc.data().email,
               phone: doc.data().phone,
@@ -168,7 +188,10 @@ const RESET_PASSWORD = async ({ commit }, payload) => {
 
   try {
     await FirebaseAuth.sendPasswordResetEmail(payload.email);
-    commit("SET_MESSAGE", { message: "success" });
+    commit(
+      "SET_MESSAGE",
+      "تم إرسال رابط تعيين كلمة المرور على بريدك الإلكتروني"
+    );
     commit("SET_LOADER", false);
   } catch (error) {
     commit("SET_ERROR", error);
@@ -240,7 +263,8 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
       diseases: payload.diseases,
       imageURL: payload.imageURL,
       certificates: payload.certificateURLs,
-      parentId: payload.parentId
+      parentId: payload.parentId,
+      createdAt: Date.now()
     };
 
     // Insert Student Data Inside Firebase Firestore
