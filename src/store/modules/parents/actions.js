@@ -26,24 +26,29 @@ const LOGIN = async ({ commit }, payload) => {
             commit("SET_MESSAGE", doc.data());
             commit("SET_USER", doc.data());
           } else {
-            await FirebaseAuth.signOut();
             commit("SET_ERROR", {
               code: "databse/user-inactive"
             });
+            await FirebaseAuth.signOut();
           }
         } else {
-          await FirebaseAuth.signOut();
           commit("SET_ERROR", {
             code: "auth/user-not-found"
           });
+          await FirebaseAuth.signOut();
         }
         commit("SET_LOADER", false);
       } else {
-        await FirebaseAuth.signOut();
         commit("SET_ERROR", {
           code: "auth/email-not-verified"
         });
         commit("SET_LOADER", false);
+
+        // Re-Send Email Verification
+        response.user.sendEmailVerification();
+
+        // Sign Out User
+        await FirebaseAuth.signOut();
       }
     }
   } catch (error) {
@@ -104,22 +109,53 @@ const TRIGGER_USER_REGISTRATION = ({ commit }) => {
 };
 
 const TRIGGER_USER_STATE = ({ commit }) => {
+  console.log("Vuex Action: TRIGGER_USER_STATE");
   FirebaseAuth.onAuthStateChanged(async user => {
-    if (user && (user.emailVerified || user.phoneNumber !== null)) {
-      try {
-        let doc = await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
-          .doc(user.uid)
-          .get();
+    if (user) {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
+        .doc(user.uid)
+        .get();
 
-        if (doc.exists && doc.data().isActive === true) {
-          commit("SET_USER", doc.data());
+      if (doc.exists && doc.data().isActive === true) {
+        if (doc.data().isActive === true) {
+          if (user.emailVerified && user.phoneNumber !== null) {
+            commit("SET_USER", {
+              name: doc.data().name,
+              email: doc.data().email,
+              phone: doc.data().phone,
+              isActive: doc.data().isActive,
+              isEmailVerified: true,
+              isPhoneVerified: true
+            });
+          } else if (user.emailVerified && user.phoneNumber === null) {
+            commit("SET_USER", {
+              name: doc.data().name,
+              email: doc.data().email,
+              isActive: doc.data().isActive,
+              isEmailVerified: true,
+              isPhoneVerified: false
+            });
+          } else if (!user.emailVerified && user.phoneNumber !== null) {
+            commit("SET_USER", {
+              name: doc.data().name,
+              email: doc.data().email,
+              phone: doc.data().phone,
+              isActive: doc.data().isActive,
+              isEmailVerified: false,
+              isPhoneVerified: true
+            });
+          } else {
+            this.SET_ERROR({
+              code: "auth/email-or-phone-inactive"
+            });
+          }
         } else {
-          commit("SET_USER", {});
+          this.SET_ERROR({
+            code: "databse/user-inactive"
+          });
         }
-      } catch (error) {
-        commit("SET_ERROR", {
-          code: "auth/user-not-found"
-        });
+      } else {
+        commit("SET_USER", {});
       }
     } else {
       commit("SET_USER", {});

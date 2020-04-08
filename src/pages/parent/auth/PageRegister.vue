@@ -9,12 +9,9 @@
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
-              <div id="recaptcha-container"></div>
               <p class="text-red" v-if="GET_ERRORS.length > 0">{{ getErrorMessage }}</p>
-              <p
-                class="text-green"
-                v-if="GET_MESSAGES.length > 0"
-              >تم التسجيل بنجاح. الرجاء إستكمال التحقق عن طريق النقر على الرابط في بريدك الإلكتروني</p>
+              <p class="text-green" v-if="GET_MESSAGES.length > 0">{{ GET_MESSAGES[0] }}</p>
+              <div id="recaptcha-container"></div>
               <q-form v-if="!isOTPEnabled" @submit="onSubmit">
                 <q-card-section>
                   <q-input
@@ -231,6 +228,7 @@ export default {
     ...mapActions("parents", [
       "REGISTER",
       "CLEAR_ERRORS_AND_MESSAGES",
+      "SET_MESSAGE",
       "SET_ERROR",
       "TRIGGER_USER_REGISTRATION",
       "SET_LOADER"
@@ -296,8 +294,11 @@ export default {
             // Deactivate Loader
             this.SET_LOADER(false);
 
+            // Display Success Massage
+            this.SET_MESSAGE("تم التسجيل بنجاح");
+
             // Go To Login Page
-            this.goToLoginPage();
+            setTimeout(() => this.goToLoginPage(), 3000);
           }
         } else {
           console.log("Credentail Is Not Defined");
@@ -332,6 +333,7 @@ export default {
         // Enable OTP SMS Sending
         this.isOTPEnabled = true;
 
+        // Set Language Code
         FirebaseAuth.languageCode = "ar";
 
         // Verify App Using reCAPTCHA

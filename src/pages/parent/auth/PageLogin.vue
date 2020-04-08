@@ -102,6 +102,7 @@
                 </q-tab-panel>
                 <q-tab-panel name="phone" class="q-pa-none">
                   <p class="text-red q-mt-sm" v-if="GET_ERRORS.length > 0">{{ getErrorMessage }}</p>
+                  <div id="recaptcha-container" class="q-mt-sm"></div>
                   <q-form ref="phoneForm" @submit="onPhoneFormSubmit" class="q-gutter-md">
                     <q-card-section>
                       <q-input
@@ -130,9 +131,11 @@
                         type="number"
                         label="رمز التحقق"
                         lazy-rules
+                        :rules="[
+                          val => (val && val.length === 6) || 'الرجاء كتابة رمز التحقق'
+                        ]"
                       />
                     </q-card-section>
-                    <div id="recaptcha-container"></div>
                     <q-card-actions class="q-px-md q-py-none q-my-none">
                       <q-btn
                         v-if="!formData.isPhoneAuthChosen"
@@ -160,7 +163,7 @@
                         label="تسجيل جديد"
                       />
                       <q-btn
-                        @click="goToResetPasswordPage"
+                        @click.prevent="sendEmailToAdmin"
                         unelevated
                         class="full-width text-grey-7"
                         label="لم أحصل على رمز التحقق!"
@@ -195,6 +198,7 @@ export default {
         isPassword: true,
         isPhoneAuthChosen: false
       },
+      loginMethod: "",
       appVerifier: null,
       otpCode: "",
       reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
@@ -202,8 +206,8 @@ export default {
   },
   created() {
     this.TRIGGER_USER_STATE();
+    this.CLEAR_ERRORS_AND_MESSAGES();
   },
-  mounted() {},
   computed: {
     ...mapGetters("parents", [
       "GET_USER",
@@ -223,6 +227,8 @@ export default {
           return "حساب المستخدم موقوف";
         } else if (this.GET_ERRORS[0].code === "auth/email-not-verified") {
           return "لم يتم التحقق من البريد الإلكتروني للمستخدم";
+        } else if (this.GET_ERRORS[0].code === "auth/email-or-phone-inactive") {
+          return "لم يتم تفعيل البريد الإلكتروني / رقم الهاتف";
         } else {
           return "حدث خطأ اثناء تسجيل الدخول";
         }
@@ -241,6 +247,8 @@ export default {
       return email == "" ? "" : this.reg.test(email) ? true : false;
     },
     async onEmailAndPasswordFormSubmit() {
+      this.loginMethod = "email";
+
       let valid = await this.$refs["emailAndPasswordForm"].validate();
 
       this.CLEAR_ERRORS_AND_MESSAGES();
@@ -250,6 +258,8 @@ export default {
       }
     },
     async onPhoneFormSubmit() {
+      this.loginMethod = "phone";
+
       let valid = await this.$refs["phoneForm"].validate();
 
       this.CLEAR_ERRORS_AND_MESSAGES();
@@ -273,9 +283,12 @@ export default {
           // Enable Phone Authetication
           this.formData.isPhoneAuthChosen = true;
 
+          // Set Language Code
+          FirebaseAuth.languageCode = "ar";
+
           // Verify App
           this.appVerifier = new auth.RecaptchaVerifier("recaptcha-container", {
-            size: "invisible"
+            size: "normal"
           });
 
           if (this.appVerifier !== null) {
@@ -335,17 +348,23 @@ export default {
           code: "auth/otp-not-verified"
         });
       }
+    },
+    sendEmailToAdmin() {
+      let adminEmail = "altomohcompany1@gmail.com";
+      let subject = "لم يتم إستلام رمز التحقق";
+      let body = `لم يصلني رمز التحقق الخاص برقم هاتفي ${this.formData.phone}`;
+      window.open(`mailto:${adminEmail}?subject=${subject}&body=${body}`);
     }
   },
   watch: {
     GET_USER: function(newState, oldState) {
       if (Object.keys(newState).length > 0) {
-        if (newState.isActive) {
+        if (newState.isEmailVerified && this.loginMethod === "email") {
+          this.$router.replace("/parent");
+        } else if (newState.isPhoneVerified && this.loginMethod === "phone") {
           this.$router.replace("/parent");
         } else {
-          this.SET_ERROR({
-            code: "databse/user-inactive"
-          });
+          console.log("ParentPageLogin: watch(GET_USER) error");
         }
       }
     }

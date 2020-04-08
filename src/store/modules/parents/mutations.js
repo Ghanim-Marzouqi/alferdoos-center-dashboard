@@ -5,7 +5,7 @@ const SET_MESSAGE = (state, payload) => {
   state.messages.push(payload);
 };
 
-const SET_ERROR = (state, error) => state.errors.unshift(error);
+const SET_ERROR = (state, error) => state.errors.push(error);
 
 const RESET_ERRORS_AND_MESSAGES = state => {
   state.errors = [];
