@@ -1,4 +1,4 @@
-import { Notify } from "quasar";
+import { Dialog } from "quasar";
 import { FirebaseAuth, FirebaseDatabase, FirebaseStorage } from "boot/firebase";
 import { COLLECTIONS } from "../../../config/constants";
 
@@ -109,7 +109,6 @@ const TRIGGER_USER_REGISTRATION = ({ commit }) => {
 };
 
 const TRIGGER_USER_STATE = ({ commit }) => {
-  console.log("Vuex Action: TRIGGER_USER_STATE");
   FirebaseAuth.onAuthStateChanged(async user => {
     if (user) {
       let doc = await FirebaseDatabase.collection(COLLECTIONS.PARENTS)
@@ -183,39 +182,6 @@ const LOGOUT = ({}) => {
 //#endregion
 
 //#region REGUSTER STUDENT
-const FETCH_CHAPTERS = async ({ commit }) => {
-  let response = await FirebaseDatabase.collection(COLLECTIONS.QURAN_CHAPTERS)
-    .orderBy("id", "asc")
-    .get();
-
-  let docs = response.docs;
-
-  let chapters = docs.map(chapter => ({
-    id: chapter.data().id,
-    name: chapter.data().name,
-    selected: false
-  }));
-
-  commit("SET_CHAPTERS", chapters);
-};
-
-const FETCH_SURAHS = async ({ commit }) => {
-  let response = await FirebaseDatabase.collection(COLLECTIONS.QURAN_SURAHS)
-    .orderBy("id", "asc")
-    .get();
-
-  let docs = response.docs;
-
-  let surahs = docs.map(surah => ({
-    id: surah.data().id,
-    name: surah.data().name,
-    chapter: surah.data().chapter,
-    phrases: surah.data().phrases
-  }));
-
-  commit("SET_SURAHS", surahs);
-};
-
 const REGISTER_STUDENT = async ({ commit }, payload) => {
   // Activate Loader
   commit("SET_LOADER", true);
@@ -238,14 +204,21 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
 
     // Upload Student Certificates
     if (payload.certificates.length > 0) {
-      payload.certificates.forEach(async certificate => {
+      let cerArr = await payload.certificates.map(async certificate => {
+        // Create File Reference
         let certificateRef = FirebaseStorageRef.child(
           `RegisteredStudents/Certificates/${certificate.name}_${Date.now()}`
         );
+
+        // Get File Snapshot
         let snapshot = await certificateRef.put(certificate);
-        let url = await snapshot.ref.getDownloadURL();
-        payload.certificateURLs.push(url);
+
+        // Get File Download URL
+        return await snapshot.ref.getDownloadURL();
       });
+
+      // push results
+      payload.certificateURLs = await Promise.all(cerArr);
     }
 
     // Create Student Object
@@ -260,6 +233,7 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
       savedChapters: payload.savedChapters.map(chapter => chapter.name),
       savedSurahs: payload.savedSurahs.map(surah => surah.name),
       isLearntInCenterBefore: payload.isLearntInCenterBefore,
+      oldCenterName: payload.oldCenterName,
       skills: payload.skills,
       centerKnownBy: payload.centerKnownBy,
       studentState: payload.studentState,
@@ -278,11 +252,8 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
     commit("SET_LOADER", false);
     commit("SET_MESSAGE", "تم تقديم الطلب بنجاح");
 
-    Notify.create({
-      color: "blue",
-      textColor: "#FFF",
-      timeout: 3000,
-      position: "top",
+    Dialog.create({
+      title: "تنبيه",
       message: "تم تقديم الطلب بنجاح"
     });
   } catch (error) {
@@ -290,11 +261,8 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
     console.log(error);
     commit("SET_LOADER", false);
 
-    Notify.create({
-      color: "red",
-      textColor: "#FFF",
-      timeout: 3000,
-      position: "top",
+    Dialog.create({
+      title: "تنبيه",
       message: "حدث خطأ اثناء التسجيل"
     });
   }
@@ -327,8 +295,6 @@ export default {
   LOGOUT,
   SET_ERROR,
   CLEAR_ERRORS_AND_MESSAGES,
-  FETCH_CHAPTERS,
-  FETCH_SURAHS,
   REGISTER_STUDENT,
   TRIGGER_USER_REGISTRATION,
   SET_LOADER,

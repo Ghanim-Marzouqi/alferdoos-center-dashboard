@@ -181,16 +181,46 @@
               </div>
             </div>
             <div class="text-weight-bold q-mt-md">الأجزاء التي يحفظها الطالب:</div>
-            <div class="row q-ma-sm">
-              <div class="q-gutter-xs">
-                <q-chip
-                  v-for="chapter in studentForm.savedChapters"
-                  :key="chapter.name"
-                  :selected.sync="chapter.selected"
-                  color="primary"
-                  text-color="white"
-                >{{ chapter.name }}</q-chip>
+            <div class="row">
+              <div class="col-6">
+                <q-select
+                  v-model="studentForm.quranChapter"
+                  class="q-ma-sm"
+                  dense
+                  outlined
+                  :options="getAllChapters"
+                  label="الجزء"
+                />
               </div>
+              <div class="col-6">
+                <q-btn
+                  class="q-ma-sm"
+                  label="إضافة"
+                  unelevated
+                  color="primary"
+                  @click="addSavedChapter(studentForm.quranChapter)"
+                />
+              </div>
+            </div>
+            <div class="q-pa-sm">
+              <q-markup-table separator="horizontal" flat bordered>
+                <thead class="bg-grey-4">
+                  <tr>
+                    <th class="text-left">الجزء</th>
+                    <th class="text-center">حذف</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(chapter, i) in studentForm.savedChapters" :key="i">
+                    <td class="text-left">{{ chapter.name }}</td>
+                    <td class="text-center">
+                      <q-btn flat @click="removeChapter(i)">
+                        <q-icon name="delete" color="red" />
+                      </q-btn>
+                    </td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
             </div>
             <div class="text-weight-bold q-mt-md">السور التي يحفظها الطالب حالياً:</div>
             <div class="row">
@@ -214,7 +244,7 @@
                 />
               </div>
             </div>
-            <div class="q-pa-md">
+            <div class="q-pa-sm">
               <q-markup-table separator="horizontal" flat bordered>
                 <thead class="bg-grey-4">
                   <tr>
@@ -255,6 +285,20 @@
                 <div class="text-weight-bold">هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم؟</div>
                 <q-radio v-model="studentForm.isLearntInCenterBefore" val="yes" label="نعم" />
                 <q-radio v-model="studentForm.isLearntInCenterBefore" val="no" label="لا" />
+              </div>
+              <div class="col-12">
+                <q-input
+                  v-show="studentForm.isLearntInCenterBefore === 'yes'"
+                  class="q-ma-sm"
+                  style="width: 400px;"
+                  dense
+                  square
+                  outlined
+                  :autogrow="false"
+                  clearable
+                  v-model="studentForm.oldCenterName"
+                  label="اين؟"
+                />
               </div>
             </div>
             <div class="row">
@@ -393,7 +437,7 @@
             <div class="row">
               <div class="col-12">
                 <q-input
-                  class="q-ma-sm"
+                  class="q-mt-sm"
                   dense
                   square
                   outlined
@@ -409,7 +453,7 @@
               </div>
               <div class="col-12">
                 <q-input
-                  class="q-ma-sm"
+                  class="q-mt-sm"
                   dense
                   square
                   outlined
@@ -426,7 +470,7 @@
               </div>
               <div class="col-12">
                 <q-input
-                  class="q-ma-sm"
+                  class="q-mt-sm"
                   dense
                   square
                   outlined
@@ -443,7 +487,7 @@
               </div>
               <div class="col-12">
                 <q-input
-                  class="q-ma-sm"
+                  class="q-my-sm"
                   dense
                   square
                   outlined
@@ -459,7 +503,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="q-gutter-sm">
+              <div class="q-gutter-xs">
                 <div class="text-weight-bold">انهى الصف:</div>
                 <q-radio v-model="studentForm.finishedClass" val="grade_seven" label="السابع" />
                 <q-radio v-model="studentForm.finishedClass" val="grade_eight" label="الثامن" />
@@ -470,7 +514,7 @@
             <div class="row">
               <div class="col-12">
                 <q-input
-                  class="q-ma-sm"
+                  class="q-mt-sm"
                   dense
                   square
                   outlined
@@ -486,7 +530,7 @@
               </div>
               <div class="col-12">
                 <q-input
-                  class="q-ma-sm"
+                  class="q-mt-sm"
                   dense
                   square
                   outlined
@@ -501,7 +545,7 @@
               <div class="col-12">
                 <q-select
                   v-model="studentForm.village"
-                  class="q-ma-sm"
+                  class="q-mt-sm"
                   dense
                   outlined
                   :options="villages"
@@ -527,7 +571,7 @@
             <div class="row">
               <div class="col-12">
                 <q-input
-                  class="q-ma-sm"
+                  class="q-mt-sm"
                   dense
                   square
                   outlined
@@ -544,7 +588,7 @@
               </div>
               <div class="col-12">
                 <q-input
-                  class="q-ma-sm"
+                  class="q-mt-sm"
                   dense
                   square
                   outlined
@@ -561,23 +605,53 @@
               </div>
             </div>
             <div class="text-weight-bold q-mt-md">الأجزاء التي يحفظها الطالب:</div>
-            <div class="row q-ma-sm">
-              <div class="q-gutter-xs">
-                <q-chip
-                  v-for="chapter in studentForm.savedChapters"
-                  :key="chapter.name"
-                  :selected.sync="chapter.selected"
-                  color="primary"
-                  text-color="white"
-                >{{ chapter.name }}</q-chip>
+            <div class="row">
+              <div class="col-8">
+                <q-select
+                  v-model="studentForm.quranChapter"
+                  class="q-mt-sm"
+                  dense
+                  outlined
+                  :options="getAllChapters"
+                  label="الجزء"
+                />
               </div>
+              <div class="col-4">
+                <q-btn
+                  class="q-mt-sm q-ml-sm"
+                  label="إضافة"
+                  unelevated
+                  color="primary"
+                  @click="addSavedChapter(studentForm.quranChapter)"
+                />
+              </div>
+            </div>
+            <div class="q-mt-sm">
+              <q-markup-table separator="horizontal" flat bordered>
+                <thead class="bg-grey-4">
+                  <tr>
+                    <th class="text-left">الجزء</th>
+                    <th class="text-center">حذف</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(chapter, i) in studentForm.savedChapters" :key="i">
+                    <td class="text-left">{{ chapter.name }}</td>
+                    <td class="text-center">
+                      <q-btn flat @click="removeChapter(i)">
+                        <q-icon name="delete" color="red" />
+                      </q-btn>
+                    </td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
             </div>
             <div class="text-weight-bold q-mt-md">السور التي يحفظها الطالب حالياً:</div>
             <div class="row">
               <div class="col-8">
                 <q-select
                   v-model="studentForm.quranSurah"
-                  class="q-ma-sm"
+                  class="q-mt-sm"
                   dense
                   outlined
                   :options="getAllSurahs"
@@ -586,7 +660,7 @@
               </div>
               <div class="col-4">
                 <q-btn
-                  class="q-ma-sm"
+                  class="q-mt-sm q-ml-sm"
                   label="إضافة"
                   unelevated
                   color="primary"
@@ -594,7 +668,7 @@
                 />
               </div>
             </div>
-            <div class="q-pa-sm">
+            <div class="q-mt-sm">
               <q-markup-table separator="horizontal" flat bordered>
                 <thead class="bg-grey-4">
                   <tr>
@@ -636,9 +710,21 @@
                 <q-radio v-model="studentForm.isLearntInCenterBefore" val="yes" label="نعم" />
                 <q-radio v-model="studentForm.isLearntInCenterBefore" val="no" label="لا" />
               </div>
+              <q-input
+                v-show="studentForm.isLearntInCenterBefore === 'yes'"
+                class="q-ma-sm"
+                style="width: 400px;"
+                dense
+                square
+                outlined
+                :autogrow="false"
+                clearable
+                v-model="studentForm.oldCenterName"
+                label="اين؟"
+              />
             </div>
             <div class="text-weight-bold">ما هي المهارات التي يمتلكها الطالب؟</div>
-            <div>
+            <div class="q-mt-xs">
               <q-input
                 dense
                 square
@@ -675,6 +761,7 @@
             <div class="text-weight-bold q-mt-sm">المرفقات</div>
             <div>
               <q-file
+                class="q-mt-xs"
                 v-model="studentForm.image"
                 label="صورة الطالب"
                 dense
@@ -684,13 +771,14 @@
                 lazy-rules
                 :rules="[ val => !!val || 'الرجاء ارفاق صورة الطالب' ]"
               >
-                <template v-slot:prepend>
+                <template v-slot:after>
                   <q-icon name="attach_file" />
                 </template>
               </q-file>
             </div>
             <div>
               <q-file
+                class="q-mt-xs"
                 v-model="studentForm.certificates"
                 label="شهادات الطالب"
                 dense
@@ -699,7 +787,7 @@
                 multiple
                 accept=".pdf, .jpg, image/*"
               >
-                <template v-slot:prepend>
+                <template v-slot:after>
                   <q-icon name="attach_file" />
                 </template>
               </q-file>
@@ -707,15 +795,13 @@
             <div class="row">
               <div class="q-gutter-sm q-mt-sm">
                 <div class="text-weight-bold">كيف عرفت عن مركز الفردوس الاعلى ومن شجعك للتسجيل فيه؟</div>
-                <div class="col-12">
-                  <q-select
-                    v-model="studentForm.centerKnownBy"
-                    dense
-                    outlined
-                    :options="centerKnownList"
-                    label="طرق معرفة المركز"
-                  />
-                </div>
+                <q-select
+                  v-model="studentForm.centerKnownBy"
+                  dense
+                  outlined
+                  :options="centerKnownList"
+                  label="طرق معرفة المركز"
+                />
               </div>
             </div>
           </q-form>
@@ -766,6 +852,7 @@ export default {
         savedChapters: [],
         savedSurahs: [],
         isLearntInCenterBefore: "no",
+        oldCenterName: "",
         skills: "",
         centerKnownBy: "",
         studentState: "healthy",
@@ -783,7 +870,8 @@ export default {
         "حي جامع",
         "المعيول",
         "عز",
-        "متان"
+        "متان",
+        "اخرى"
       ],
       centerKnownList: [
         "مواقع التواصل الإجتماعي",
@@ -797,16 +885,11 @@ export default {
   },
   created() {
     this.CLEAR_ERRORS_AND_MESSAGES();
-    this.FETCH_CHAPTERS();
-    this.FETCH_SURAHS();
   },
   mounted() {
     if (Object.keys(this.GET_USER).length > 0) {
       this.studentForm.parentPhone1 = `${this.GET_USER.phone}`.slice(4);
     }
-
-    // set chapters
-    this.studentForm.savedChapters = this.GET_CHAPTERS;
   },
   computed: {
     ...mapGetters("parents", [
@@ -820,23 +903,30 @@ export default {
     getFirstPhoneNumber() {
       return `${this.GET_USER.phone}`.slice(4);
     },
+    getAllChapters() {
+      let chapters = this.GET_CHAPTERS.map(chapter => chapter.name);
+      return chapters;
+    },
     getAllSurahs() {
       let surahs = this.GET_SURAHS.map(surah => surah.name);
       return surahs;
     }
   },
   methods: {
-    ...mapActions("parents", [
-      "FETCH_CHAPTERS",
-      "FETCH_SURAHS",
-      "REGISTER_STUDENT",
-      "CLEAR_ERRORS_AND_MESSAGES"
-    ]),
+    ...mapActions("parents", ["REGISTER_STUDENT", "CLEAR_ERRORS_AND_MESSAGES"]),
     async goToNextStep(step, form) {
       let valid = await this.$refs[form].validate();
       if (valid) {
         this.hStep = step;
         this.vStep = step;
+      }
+    },
+    addSavedChapter(chapter) {
+      let found = this.GET_CHAPTERS.find(value => value.name === chapter);
+
+      if (found) {
+        this.studentForm.savedChapters.push(found);
+        console.log(this.studentForm.savedChapters);
       }
     },
     addSavedSurah(surah) {
@@ -847,6 +937,9 @@ export default {
         console.log(this.studentForm.savedSurahs);
       }
     },
+    removeChapter(index) {
+      this.studentForm.savedChapters.splice(index, 1);
+    },
     removeSurah(index) {
       this.studentForm.savedSurahs.splice(index, 1);
     },
@@ -854,13 +947,6 @@ export default {
       let valid = await this.$refs[form].validate();
 
       if (valid) {
-        let chapters = [];
-        this.studentForm.savedChapters.forEach(chapter => {
-          if (chapter.selected === true) {
-            chapters.push(chapter);
-          }
-        });
-
         this.REGISTER_STUDENT({
           firstName: this.studentForm.firstName.trim(),
           secondName: this.studentForm.secondName.trim(),
@@ -872,9 +958,10 @@ export default {
           village: this.studentForm.village,
           subjectANumber: this.studentForm.subjectANumber,
           subjectBNumber: this.studentForm.subjectBNumber,
-          savedChapters: chapters,
+          savedChapters: this.studentForm.savedChapters,
           savedSurahs: this.studentForm.savedSurahs,
           isLearntInCenterBefore: this.studentForm.isLearntInCenterBefore,
+          oldCenterName: this.studentForm.oldCenterName.trim(),
           skills: this.studentForm.skills.trim(),
           centerKnownBy: this.studentForm.centerKnownBy,
           studentState: this.studentForm.studentState,
@@ -905,6 +992,7 @@ export default {
           savedChapters: [],
           savedSurahs: [],
           isLearntInCenterBefore: "no",
+          oldCenterName: "",
           skills: "",
           centerKnownBy: "",
           studentState: "healthy",

@@ -131,9 +131,7 @@
                         type="number"
                         label="رمز التحقق"
                         lazy-rules
-                        :rules="[
-                          val => (val && val.length === 6) || 'الرجاء كتابة رمز التحقق'
-                        ]"
+                        :rules="[]"
                       />
                     </q-card-section>
                     <q-card-actions class="q-px-md q-py-none q-my-none">
@@ -198,7 +196,7 @@ export default {
         isPassword: true,
         isPhoneAuthChosen: false
       },
-      loginMethod: "",
+      loginMethod: "email",
       appVerifier: null,
       otpCode: "",
       reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
@@ -258,11 +256,14 @@ export default {
       }
     },
     async onPhoneFormSubmit() {
+      console.log("Phone Form Submitted");
       this.loginMethod = "phone";
 
       let valid = await this.$refs["phoneForm"].validate();
 
       this.CLEAR_ERRORS_AND_MESSAGES();
+
+      console.log(valid);
 
       if (valid) {
         // Activate Loader
@@ -282,6 +283,9 @@ export default {
         if (found) {
           // Enable Phone Authetication
           this.formData.isPhoneAuthChosen = true;
+
+          // Enable This to Test Your App
+          // auth().settings.appVerificationDisabledForTesting = true;
 
           // Set Language Code
           FirebaseAuth.languageCode = "ar";
