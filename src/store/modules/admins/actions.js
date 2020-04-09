@@ -165,14 +165,16 @@ const LOGOUT = ({}) => {
 //#endregion
 
 //#region STUDENT
-const FETCH_REGIETERED_STUDENTS = async ({ commit }) => {
+const FETCH_REGISTERED_STUDENTS = async ({ commit }) => {
   // Activate Loader
   commit("SET_LOADER", true);
 
   // Fetch Registered Students
   let snapshot = await FirebaseDatabase.collection(
     COLLECTIONS.REGISTERED_STUDENTS
-  ).get();
+  )
+    .orderBy("createdAt", "desc")
+    .get();
 
   let docs = snapshot.docs;
 
@@ -190,6 +192,7 @@ const FETCH_REGIETERED_STUDENTS = async ({ commit }) => {
     isLearntInCenterBefore: doc.data().isLearntInCenterBefore,
     oldCenterName: doc.data().oldCenterName,
     parentId: doc.data().parentId,
+    parentName: doc.data().parentName,
     savedChapters: doc.data().savedChapters,
     savedSurahs: doc.data().savedSurahs,
     secondPhoneNumber: doc.data().secondPhoneNumber,
@@ -204,6 +207,21 @@ const FETCH_REGIETERED_STUDENTS = async ({ commit }) => {
 
   // Deactivate Loader
   commit("SET_LOADER", false);
+};
+
+const DELETE_REGISTERED_STUDENT = async ({ commit }, payload) => {
+  try {
+    // Delete Registered Student
+    await FirebaseDatabase.collection(COLLECTIONS.REGISTERED_STUDENTS)
+      .doc(payload)
+      .delete();
+
+    // Commit Success Message
+    commit("SET_MESSAGE", { code: "database/student-form-record-deleted" });
+  } catch (error) {
+    // Commit Error Message
+    commit("SET_ERROR", { code: "database/student-form-record-not-deleted" });
+  }
 };
 //#endregion
 
@@ -235,5 +253,6 @@ export default {
   TRIGGER_USER_REGISTRATION,
   SET_LOADER,
   SET_MESSAGE,
-  FETCH_REGIETERED_STUDENTS
+  FETCH_REGISTERED_STUDENTS,
+  DELETE_REGISTERED_STUDENT
 };

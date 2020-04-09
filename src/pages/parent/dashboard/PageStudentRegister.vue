@@ -968,7 +968,8 @@ export default {
           diseases: this.studentForm.diseases.trim(),
           image: this.studentForm.image,
           certificates: this.studentForm.certificates,
-          parentId: this.GET_USER.id
+          parentId: this.GET_USER.id,
+          parentName: this.GET_USER.name
         });
       }
     }

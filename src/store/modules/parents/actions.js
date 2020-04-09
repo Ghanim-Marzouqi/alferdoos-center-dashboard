@@ -264,6 +264,7 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
       imageURL: payload.imageURL,
       certificates: payload.certificateURLs,
       parentId: payload.parentId,
+      parentName: payload.parentName,
       createdAt: Date.now()
     };
 
