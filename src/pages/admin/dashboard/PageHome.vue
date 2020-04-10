@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center">
-    <h1>الصفحة الرئيسية</h1>
+    <p class="text-h4">الصفحة الرئيسية</p>
   </q-page>
 </template>
 

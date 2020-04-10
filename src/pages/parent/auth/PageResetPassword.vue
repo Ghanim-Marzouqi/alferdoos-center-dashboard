@@ -4,7 +4,9 @@
       <q-page class="bg-primary window-height window-width flex flex-center">
         <div class="column text-center">
           <div class="col">
-            <img src="~assets/images/logo_white.png" width="300px" height="auto" />
+            <router-link :to="{ path: '/' }" exact>
+              <img src="~assets/images/logo_white.png" width="300px" height="auto" />
+            </router-link>
             <p class="text-white text-h6 text-weight-bold">إعادة تعيين كلمة المرور</p>
           </div>
           <div class="row">

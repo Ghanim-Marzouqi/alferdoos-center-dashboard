@@ -4,7 +4,9 @@
       <q-page class="bg-primary window-height window-width flex flex-center">
         <div class="column text-center">
           <div class="col">
-            <img src="~assets/images/logo_white.png" width="300px" height="auto" />
+            <router-link :to="{ path: '/' }" exact>
+              <img src="~assets/images/logo_white.png" width="300px" height="auto" />
+            </router-link>
             <p class="text-white text-h6 text-weight-bold">تسجيل دخول مدير النظام</p>
           </div>
           <div class="row">
@@ -169,7 +171,7 @@
 import { mapActions, mapGetters } from "vuex";
 import { auth, firestore } from "firebase";
 import { FirebaseAuth } from "boot/firebase";
-import { COLLECTIONS } from "../../../config/constants";
+import { COLLECTIONS, ADMIN_EMAIL } from "../../../config/constants";
 
 export default {
   name: "AdminPageLogin",
@@ -337,7 +339,7 @@ export default {
       }
     },
     sendEmailToAdmin() {
-      let adminEmail = "altomohcompany1@gmail.com";
+      let adminEmail = ADMIN_EMAIL;
       let subject = "لم يتم إستلام رمز التحقق";
       let body = `لم يصلني رمز التحقق الخاص برقم هاتفي ${this.formData.phone}`;
       window.open(`mailto:${adminEmail}?subject=${subject}&body=${body}`);

@@ -31,6 +31,7 @@ const LOGIN = async ({ commit }, payload) => {
                 email: doc.data().email,
                 phone: doc.data().phone,
                 isActive: doc.data().isActive,
+                isSuperAdmin: doc.data().isSuperAdmin,
                 isEmailVerified: true
               });
             } else {
@@ -39,6 +40,7 @@ const LOGIN = async ({ commit }, payload) => {
                 name: doc.data().name,
                 email: doc.data().email,
                 isActive: doc.data().isActive,
+                isSuperAdmin: doc.data().isSuperAdmin,
                 isEmailVerified: true
               });
             }
@@ -101,6 +103,7 @@ const TRIGGER_USER_STATE = ({ commit }) => {
               email: doc.data().email,
               phone: doc.data().phone,
               isActive: doc.data().isActive,
+              isSuperAdmin: doc.data().isSuperAdmin,
               isEmailVerified: true,
               isPhoneVerified: true
             });
@@ -110,6 +113,7 @@ const TRIGGER_USER_STATE = ({ commit }) => {
               name: doc.data().name,
               email: doc.data().email,
               isActive: doc.data().isActive,
+              isSuperAdmin: doc.data().isSuperAdmin,
               isEmailVerified: true,
               isPhoneVerified: false
             });
@@ -120,6 +124,7 @@ const TRIGGER_USER_STATE = ({ commit }) => {
               email: doc.data().email,
               phone: doc.data().phone,
               isActive: doc.data().isActive,
+              isSuperAdmin: doc.data().isSuperAdmin,
               isEmailVerified: false,
               isPhoneVerified: true
             });

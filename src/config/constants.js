@@ -6,10 +6,10 @@ const COLLECTIONS = {
   TEACHERS: "teachers",
   REGISTERED_STUDENTS: "registered_students",
   QURAN_CHAPTERS: "quran_chapters",
-  QURAN_SURAHS: "quran_surahs",
+  QURAN_SURAHS: "quran_surahs"
 };
 
-const URL = "gs://al-ferdoos-school.appspot.com";
+const ADMIN_EMAIL = "altomohcompany1@gmail.com";
 
 // export objects / modules
-export { COLLECTIONS, URL };
+export { COLLECTIONS, ADMIN_EMAIL };

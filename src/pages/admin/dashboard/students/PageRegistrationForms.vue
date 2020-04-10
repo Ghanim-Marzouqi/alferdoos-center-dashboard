@@ -107,7 +107,13 @@
                   :ratio="1"
                   style="height: 200px; width: 200px"
                   class="q-ma-sm"
-                />
+                >
+                  <template v-slot:error>
+                    <div
+                      class="absolute-full flex flex-center bg-negative text-white"
+                    >لا يمكن تحميل الصورة</div>
+                  </template>
+                </q-img>
               </div>
             </div>
             <div class="row q-ml-md">
@@ -260,7 +266,8 @@ export default {
     ...mapActions("admins", [
       "FETCH_REGISTERED_STUDENTS",
       "DELETE_REGISTERED_STUDENT",
-      "CLEAR_ERRORS_AND_MESSAGES"
+      "CLEAR_ERRORS_AND_MESSAGES",
+      "SET_ERROR"
     ]),
     deleteStudentRegistrationForm(id) {
       this.$q
@@ -284,27 +291,28 @@ export default {
         xhr.responseType = "blob";
         xhr.onload = function(event) {
           var blob = xhr.response;
+          let link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = `cer_${Date.now()}`;
+          link.click();
         };
         xhr.open("GET", fileURL);
         xhr.send();
-
-        console.log(xhr);
       } catch (error) {
+        SET_ERROR({ code: error.code });
         switch (error.code) {
           case "storage/object-not-found":
-            console.log("File Does Not Exists");
+            console.log("ERROR: storage/object-not-found");
             break;
           case "storage/unauthorized":
-            console.log("User doesn't have permission to access the object");
+            console.log("ERROR: storage/unauthorized");
             break;
           case "storage/canceled":
-            console.log("User canceled the upload");
+            console.log("ERROR: storage/canceled");
             break;
           case "storage/unknown":
-            console.log("Unknown error occurred, inspect the server response");
+            console.log("ERROR: storage/unknown");
             break;
-          default:
-            console.log(error);
         }
       }
     },
@@ -340,6 +348,38 @@ export default {
           this.$q.dialog({
             title: "فشلت العملية",
             message: "حدث خطأ اثناء حذف المستخدم"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+        }
+
+        if (errorCode === "storage/object-not-found") {
+          this.$q.dialog({
+            title: "حدث خطأ",
+            message: "لم يتم العثور على الملف"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+        }
+
+        if (errorCode === "storage/unauthorized") {
+          this.$q.dialog({
+            title: "حدث خطأ",
+            message: "لا تملك الصلاحيات لتحميل الملف"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+        }
+
+        if (errorCode === "storage/canceled") {
+          this.$q.dialog({
+            title: "حدث خطأ",
+            message: "تم إلغاء تنزيل الملف"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+        }
+
+        if (errorCode === "storage/unknown") {
+          this.$q.dialog({
+            title: "حدث خطأ",
+            message: "حدث خطأ اثناء تنزيل الملف"
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
