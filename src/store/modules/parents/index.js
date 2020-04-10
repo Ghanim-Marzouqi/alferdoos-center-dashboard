@@ -155,7 +155,8 @@ const state = {
     { id: 114, name: "الناس", chapter: 30, phrases: 6 }
   ],
   loading: false,
-  is_user_registered: false
+  is_user_registered: false,
+  registered_forms: []
 };
 
 export default {

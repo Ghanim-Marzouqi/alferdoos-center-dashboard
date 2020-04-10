@@ -16,11 +16,14 @@ const SET_LOADER = (state, value) => (state.loading = value);
 
 const SET_REGISTRATION = (state, value) => (state.is_user_registered = value);
 
+const SET_REGISTERED_FORMS = (state, forms) => (state.registered_forms = forms);
+
 export default {
   SET_USER,
   SET_MESSAGE,
   SET_ERROR,
   RESET_ERRORS_AND_MESSAGES,
   SET_LOADER,
-  SET_REGISTRATION
+  SET_REGISTRATION,
+  SET_REGISTERED_FORMS
 };

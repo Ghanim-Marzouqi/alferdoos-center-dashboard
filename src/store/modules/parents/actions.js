@@ -292,6 +292,49 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
     });
   }
 };
+
+const FETCH_REGISTERED_FORMS = async ({ commit }, payload) => {
+  // Activate Loader
+  commit("SET_LOADER", true);
+
+  // Get All Forms By Parent ID
+  let snapshot = await FirebaseDatabase.collection(
+    COLLECTIONS.REGISTERED_STUDENTS
+  )
+    .where("parentId", "==", payload)
+    .get();
+
+  // Get All Records
+  let docs = snapshot.docs;
+
+  // Prepare Data
+  let forms = docs.map(doc => ({
+    id: doc.id,
+    name: doc.data().name,
+    centerKnownBy: doc.data().centerKnownBy,
+    certificates: doc.data().certificates,
+    createdAt: doc.data().createdAt,
+    diseases: doc.data().diseases,
+    finishedClass: doc.data().finishedClass,
+    firstPhoneNumber: doc.data().firstPhoneNumber,
+    imageURL: doc.data().imageURL,
+    isLearntInCenterBefore: doc.data().isLearntInCenterBefore,
+    oldCenterName: doc.data().oldCenterName,
+    parentId: doc.data().parentId,
+    parentName: doc.data().parentName,
+    savedChapters: doc.data().savedChapters,
+    savedSurahs: doc.data().savedSurahs,
+    secondPhoneNumber: doc.data().secondPhoneNumber,
+    skills: doc.data().skills,
+    studentState: doc.data().studentState,
+    subjectANumber: doc.data().subjectANumber,
+    subjectBNumber: doc.data().subjectBNumber,
+    village: doc.data().village
+  }));
+
+  commit("SET_REGISTERED_FORMS", forms);
+  commit("SET_LOADER", false);
+};
 //#endregion
 
 //#region GENERAL
@@ -323,5 +366,6 @@ export default {
   REGISTER_STUDENT,
   TRIGGER_USER_REGISTRATION,
   SET_LOADER,
-  SET_MESSAGE
+  SET_MESSAGE,
+  FETCH_REGISTERED_FORMS
 };
