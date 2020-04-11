@@ -57,6 +57,14 @@
               </q-item-section>
             </q-item>
           </q-expansion-item>
+          <q-item class="q-ma-xs" clickable exact to="/admin/settings">
+            <q-item-section avatar>
+              <q-icon name="o_settings" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>الإعدادات</q-item-label>
+            </q-item-section>
+          </q-item>
 
           <q-separator />
           <q-item clickable @click="logout">
@@ -100,31 +108,6 @@ export default {
           title: "الرئيسية",
           icon: "o_home",
           link: "/admin"
-        },
-        {
-          title: "الطلاب",
-          icon: "o_people",
-          link: "/admin/students"
-        }
-      ],
-      simple: [
-        {
-          label: "الرئيسية",
-          icon: "o_home",
-          children: [
-            {
-              label: "Good food (with icon)",
-              icon: "restaurant_menu"
-            },
-            {
-              label: "Good service (disabled node with icon)",
-              icon: "room_service"
-            },
-            {
-              label: "Pleasant surroundings (with icon)",
-              icon: "photo"
-            }
-          ]
         }
       ]
     };

@@ -22,6 +22,7 @@
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
             <q-td key="createdAt" :props="props">{{ props.row.createdAt | formatDate }}</q-td>
+            <q-td key="status" :props="props">{{ props.row.status | getStatus }}</q-td>
             <q-td key="show" :props="props">
               <q-btn dense flat @click.stop="showStudentDialog(props.row)">
                 <q-icon color="blue" name="o_visibility" />
@@ -123,7 +124,7 @@
                   هل يعاني الطالب أي مرض:
                   <strong
                     class="text-blue"
-                  >{{ registeredStudent.studentState === 'health' ? 'لا' : 'نعم' }}</strong>
+                  >{{ registeredStudent.studentState === 'healthy' ? 'لا' : 'نعم' }}</strong>
                 </p>
                 <p>
                   الأعراض والأمراض التي يعاني منها الطالب:
@@ -220,6 +221,14 @@ export default {
           align: "center",
           field: row => row.createdAt,
           format: val => `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`
+        },
+        {
+          name: "status",
+          required: true,
+          label: "حالة الطلب",
+          align: "center",
+          field: row => row.status,
+          format: val => `${val}`
         },
         {
           name: "show",
@@ -323,6 +332,13 @@ export default {
   filters: {
     formatDate(val) {
       return `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`;
+    },
+    getStatus(val) {
+      if (val === "review") return "الطلب قيد المراجعة";
+      else if (val === "accept_for_exam") return "مقبول للإختبار";
+      else if (val === "accept_for_study") return "مقبول للدراسة في المركز";
+      else if (val === "reject") return "تم الرفض";
+      else return "حالة الطلب غير معروفة";
     }
   },
   watch: {

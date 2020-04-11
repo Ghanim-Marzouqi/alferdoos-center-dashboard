@@ -265,7 +265,8 @@ const REGISTER_STUDENT = async ({ commit }, payload) => {
       certificates: payload.certificateURLs,
       parentId: payload.parentId,
       parentName: payload.parentName,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      status: "review"
     };
 
     // Insert Student Data Inside Firebase Firestore
@@ -326,6 +327,7 @@ const FETCH_REGISTERED_FORMS = async ({ commit }, payload) => {
     savedSurahs: doc.data().savedSurahs,
     secondPhoneNumber: doc.data().secondPhoneNumber,
     skills: doc.data().skills,
+    status: doc.data().status,
     studentState: doc.data().studentState,
     subjectANumber: doc.data().subjectANumber,
     subjectBNumber: doc.data().subjectBNumber,

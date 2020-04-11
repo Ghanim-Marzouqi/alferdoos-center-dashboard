@@ -26,6 +26,10 @@ const routes = [
         path: ":id/student-dashboard",
         component: () =>
           import("pages/admin/dashboard/students/PageStudentDashboard.vue")
+      },
+      {
+        path: "settings",
+        component: () => import("pages/admin/dashboard/PageSettings.vue")
       }
     ]
   },

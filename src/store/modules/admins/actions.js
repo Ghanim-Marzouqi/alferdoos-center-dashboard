@@ -202,6 +202,7 @@ const FETCH_REGISTERED_STUDENTS = async ({ commit }) => {
     savedSurahs: doc.data().savedSurahs,
     secondPhoneNumber: doc.data().secondPhoneNumber,
     skills: doc.data().skills,
+    status: doc.data().status,
     studentState: doc.data().studentState,
     subjectANumber: doc.data().subjectANumber,
     subjectBNumber: doc.data().subjectBNumber,

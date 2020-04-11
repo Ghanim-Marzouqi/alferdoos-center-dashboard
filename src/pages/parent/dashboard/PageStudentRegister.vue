@@ -279,124 +279,137 @@
         </q-step>
 
         <q-step :name="3" title="بيانات إضافية" icon="assignment" active-icon="assignment">
-          <q-form ref="hMoretInfoForm">
-            <div class="row">
-              <div class="q-gutter-sm">
-                <div class="text-weight-bold">هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم؟</div>
-                <q-radio v-model="studentForm.isLearntInCenterBefore" val="yes" label="نعم" />
-                <q-radio v-model="studentForm.isLearntInCenterBefore" val="no" label="لا" />
-              </div>
-              <div class="col-12">
-                <q-input
-                  v-show="studentForm.isLearntInCenterBefore === 'yes'"
-                  class="q-ma-sm"
-                  style="width: 400px;"
-                  dense
-                  square
-                  outlined
-                  :autogrow="false"
-                  clearable
-                  v-model="studentForm.oldCenterName"
-                  label="اين؟"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="q-gutter-sm">
-                <div class="text-weight-bold">ما هي المهارات التي يمتلكها الطالب؟</div>
-                <div class="col-12">
-                  <q-input
-                    class="q-ma-sm"
-                    style="width: 400px;"
-                    dense
-                    square
-                    outlined
-                    :autogrow="false"
-                    clearable
-                    v-model="studentForm.skills"
-                    type="textarea"
-                    label="اكتب المهارات التي يمتلكها الطالب"
-                  />
+          <div class="row">
+            <div class="col-6">
+              <q-form ref="hMoretInfoForm">
+                <div class="row">
+                  <div class="q-gutter-sm">
+                    <div class="text-weight-bold">هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم؟</div>
+                    <q-radio v-model="studentForm.isLearntInCenterBefore" val="yes" label="نعم" />
+                    <q-radio v-model="studentForm.isLearntInCenterBefore" val="no" label="لا" />
+                  </div>
+                  <div class="col-12">
+                    <q-input
+                      v-show="studentForm.isLearntInCenterBefore === 'yes'"
+                      class="q-ma-sm"
+                      style="width: 400px;"
+                      dense
+                      square
+                      outlined
+                      :autogrow="false"
+                      clearable
+                      v-model="studentForm.oldCenterName"
+                      label="اين؟"
+                    />
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="q-gutter-sm">
-                <div class="text-weight-bold">الحالة الصحية للطالب ؟</div>
-                <q-radio v-model="studentForm.studentState" val="healthy" label="سليم" />
-                <q-radio v-model="studentForm.studentState" val="sick" label="مريض" />
-                <q-input
-                  v-if="studentForm.studentState === 'sick'"
-                  class="q-ma-sm"
-                  style="width: 400px"
-                  dense
-                  square
-                  outlined
-                  :autogrow="false"
-                  clearable
-                  v-model="studentForm.diseases"
-                  type="textarea"
-                  label="الأمراض او الأعراض التي يعاني منها الطالب"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="q-gutter-sm">
-                <div class="text-weight-bold">المرفقات</div>
-                <div class="col-6">
-                  <q-file
-                    v-model="studentForm.image"
-                    label="صورة الطالب"
-                    dense
-                    outlined
-                    use-chips
-                    style="width: 400px"
-                    class="q-ma-sm"
-                    accept=".jpg, image/*"
-                    lazy-rules
-                    :rules="[ val => !!val || 'الرجاء ارفاق صورة الطالب' ]"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="attach_file" />
-                    </template>
-                  </q-file>
+                <div class="row">
+                  <div class="q-gutter-sm">
+                    <div class="text-weight-bold">ما هي المهارات التي يمتلكها الطالب؟</div>
+                    <div class="col-12">
+                      <q-input
+                        class="q-ma-sm"
+                        style="width: 400px;"
+                        dense
+                        square
+                        outlined
+                        :autogrow="false"
+                        clearable
+                        v-model="studentForm.skills"
+                        type="textarea"
+                        label="اكتب المهارات التي يمتلكها الطالب"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div class="col-6">
-                  <q-file
-                    v-model="studentForm.certificates"
-                    label="شهادات الطالب"
-                    dense
-                    outlined
-                    use-chips
-                    multiple
-                    style="width: 400px"
-                    class="q-ma-sm"
-                    accept=".pdf, .jpg, image/*"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="attach_file" />
-                    </template>
-                  </q-file>
+                <div class="row">
+                  <div class="q-gutter-sm">
+                    <div class="text-weight-bold">الحالة الصحية للطالب ؟</div>
+                    <q-radio v-model="studentForm.studentState" val="healthy" label="سليم" />
+                    <q-radio v-model="studentForm.studentState" val="sick" label="مريض" />
+                    <q-input
+                      v-if="studentForm.studentState === 'sick'"
+                      class="q-ma-sm"
+                      style="width: 400px"
+                      dense
+                      square
+                      outlined
+                      :autogrow="false"
+                      clearable
+                      v-model="studentForm.diseases"
+                      type="textarea"
+                      label="الأمراض او الأعراض التي يعاني منها الطالب"
+                    />
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="q-gutter-sm q-mt-sm">
-                <div class="text-weight-bold">كيف عرفت عن مركز الفردوس الاعلى ومن شجعك للتسجيل فيه؟</div>
-                <div class="col-6">
-                  <q-select
-                    v-model="studentForm.centerKnownBy"
-                    class="q-ma-sm"
-                    dense
-                    outlined
-                    :options="centerKnownList"
-                    label="طرق معرفة المركز"
-                    style="width: 400px"
-                  />
+                <div class="row">
+                  <div class="q-gutter-sm">
+                    <div class="text-weight-bold">المرفقات</div>
+                    <div class="col-6">
+                      <q-file
+                        v-model="studentForm.image"
+                        label="صورة الطالب"
+                        dense
+                        outlined
+                        use-chips
+                        style="width: 400px"
+                        class="q-ma-sm"
+                        accept=".jpg, image/*"
+                        lazy-rules
+                        :rules="[ val => !!val || 'الرجاء ارفاق صورة الطالب' ]"
+                        @input="onSelectFile"
+                      >
+                        <template v-slot:prepend>
+                          <q-icon name="attach_file" />
+                        </template>
+                      </q-file>
+                    </div>
+                    <div class="col-6">
+                      <q-file
+                        v-model="studentForm.certificates"
+                        label="شهادات الطالب"
+                        dense
+                        outlined
+                        use-chips
+                        multiple
+                        style="width: 400px"
+                        class="q-ma-sm"
+                        accept=".pdf, .jpg, image/*"
+                      >
+                        <template v-slot:prepend>
+                          <q-icon name="attach_file" />
+                        </template>
+                      </q-file>
+                    </div>
+                  </div>
                 </div>
-              </div>
+                <div class="row">
+                  <div class="q-gutter-sm q-mt-sm">
+                    <div
+                      class="text-weight-bold"
+                    >كيف عرفت عن مركز الفردوس الاعلى ومن شجعك للتسجيل فيه؟</div>
+                    <div class="col-6">
+                      <q-select
+                        v-model="studentForm.centerKnownBy"
+                        class="q-ma-sm"
+                        dense
+                        outlined
+                        :options="centerKnownList"
+                        label="طرق معرفة المركز"
+                        style="width: 400px"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </q-form>
             </div>
-          </q-form>
+            <div class="col-6">
+              <q-img
+                :src="imagePreview === null ? 'statics/images/boy_placeholder.jpg' : imagePreview"
+                :ratio="1"
+              />
+            </div>
+          </div>
           <q-stepper-navigation>
             <q-btn
               :loading="GET_LOADER"
@@ -836,6 +849,7 @@ export default {
     return {
       hStep: 1,
       vStep: 1,
+      imagePreview: null,
       studentForm: {
         firstName: "",
         secondName: "",
@@ -942,6 +956,13 @@ export default {
     },
     removeSurah(index) {
       this.studentForm.savedSurahs.splice(index, 1);
+    },
+    onSelectFile(file) {
+      if (typeof file !== "undefined") {
+        this.imagePreview = URL.createObjectURL(file);
+      } else {
+        this.imagePreview = null;
+      }
     },
     async onSubmit(form) {
       let valid = await this.$refs[form].validate();
