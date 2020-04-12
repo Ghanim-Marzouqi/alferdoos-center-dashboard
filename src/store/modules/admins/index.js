@@ -156,7 +156,8 @@ const state = {
   ],
   loading: false,
   is_user_registered: false,
-  registeredStudents: []
+  registered_students: [],
+  year_info: {}
 };
 
 export default {

@@ -19,6 +19,8 @@ const SET_REGISTRATION = (state, value) => (state.is_user_registered = value);
 const SET_REGISTERED_STUDENTS = (state, students) =>
   (state.registeredStudents = students);
 
+const SET_YEAR_INFO = (state, year_info) => (state.year_info = year_info);
+
 export default {
   SET_USER,
   SET_MESSAGE,

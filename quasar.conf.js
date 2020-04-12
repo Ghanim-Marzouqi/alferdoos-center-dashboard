@@ -58,12 +58,13 @@ module.exports = function(ctx) {
         "QTr",
         "QTd",
         "QImg",
-        "QDialog"
+        "QDialog",
+        "QDate"
       ],
       directives: ["ClosePopup"],
 
       // Quasar plugins
-      plugins: ["Dialog", "Notify"]
+      plugins: ["Dialog", "Notify", "Loading"]
     },
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie

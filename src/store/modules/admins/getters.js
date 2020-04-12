@@ -5,7 +5,8 @@ const GET_CHAPTERS = state => state.chapters;
 const GET_SURAHS = state => state.surahs;
 const GET_LOADER = state => state.loading;
 const GET_USER_REGISTRATION = state => state.is_user_registered;
-const GET_REGISTERED_STUDENTS = state => state.registeredStudents;
+const GET_REGISTERED_STUDENTS = state => state.registered_students;
+const GET_YEAR_INFO = state => state.year_info;
 
 export default {
   GET_USER,
@@ -15,5 +16,6 @@ export default {
   GET_SURAHS,
   GET_LOADER,
   GET_USER_REGISTRATION,
-  GET_REGISTERED_STUDENTS
+  GET_REGISTERED_STUDENTS,
+  GET_YEAR_INFO
 };

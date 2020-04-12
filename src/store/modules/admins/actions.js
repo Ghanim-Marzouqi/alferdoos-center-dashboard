@@ -1,5 +1,5 @@
-import { Dialog } from "quasar";
-import { FirebaseAuth, FirebaseDatabase, FirebaseStorage } from "boot/firebase";
+import { Dialog, Loading, QSpinnerGears } from "quasar";
+import { FirebaseAuth, FirebaseDatabase } from "boot/firebase";
 import { COLLECTIONS } from "../../../config/constants";
 
 //#region AUTH
@@ -231,6 +231,144 @@ const DELETE_REGISTERED_STUDENT = async ({ commit }, payload) => {
 };
 //#endregion
 
+//#region SETTINGS
+const FETCH_YEAR_INFO = async ({ commit }) => {
+  // Get Date
+  let date = new Date();
+
+  try {
+    // Get Year Info If Exists
+    let doc = await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
+      .doc(date.getFullYear())
+      .get();
+
+    if (!doc.exists) {
+      // Get data
+      commit("SET_YEAR_INFO", {
+        id: doc.data().id,
+        name: doc.data().name,
+        startPeriodDate: doc.data().startPeriodDate,
+        endPeriodDate: doc.data().endPeriodDate
+      });
+    }
+  } catch (error) {
+    // Set Error
+    commit("SET_ERROR", { code: "database/year-info-error" });
+  }
+};
+
+const SET_YEAR_NAME = async ({ commit }, payload) => {
+  // Activate Loader
+  commit("SET_LOADER", true);
+
+  // Get Date
+  let date = new Date();
+
+  try {
+    // Get Year Info If Exists
+    let doc = await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
+      .doc(date.getFullYear())
+      .get();
+
+    if (!doc.exists) {
+      // Register New Year Info
+      await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
+        .doc(date.getFullYear())
+        .set({
+          id: date.getFullYear(),
+          name: payload
+        });
+
+      // Deactivate Loader
+      commit("SET_LOADER", false);
+
+      // Display A Dialog
+      Dialog.create({
+        name: "تنبيه",
+        message: "تم تغيير السنة الدراسية بنجاح"
+      });
+    } else {
+      // Update Existed Year Info
+      await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
+        .doc(date.getFullYear())
+        .update({
+          name: payload
+        });
+
+      // Deactivate Loader
+      commit("SET_LOADER", false);
+
+      // Display A Dialog
+      Dialog.create({
+        name: "تنبيه",
+        message: "تم تغيير السنة الدراسية بنجاح"
+      });
+    }
+  } catch (error) {
+    // Display A Dialog
+    Dialog.create({
+      name: "خطأ",
+      message: "حدث خطأ اثناء تغيير بيانات السنة الدراسية"
+    });
+
+    // Deactivate Loader
+    commit("SET_LOADER", false);
+  }
+};
+
+const SET_REGISTRATION_PERIOD = async ({ commit }, payload) => {
+  // Activate Loader
+  commit("SET_LOADER", true);
+
+  // Get Date
+  let date = new Date();
+
+  try {
+    // Get Year Info If Exists
+    let doc = await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
+      .doc(date.getFullYear())
+      .get();
+
+    if (!doc.exists) {
+      // Deactivate Loader
+      commit("SET_LOADER", false);
+
+      // Display A Dialog
+      Dialog.create({
+        name: "خطأ",
+        message: "لم يتم العثور على معلومات السنة الدراسية"
+      });
+    } else {
+      // Update Existed Year Info
+      await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
+        .doc(date.getFullYear())
+        .update({
+          startPeriodDate: payload.startPeriodDate,
+          endPeriodDate: payload.endPeriodDate
+        });
+
+      // Deactivate Loader
+      commit("SET_LOADER", false);
+
+      // Display A Dialog
+      Dialog.create({
+        name: "تمت العملية بنجاح",
+        message: "تم تغيير فترة التسجيل بنجاح"
+      });
+    }
+  } catch (error) {
+    // Deactivate Loader
+    commit("SET_LOADER", false);
+
+    // Display A Dialog
+    Dialog.create({
+      name: "حطأ",
+      message: "حدث خطأ اثناء تغيير الفترة الدراسية"
+    });
+  }
+};
+//#endregion
+
 //#region GENERAL
 const SET_MESSAGE = ({ commit }, payload) => {
   commit("SET_MESSAGE", payload);
@@ -260,5 +398,8 @@ export default {
   SET_LOADER,
   SET_MESSAGE,
   FETCH_REGISTERED_STUDENTS,
-  DELETE_REGISTERED_STUDENT
+  DELETE_REGISTERED_STUDENT,
+  SET_YEAR_NAME,
+  SET_REGISTRATION_PERIOD,
+  FETCH_YEAR_INFO
 };
