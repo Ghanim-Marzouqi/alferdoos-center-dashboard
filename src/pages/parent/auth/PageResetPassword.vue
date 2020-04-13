@@ -88,7 +88,7 @@ export default {
     },
     goToLoginPage() {
       this.CLEAR_ERRORS_AND_MESSAGES();
-      this.$router.replace("/parent/login");
+      this.$router.replace("/parent-login");
     }
   }
 };

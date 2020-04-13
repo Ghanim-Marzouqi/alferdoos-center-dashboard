@@ -317,11 +317,11 @@ export default {
     },
     goToRegisterPage() {
       this.CLEAR_ERRORS_AND_MESSAGES();
-      this.$router.push("/parent/register");
+      this.$router.push("/parent-register");
     },
     goToResetPasswordPage() {
       this.CLEAR_ERRORS_AND_MESSAGES();
-      this.$router.push("/parent/reset-password");
+      this.$router.push("/parent-reset-password");
     },
     sendOTP(phone) {
       var phoneNumber = `+968${phone}`;

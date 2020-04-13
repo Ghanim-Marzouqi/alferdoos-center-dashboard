@@ -72,7 +72,7 @@ export default {
         {
           title: "تسجيل طالب جديد",
           icon: "o_create",
-          link: "/parent"
+          link: "/parent/register-student"
         },
         {
           title: "طلبات التسجيل",
@@ -84,7 +84,7 @@ export default {
   },
   created() {
     if (Object.keys(this.GET_USER).length === 0) {
-      this.$router.replace("/parent/login");
+      this.$router.replace("/parent-login");
     }
   },
   computed: mapGetters("parents", ["GET_USER"]),
@@ -97,7 +97,7 @@ export default {
   watch: {
     GET_USER: function(newState, oldState) {
       if (Object.keys(newState).length === 0) {
-        this.$router.replace("/parent/login");
+        this.$router.replace("/parent-login");
       }
     }
   },

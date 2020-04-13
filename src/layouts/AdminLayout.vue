@@ -30,7 +30,7 @@
         style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd"
       >
         <q-list>
-          <q-item class="q-ma-xs" clickable exact to="/admin">
+          <q-item class="q-ma-xs" clickable exact to="/admin/home">
             <q-item-section avatar>
               <q-icon name="o_home" />
             </q-item-section>
@@ -38,16 +38,12 @@
               <q-item-label>الرئيسية</q-item-label>
             </q-item-section>
           </q-item>
-          <q-expansion-item expand-separator icon="o_school" label="بيانات الطلاب الأساسية">
-            <q-item class="q-ma-xs" clickable exact to="/admin/student-registration-forms">
-              <q-item-section avatar>
-                <q-icon name="o_assignment" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>طلبات التسجيل</q-item-label>
-              </q-item-section>
-            </q-item>
-
+          <q-expansion-item
+            class="q-ma-xs"
+            expand-separator
+            icon="o_school"
+            label="بيانات الطلاب الأساسية"
+          >
             <q-item class="q-ma-xs" clickable exact to="/admin/student-list">
               <q-item-section avatar>
                 <q-icon name="o_people" />
@@ -56,16 +52,25 @@
                 <q-item-label>الطلاب المسجلين</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/student-registration-forms">
+              <q-item-section avatar>
+                <q-icon name="o_assignment" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>طلبات التسجيل</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-expansion-item>
-          <q-item class="q-ma-xs" clickable exact to="/admin/settings">
-            <q-item-section avatar>
-              <q-icon name="o_settings" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>الإعدادات</q-item-label>
-            </q-item-section>
-          </q-item>
-
+          <q-expansion-item class="q-ma-xs" expand-separator icon="o_settings" label="الإعدادات">
+            <q-item class="q-ma-xs" clickable exact to="/admin/settings-year-info">
+              <q-item-section avatar>
+                <q-icon name="o_date_range" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>السنة الدراسية</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-expansion-item>
           <q-separator />
           <q-item clickable @click="logout">
             <q-item-section avatar>
@@ -102,19 +107,12 @@ export default {
   name: "Layout",
   data() {
     return {
-      rightDrawerOpen: false,
-      links: [
-        {
-          title: "الرئيسية",
-          icon: "o_home",
-          link: "/admin"
-        }
-      ]
+      rightDrawerOpen: false
     };
   },
   created() {
     if (Object.keys(this.GET_USER).length === 0) {
-      this.$router.replace("/admin/login");
+      this.$router.replace("/admin-login");
     }
   },
   computed: mapGetters("admins", ["GET_USER"]),
@@ -127,7 +125,7 @@ export default {
   watch: {
     GET_USER: function(newState, oldState) {
       if (Object.keys(newState).length === 0) {
-        this.$router.replace("/admin/login");
+        this.$router.replace("/admin-login");
       }
     }
   },

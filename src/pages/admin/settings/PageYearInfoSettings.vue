@@ -133,7 +133,7 @@ import { mapGetters, mapActions } from "vuex";
 const today = new Date();
 
 export default {
-  name: "PageSettings",
+  name: "PageYearInfoSettings",
   data() {
     return {
       yearInfo: {},

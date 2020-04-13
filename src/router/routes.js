@@ -5,41 +5,52 @@ const routes = [
     component: () => import("pages/PageMain.vue")
   },
   {
+    path: "/admin-login",
+    component: () => import("pages/admin/auth/PageLogin.vue")
+  },
+  {
+    path: "/admin-reset-password",
+    component: () => import("pages/admin/auth/PageResetPassword.vue")
+  },
+  {
     path: "/admin",
     component: () => import("layouts/AdminLayout.vue"),
+    redirect: "/admin/home",
     children: [
       {
-        path: "",
-        component: () => import("pages/admin/dashboard/PageHome.vue")
+        path: "home",
+        component: () => import("pages/admin/PageHome.vue")
+      },
+      {
+        path: "student-list",
+        component: () => import("pages/admin/students/PageStudentList.vue")
       },
       {
         path: "student-registration-forms",
         component: () =>
-          import("pages/admin/dashboard/students/PageRegistrationForms.vue")
-      },
-      {
-        path: "student-list",
-        component: () =>
-          import("pages/admin/dashboard/students/PageStudentList.vue")
+          import("pages/admin/students/PageRegistrationForms.vue")
       },
       {
         path: ":id/student-dashboard",
-        component: () =>
-          import("pages/admin/dashboard/students/PageStudentDashboard.vue")
+        component: () => import("pages/admin/students/PageStudentDashboard.vue")
       },
       {
-        path: "settings",
-        component: () => import("pages/admin/dashboard/PageSettings.vue")
+        path: "settings-year-info",
+        component: () => import("pages/admin/settings/PageYearInfoSettings.vue")
       }
     ]
   },
   {
-    path: "/admin/login",
-    component: () => import("pages/admin/auth/PageLogin.vue")
+    path: "/parent-login",
+    component: () => import("pages/parent/auth/PageLogin.vue")
   },
   {
-    path: "/admin/reset-password",
-    component: () => import("pages/admin/auth/PageResetPassword.vue")
+    path: "/parent-register",
+    component: () => import("pages/parent/auth/PageRegister.vue")
+  },
+  {
+    path: "/parent-reset-password",
+    component: () => import("pages/parent/auth/PageResetPassword.vue")
   },
   {
     path: "/parent",
@@ -47,45 +58,37 @@ const routes = [
     children: [
       {
         path: "",
-        component: () =>
-          import("pages/parent/dashboard/PageStudentRegister.vue")
+        redirect: "/parent/register-student"
+      },
+      {
+        path: "register-student",
+        component: () => import("pages/parent/students/PageStudentRegister.vue")
       },
       {
         path: "registration-applications",
         component: () =>
-          import("pages/parent/dashboard/PageRegistrationApplications.vue")
+          import("pages/parent/students/PageRegistrationApplications.vue")
       }
     ]
   },
   {
-    path: "/parent/login",
-    component: () => import("pages/parent/auth/PageLogin.vue")
+    path: "/teacher-login",
+    component: () => import("pages/teacher/auth/PageLogin.vue")
   },
   {
-    path: "/parent/register",
-    component: () => import("pages/parent/auth/PageRegister.vue")
-  },
-  {
-    path: "/parent/reset-password",
-    component: () => import("pages/parent/auth/PageResetPassword.vue")
+    path: "/teacher-reset-password",
+    component: () => import("pages/teacher/auth/PageResetPassword.vue")
   },
   {
     path: "/teacher",
     component: () => import("layouts/TeacherLayout.vue"),
+    redirect: "/teacher/home",
     children: [
       {
-        path: "",
-        component: () => import("pages/teacher/dashboard/PageHome.vue")
+        path: "home",
+        component: () => import("pages/teacher/PageHome.vue")
       }
     ]
-  },
-  {
-    path: "/teacher/login",
-    component: () => import("pages/teacher/auth/PageLogin.vue")
-  },
-  {
-    path: "/teacher/reset-password",
-    component: () => import("pages/teacher/auth/PageResetPassword.vue")
   }
 ];
 

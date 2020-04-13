@@ -80,14 +80,14 @@ export default {
         {
           title: "الرئيسية",
           icon: "o_home",
-          link: "/teacher"
+          link: "/teacher/home"
         }
       ]
     };
   },
   created() {
     if (Object.keys(this.GET_USER).length === 0) {
-      this.$router.replace("/teacher/login");
+      this.$router.replace("/teacher-login");
     }
   },
   computed: mapGetters("teachers", ["GET_USER"]),
@@ -100,7 +100,7 @@ export default {
   watch: {
     GET_USER: function(newState, oldState) {
       if (Object.keys(newState).length === 0) {
-        this.$router.replace("/teacher/login");
+        this.$router.replace("/teacher-login");
       }
     }
   },

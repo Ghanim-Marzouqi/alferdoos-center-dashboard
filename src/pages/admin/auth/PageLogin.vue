@@ -302,7 +302,7 @@ export default {
     },
     goToResetPasswordPage() {
       this.CLEAR_ERRORS_AND_MESSAGES();
-      this.$router.push("/admin/reset-password");
+      this.$router.push("/admin-reset-password");
     },
     sendOTP(phone) {
       var phoneNumber = `+968${phone}`;

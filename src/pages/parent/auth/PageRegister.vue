@@ -325,7 +325,7 @@ export default {
         FirebaseAuth.signOut();
       }
 
-      this.$router.replace("/parent/login");
+      this.$router.replace("/parent-login");
     }
   },
   watch: {

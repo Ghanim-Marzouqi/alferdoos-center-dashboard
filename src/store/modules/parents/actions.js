@@ -199,8 +199,9 @@ const RESET_PASSWORD = async ({ commit }, payload) => {
   }
 };
 
-const LOGOUT = ({}) => {
+const LOGOUT = ({ commit }) => {
   FirebaseAuth.signOut();
+  commit("SET_USER", {});
 };
 //#endregion
 
