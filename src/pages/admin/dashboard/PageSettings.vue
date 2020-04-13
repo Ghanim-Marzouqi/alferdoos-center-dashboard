@@ -14,7 +14,7 @@
           </thead>
           <tbody>
             <tr>
-              <td class="text-left">{{ currentYear }}</td>
+              <td class="text-left">{{ GET_YEAR_INFO.name }}</td>
               <td class="text-right">
                 <q-btn dense flat @click="isYearDialogOpen = true">
                   <q-icon name="o_edit" color="primary" />
@@ -38,7 +38,9 @@
           </thead>
           <tbody>
             <tr>
-              <td class="text-left">{{ startPeriodDate | getDate }} - {{ endPeriodDate | getDate }}</td>
+              <td
+                class="text-left"
+              >{{ GET_YEAR_INFO.startPeriodDate | getDate }} - {{ GET_YEAR_INFO.endPeriodDate | getDate }}</td>
               <td class="text-right">
                 <q-btn dense flat @click="isDateDialogOpen = true">
                   <q-icon name="o_edit" color="primary" />
@@ -69,7 +71,7 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn flat label="حفظ" @click="saveCurrentYear" v-close-popup />
+          <q-btn flat label="حفظ" @click="saveCurrentYear" :loading="GET_LOADER" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -116,7 +118,7 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn flat label="حفظ" @click="onPeriodFormSubmit" />
+          <q-btn flat label="حفظ" @click="onPeriodFormSubmit" :loading="GET_LOADER" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -124,19 +126,20 @@
 </template>
 
 <script>
+import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
 
-// Get Current Date
-const date = new Date();
+// Get Today's Date
+const today = new Date();
 
 export default {
   name: "PageSettings",
   data() {
     return {
       yearInfo: {},
-      currentYear: `${date.getFullYear()}/${date.getFullYear() + 1}`,
-      startPeriodDate: `${date.toISOString()}`,
-      endPeriodDate: `${date.toISOString()}`,
+      currentYear: "",
+      startPeriodDate: date.formatDate(today, "YYYY/MM/DD"),
+      endPeriodDate: date.formatDate(today, "YYYY/MM/DD"),
       isYearDialogOpen: false,
       isDateDialogOpen: false
     };
@@ -146,47 +149,156 @@ export default {
     this.FETCH_YEAR_INFO();
   },
   computed: {
-    ...mapGetters("admins", ["GET_LOADER", "GET_YEAR_INFO"])
+    ...mapGetters("admins", [
+      "GET_LOADER",
+      "GET_YEAR_INFO",
+      "GET_MESSAGES",
+      "GET_ERRORS"
+    ]),
+    getTodayDate() {
+      return date.toISOString
+        .split("T")[0]
+        .split("-")
+        .join("/");
+    }
   },
   methods: {
     ...mapActions("admins", [
       "FETCH_YEAR_INFO",
       "SET_YEAR_NAME",
-      "SET_REGISTRATION_PERIOD"
+      "SET_REGISTRATION_PERIOD",
+      "CLEAR_ERRORS_AND_MESSAGES"
     ]),
     saveCurrentYear() {
       if (this.currentYear === "") return;
 
-      // store current year name
+      // Set Current Year Name
+      this.SET_YEAR_NAME(this.currentYear);
     },
     onPeriodFormSubmit() {
-      if (Date.parse(this.startPeriodDate) > Date.parse(this.endPeriodDate)) {
+      // Get Timestamps
+      let todayTimestamp = Date.parse(date.formatDate(today, "YYYY/MM/DD"));
+      let startDateTimestamp = Date.parse(this.startPeriodDate);
+      let endDateTimestamp = Date.parse(this.endPeriodDate);
+
+      // Check if Start Period Date Is Bigger Or Equal To Today's Date
+      if (startDateTimestamp < todayTimestamp) {
+        this.$q.dialog({
+          title: "تنبيه",
+          message: "يجب أن يكون تاريخ بداية التسجيل أكبر أو يساوي تاريخ اليوم"
+        });
+        return;
+      }
+
+      // Check if Start Period Date Is Less Or Equal To End Period Date
+      if (startDateTimestamp > endDateTimestamp) {
         this.$q.dialog({
           title: "تنبيه",
           message:
             "يجب أن يكون تاريخ بداية التسجيل أصغر من أو يساوي تاريخ إنتهاء التسجيل"
         });
         return;
-      } else {
-        console.log("Submit");
-        this.isDateDialogOpen = false;
       }
+
+      // Set Registration Period Dates
+      this.SET_REGISTRATION_PERIOD({
+        startPeriodDate: startDateTimestamp,
+        endPeriodDate: endDateTimestamp
+      });
     }
   },
   filters: {
     getDate(val) {
-      return val
-        .split("T")[0]
-        .split("-")
-        .join("/");
+      return date.formatDate(val, "YYYY/MM/DD");
     }
   },
   watch: {
-    startPeriodDate: function(value) {
-      console.log("Start Date", Date.parse(value));
+    GET_YEAR_INFO: function(newState, oldState) {
+      if (Object.keys(newState).length > 0) {
+        this.currentYear = newState.name;
+        (this.startPeriodDate = date.formatDate(
+          newState.startPeriodDate,
+          "YYYY/MM/DD"
+        )),
+          (this.endPeriodDate = date.formatDate(
+            newState.endPeriodDate,
+            "YYYY/MM/DD"
+          ));
+      }
     },
-    endPeriodDate: function(value) {
-      console.log("End Date", Date.parse(value));
+    GET_MESSAGES: function(newState, oldState) {
+      if (newState.length > 0) {
+        // Get Message Code
+        let messageCode = newState[0].code;
+
+        if (messageCode === "database/year-info-created") {
+          // Clear Messages
+          this.CLEAR_ERRORS_AND_MESSAGES();
+
+          // Fetch Year Info
+          this.FETCH_YEAR_INFO();
+
+          // Display Success Dialog
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم إضافة بيانات السنة الدراسية بنجاح"
+          });
+
+          // Dismiss Dialog
+          this.isYearDialogOpen = false;
+        }
+
+        if (messageCode === "database/year-info-updated") {
+          // Clear Messages
+          this.CLEAR_ERRORS_AND_MESSAGES();
+
+          // Fetch Year Info
+          this.FETCH_YEAR_INFO();
+
+          // Display Success Dialog
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تحديث بيانات السنة الدراسية بنجاح"
+          });
+
+          // Dismiss Dialog
+          this.isYearDialogOpen = false;
+        }
+
+        if (messageCode === "database/year-info-registration-period-updated") {
+          // Clear Messages
+          this.CLEAR_ERRORS_AND_MESSAGES();
+
+          // Fetch Year Info
+          this.FETCH_YEAR_INFO();
+
+          // Display Success Dialog
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تحديث بيانات السنة الدراسية بنجاح"
+          });
+
+          // Dismiss Dialog
+          this.isDateDialogOpen = false;
+        }
+      }
+    },
+    GET_ERRORS: function(newState, oldState) {
+      if (newState.length > 0) {
+        // Get Message Code
+        let errorCode = newState[0].code;
+
+        if (errorCode === "database/year-info-error") {
+          // Clear Messages
+          this.CLEAR_ERRORS_AND_MESSAGES();
+
+          // Display Success Dialog
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ اثناء إضافة / تحديث بيانات السنة الدراسية"
+          });
+        }
+      }
     }
   }
 };

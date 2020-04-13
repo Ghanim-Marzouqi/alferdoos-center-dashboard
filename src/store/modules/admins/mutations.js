@@ -17,7 +17,7 @@ const SET_LOADER = (state, value) => (state.loading = value);
 const SET_REGISTRATION = (state, value) => (state.is_user_registered = value);
 
 const SET_REGISTERED_STUDENTS = (state, students) =>
-  (state.registeredStudents = students);
+  (state.registered_students = students);
 
 const SET_YEAR_INFO = (state, year_info) => (state.year_info = year_info);
 
@@ -28,5 +28,6 @@ export default {
   RESET_ERRORS_AND_MESSAGES,
   SET_LOADER,
   SET_REGISTRATION,
-  SET_REGISTERED_STUDENTS
+  SET_REGISTERED_STUDENTS,
+  SET_YEAR_INFO
 };

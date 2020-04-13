@@ -239,10 +239,10 @@ const FETCH_YEAR_INFO = async ({ commit }) => {
   try {
     // Get Year Info If Exists
     let doc = await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
-      .doc(date.getFullYear())
+      .doc(date.getFullYear().toString())
       .get();
 
-    if (!doc.exists) {
+    if (doc.exists) {
       // Get data
       commit("SET_YEAR_INFO", {
         id: doc.data().id,
@@ -252,6 +252,7 @@ const FETCH_YEAR_INFO = async ({ commit }) => {
       });
     }
   } catch (error) {
+    console.log("admins/FETCH_YEAR_INFO", error);
     // Set Error
     commit("SET_ERROR", { code: "database/year-info-error" });
   }
@@ -267,49 +268,40 @@ const SET_YEAR_NAME = async ({ commit }, payload) => {
   try {
     // Get Year Info If Exists
     let doc = await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
-      .doc(date.getFullYear())
+      .doc(date.getFullYear().toString())
       .get();
 
     if (!doc.exists) {
       // Register New Year Info
       await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
-        .doc(date.getFullYear())
+        .doc(date.getFullYear().toString())
         .set({
-          id: date.getFullYear(),
-          name: payload
+          id: date.getFullYear().toString(),
+          name: payload,
+          startPeriodDate: Date.now(),
+          endPeriodDate: Date.now()
         });
+
+      commit("SET_MESSAGE", { code: "database/year-info-created" });
 
       // Deactivate Loader
       commit("SET_LOADER", false);
-
-      // Display A Dialog
-      Dialog.create({
-        name: "تنبيه",
-        message: "تم تغيير السنة الدراسية بنجاح"
-      });
     } else {
       // Update Existed Year Info
       await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
-        .doc(date.getFullYear())
+        .doc(date.getFullYear().toString())
         .update({
           name: payload
         });
 
+      commit("SET_MESSAGE", { code: "database/year-info-updated" });
+
       // Deactivate Loader
       commit("SET_LOADER", false);
-
-      // Display A Dialog
-      Dialog.create({
-        name: "تنبيه",
-        message: "تم تغيير السنة الدراسية بنجاح"
-      });
     }
   } catch (error) {
-    // Display A Dialog
-    Dialog.create({
-      name: "خطأ",
-      message: "حدث خطأ اثناء تغيير بيانات السنة الدراسية"
-    });
+    console.log("admins/SET_YEAR_NAME", error);
+    commit("SET_ERROR", { code: "database/year-info-error" });
 
     // Deactivate Loader
     commit("SET_LOADER", false);
@@ -326,45 +318,37 @@ const SET_REGISTRATION_PERIOD = async ({ commit }, payload) => {
   try {
     // Get Year Info If Exists
     let doc = await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
-      .doc(date.getFullYear())
+      .doc(date.getFullYear().toString())
       .get();
 
     if (!doc.exists) {
+      // Set Error
+      commit("SET_ERROR", { code: "database/year-info-not-found" });
+
       // Deactivate Loader
       commit("SET_LOADER", false);
-
-      // Display A Dialog
-      Dialog.create({
-        name: "خطأ",
-        message: "لم يتم العثور على معلومات السنة الدراسية"
-      });
     } else {
       // Update Existed Year Info
       await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
-        .doc(date.getFullYear())
+        .doc(date.getFullYear().toString())
         .update({
           startPeriodDate: payload.startPeriodDate,
           endPeriodDate: payload.endPeriodDate
         });
 
+      commit("SET_MESSAGE", {
+        code: "database/year-info-registration-period-updated"
+      });
+
       // Deactivate Loader
       commit("SET_LOADER", false);
-
-      // Display A Dialog
-      Dialog.create({
-        name: "تمت العملية بنجاح",
-        message: "تم تغيير فترة التسجيل بنجاح"
-      });
     }
   } catch (error) {
+    // Set Error
+    commit("SET_ERROR", { code: "database/year-info-error" });
+
     // Deactivate Loader
     commit("SET_LOADER", false);
-
-    // Display A Dialog
-    Dialog.create({
-      name: "حطأ",
-      message: "حدث خطأ اثناء تغيير الفترة الدراسية"
-    });
   }
 };
 //#endregion
