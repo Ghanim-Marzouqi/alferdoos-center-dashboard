@@ -2,7 +2,13 @@
   <q-page padding>
     <p class="text-h6 text-weight-bold">طلب تسجيل طالب جديد</p>
     <div class="q-pa-md">
-      <q-stepper id="horizontal-stepper" v-model="hStep" ref="hStepper" color="primary" animated>
+      <q-stepper
+        id="horizontal-stepper"
+        v-model="hStep"
+        ref="hStepper"
+        color="primary"
+        animated
+      >
         <q-step
           :name="1"
           title="البيانات الأساسية"
@@ -83,9 +89,21 @@
             <div class="row">
               <div class="q-gutter-sm">
                 <div class="text-weight-bold">انهى الصف:</div>
-                <q-radio v-model="studentForm.finishedClass" val="grade_seven" label="السابع" />
-                <q-radio v-model="studentForm.finishedClass" val="grade_eight" label="الثامن" />
-                <q-radio v-model="studentForm.finishedClass" val="grade_nine" label="التاسع" />
+                <q-radio
+                  v-model="studentForm.finishedClass"
+                  val="grade_seven"
+                  label="السابع"
+                />
+                <q-radio
+                  v-model="studentForm.finishedClass"
+                  val="grade_eight"
+                  label="الثامن"
+                />
+                <q-radio
+                  v-model="studentForm.finishedClass"
+                  val="grade_nine"
+                  label="التاسع"
+                />
               </div>
             </div>
             <div class="text-weight-bold q-mt-md">رقم ولي الأمر والإقامة:</div>
@@ -102,7 +120,9 @@
                   label="رقم هاتف ولي الأمر الأول"
                   lazy-rules
                   :rules="[
-                    val => (val && val.length > 0) || 'الرجاء ادخال رقم هاتف ولي الأمر الأول',
+                    val =>
+                      (val && val.length > 0) ||
+                      'الرجاء ادخال رقم هاتف ولي الأمر الأول'
                   ]"
                 />
               </div>
@@ -131,7 +151,11 @@
             </div>
           </q-form>
           <q-stepper-navigation>
-            <q-btn label="متابعة" color="primary" @click="goToNextStep(2, 'hStudentInfoForm')" />
+            <q-btn
+              label="متابعة"
+              color="primary"
+              @click="goToNextStep(2, 'hStudentInfoForm')"
+            />
           </q-stepper-navigation>
         </q-step>
 
@@ -143,7 +167,9 @@
           :done="hStep > 2"
         >
           <q-form ref="hSubjectInfoForm">
-            <div class="text-weight-bold q-mt-md">تقدير علامات المواد الدراسية:</div>
+            <div class="text-weight-bold q-mt-md">
+              تقدير علامات المواد الدراسية:
+            </div>
             <div class="row">
               <div class="col-6">
                 <q-input
@@ -180,7 +206,9 @@
                 />
               </div>
             </div>
-            <div class="text-weight-bold q-mt-md">الأجزاء التي يحفظها الطالب:</div>
+            <div class="text-weight-bold q-mt-md">
+              الأجزاء التي يحفظها الطالب:
+            </div>
             <div class="row">
               <div class="col-6">
                 <q-select
@@ -190,6 +218,7 @@
                   outlined
                   :options="getAllChapters"
                   label="الجزء"
+                  @input="addSavedChapter(studentForm.quranChapter)"
                 />
               </div>
               <div class="col-6">
@@ -211,7 +240,10 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(chapter, i) in studentForm.savedChapters" :key="i">
+                  <tr
+                    v-for="(chapter, i) in studentForm.savedChapters"
+                    :key="i"
+                  >
                     <td class="text-left">{{ chapter.name }}</td>
                     <td class="text-center">
                       <q-btn dense flat @click="removeChapter(i)">
@@ -222,7 +254,9 @@
                 </tbody>
               </q-markup-table>
             </div>
-            <div class="text-weight-bold q-mt-md">السور التي يحفظها الطالب حالياً:</div>
+            <div class="text-weight-bold q-mt-md">
+              السور التي يحفظها الطالب حالياً:
+            </div>
             <div class="row">
               <div class="col-6">
                 <q-select
@@ -232,6 +266,7 @@
                   outlined
                   :options="getAllSurahs"
                   label="السورة"
+                  @input="addSavedSurah(studentForm.quranSurah)"
                 />
               </div>
               <div class="col-6">
@@ -266,27 +301,46 @@
             </div>
           </q-form>
           <q-stepper-navigation>
-            <q-btn label="متابعة" color="primary" @click="goToNextStep(3, 'hSubjectInfoForm')" />
+            <q-btn
+              label="متابعة"
+              color="primary"
+              @click="goToNextStep(3, 'hSubjectInfoForm')"
+            />
             <q-btn
               label="رجوع"
               flat
               type="reset"
               color="primary"
               class="q-ml-sm text-weight-bold"
-              @click="() => hStep = 1"
+              @click="() => (hStep = 1)"
             />
           </q-stepper-navigation>
         </q-step>
 
-        <q-step :name="3" title="بيانات إضافية" icon="assignment" active-icon="assignment">
+        <q-step
+          :name="3"
+          title="بيانات إضافية"
+          icon="assignment"
+          active-icon="assignment"
+        >
           <div class="row">
             <div class="col-6">
               <q-form ref="hMoretInfoForm">
                 <div class="row">
                   <div class="q-gutter-sm">
-                    <div class="text-weight-bold">هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم؟</div>
-                    <q-radio v-model="studentForm.isLearntInCenterBefore" val="yes" label="نعم" />
-                    <q-radio v-model="studentForm.isLearntInCenterBefore" val="no" label="لا" />
+                    <div class="text-weight-bold">
+                      هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم؟
+                    </div>
+                    <q-radio
+                      v-model="studentForm.isLearntInCenterBefore"
+                      val="yes"
+                      label="نعم"
+                    />
+                    <q-radio
+                      v-model="studentForm.isLearntInCenterBefore"
+                      val="no"
+                      label="لا"
+                    />
                   </div>
                   <div class="col-12">
                     <q-input
@@ -305,7 +359,9 @@
                 </div>
                 <div class="row">
                   <div class="q-gutter-sm">
-                    <div class="text-weight-bold">ما هي المهارات التي يمتلكها الطالب؟</div>
+                    <div class="text-weight-bold">
+                      ما هي المهارات التي يمتلكها الطالب؟
+                    </div>
                     <div class="col-12">
                       <q-input
                         class="q-ma-sm"
@@ -325,8 +381,16 @@
                 <div class="row">
                   <div class="q-gutter-sm">
                     <div class="text-weight-bold">الحالة الصحية للطالب ؟</div>
-                    <q-radio v-model="studentForm.studentState" val="healthy" label="سليم" />
-                    <q-radio v-model="studentForm.studentState" val="sick" label="مريض" />
+                    <q-radio
+                      v-model="studentForm.studentState"
+                      val="healthy"
+                      label="سليم"
+                    />
+                    <q-radio
+                      v-model="studentForm.studentState"
+                      val="sick"
+                      label="مريض"
+                    />
                     <q-input
                       v-if="studentForm.studentState === 'sick'"
                       class="q-ma-sm"
@@ -356,7 +420,7 @@
                         class="q-ma-sm"
                         accept=".jpg, image/*"
                         lazy-rules
-                        :rules="[ val => !!val || 'الرجاء ارفاق صورة الطالب' ]"
+                        :rules="[val => !!val || 'الرجاء ارفاق صورة الطالب']"
                         @input="onSelectFile"
                       >
                         <template v-slot:prepend>
@@ -385,9 +449,9 @@
                 </div>
                 <div class="row">
                   <div class="q-gutter-sm q-mt-sm">
-                    <div
-                      class="text-weight-bold"
-                    >كيف عرفت عن مركز الفردوس الاعلى ومن شجعك للتسجيل فيه؟</div>
+                    <div class="text-weight-bold">
+                      كيف عرفت عن مركز الفردوس الاعلى ومن شجعك للتسجيل فيه؟
+                    </div>
                     <div class="col-6">
                       <q-select
                         v-model="studentForm.centerKnownBy"
@@ -405,7 +469,11 @@
             </div>
             <div class="col-6">
               <q-img
-                :src="imagePreview === null ? 'statics/images/boy_placeholder.jpg' : imagePreview"
+                :src="
+                  imagePreview === null
+                    ? 'statics/images/boy_placeholder.jpg'
+                    : imagePreview
+                "
                 :ratio="1"
               />
             </div>
@@ -423,7 +491,7 @@
               type="reset"
               color="primary"
               class="q-ml-sm text-weight-bold"
-              @click="() => hStep = 2"
+              @click="() => (hStep = 2)"
             />
           </q-stepper-navigation>
         </q-step>
@@ -518,9 +586,21 @@
             <div class="row">
               <div class="q-gutter-xs">
                 <div class="text-weight-bold">انهى الصف:</div>
-                <q-radio v-model="studentForm.finishedClass" val="grade_seven" label="السابع" />
-                <q-radio v-model="studentForm.finishedClass" val="grade_eight" label="الثامن" />
-                <q-radio v-model="studentForm.finishedClass" val="grade_nine" label="التاسع" />
+                <q-radio
+                  v-model="studentForm.finishedClass"
+                  val="grade_seven"
+                  label="السابع"
+                />
+                <q-radio
+                  v-model="studentForm.finishedClass"
+                  val="grade_eight"
+                  label="الثامن"
+                />
+                <q-radio
+                  v-model="studentForm.finishedClass"
+                  val="grade_nine"
+                  label="التاسع"
+                />
               </div>
             </div>
             <div class="text-weight-bold q-mt-md">رقم ولي الأمر والإقامة:</div>
@@ -537,7 +617,9 @@
                   label="رقم هاتف ولي الأمر الأول"
                   lazy-rules
                   :rules="[
-                    val => (val && val.length > 0) || 'الرجاء ادخال رقم هاتف ولي الأمر الأول',
+                    val =>
+                      (val && val.length > 0) ||
+                      'الرجاء ادخال رقم هاتف ولي الأمر الأول'
                   ]"
                 />
               </div>
@@ -568,7 +650,11 @@
             </div>
           </q-form>
           <q-stepper-navigation>
-            <q-btn label="متابعة" color="primary" @click="goToNextStep(2, 'vStudentInfoForm')" />
+            <q-btn
+              label="متابعة"
+              color="primary"
+              @click="goToNextStep(2, 'vStudentInfoForm')"
+            />
           </q-stepper-navigation>
         </q-step>
 
@@ -580,7 +666,9 @@
           :done="vStep > 2"
         >
           <q-form ref="vSubjectInfoForm">
-            <div class="text-weight-bold q-mt-md">تقدير علامات المواد الدراسية:</div>
+            <div class="text-weight-bold q-mt-md">
+              تقدير علامات المواد الدراسية:
+            </div>
             <div class="row">
               <div class="col-12">
                 <q-input
@@ -617,7 +705,9 @@
                 />
               </div>
             </div>
-            <div class="text-weight-bold q-mt-md">الأجزاء التي يحفظها الطالب:</div>
+            <div class="text-weight-bold q-mt-md">
+              الأجزاء التي يحفظها الطالب:
+            </div>
             <div class="row">
               <div class="col-8">
                 <q-select
@@ -627,6 +717,7 @@
                   outlined
                   :options="getAllChapters"
                   label="الجزء"
+                  @input="addSavedChapter(studentForm.quranChapter)"
                 />
               </div>
               <div class="col-4">
@@ -648,7 +739,10 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(chapter, i) in studentForm.savedChapters" :key="i">
+                  <tr
+                    v-for="(chapter, i) in studentForm.savedChapters"
+                    :key="i"
+                  >
                     <td class="text-left">{{ chapter.name }}</td>
                     <td class="text-center">
                       <q-btn dense flat @click="removeChapter(i)">
@@ -659,7 +753,9 @@
                 </tbody>
               </q-markup-table>
             </div>
-            <div class="text-weight-bold q-mt-md">السور التي يحفظها الطالب حالياً:</div>
+            <div class="text-weight-bold q-mt-md">
+              السور التي يحفظها الطالب حالياً:
+            </div>
             <div class="row">
               <div class="col-8">
                 <q-select
@@ -669,6 +765,7 @@
                   outlined
                   :options="getAllSurahs"
                   label="السورة"
+                  @input="addSavedSurah(studentForm.quranSurah)"
                 />
               </div>
               <div class="col-4">
@@ -703,25 +800,44 @@
             </div>
           </q-form>
           <q-stepper-navigation>
-            <q-btn label="متابعة" color="primary" @click="goToNextStep(3, 'vSubjectInfoForm')" />
+            <q-btn
+              label="متابعة"
+              color="primary"
+              @click="goToNextStep(3, 'vSubjectInfoForm')"
+            />
             <q-btn
               label="رجوع"
               flat
               type="reset"
               color="primary"
               class="q-ml-sm text-weight-bold"
-              @click="() => vStep = 1"
+              @click="() => (vStep = 1)"
             />
           </q-stepper-navigation>
         </q-step>
 
-        <q-step :name="3" title="بيانات إضافية" icon="assignment" active-icon="assignment">
+        <q-step
+          :name="3"
+          title="بيانات إضافية"
+          icon="assignment"
+          active-icon="assignment"
+        >
           <q-form ref="vMoretInfoForm">
             <div class="row">
               <div class="q-gutter-sm">
-                <div class="text-weight-bold">هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم؟</div>
-                <q-radio v-model="studentForm.isLearntInCenterBefore" val="yes" label="نعم" />
-                <q-radio v-model="studentForm.isLearntInCenterBefore" val="no" label="لا" />
+                <div class="text-weight-bold">
+                  هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم؟
+                </div>
+                <q-radio
+                  v-model="studentForm.isLearntInCenterBefore"
+                  val="yes"
+                  label="نعم"
+                />
+                <q-radio
+                  v-model="studentForm.isLearntInCenterBefore"
+                  val="no"
+                  label="لا"
+                />
               </div>
               <q-input
                 v-show="studentForm.isLearntInCenterBefore === 'yes'"
@@ -736,7 +852,9 @@
                 label="اين؟"
               />
             </div>
-            <div class="text-weight-bold">ما هي المهارات التي يمتلكها الطالب؟</div>
+            <div class="text-weight-bold">
+              ما هي المهارات التي يمتلكها الطالب؟
+            </div>
             <div class="q-mt-xs">
               <q-input
                 dense
@@ -753,8 +871,16 @@
               <div class="q-gutter-sm">
                 <div class="col-12">
                   <div class="text-weight-bold">الحالة الصحية للطالب ؟</div>
-                  <q-radio v-model="studentForm.studentState" val="healthy" label="سليم" />
-                  <q-radio v-model="studentForm.studentState" val="sick" label="مريض" />
+                  <q-radio
+                    v-model="studentForm.studentState"
+                    val="healthy"
+                    label="سليم"
+                  />
+                  <q-radio
+                    v-model="studentForm.studentState"
+                    val="sick"
+                    label="مريض"
+                  />
                 </div>
               </div>
             </div>
@@ -782,7 +908,7 @@
                 use-chips
                 accept=".jpg, image/*"
                 lazy-rules
-                :rules="[ val => !!val || 'الرجاء ارفاق صورة الطالب' ]"
+                :rules="[val => !!val || 'الرجاء ارفاق صورة الطالب']"
               >
                 <template v-slot:after>
                   <q-icon name="attach_file" />
@@ -807,7 +933,9 @@
             </div>
             <div class="row">
               <div class="q-gutter-sm q-mt-sm">
-                <div class="text-weight-bold">كيف عرفت عن مركز الفردوس الاعلى ومن شجعك للتسجيل فيه؟</div>
+                <div class="text-weight-bold">
+                  كيف عرفت عن مركز الفردوس الاعلى ومن شجعك للتسجيل فيه؟
+                </div>
                 <q-select
                   v-model="studentForm.centerKnownBy"
                   dense
@@ -831,7 +959,7 @@
               type="reset"
               color="primary"
               class="q-ml-sm text-weight-bold"
-              @click="() => vStep = 2"
+              @click="() => (vStep = 2)"
             />
           </q-stepper-navigation>
         </q-step>
