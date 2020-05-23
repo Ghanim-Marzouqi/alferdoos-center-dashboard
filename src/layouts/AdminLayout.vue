@@ -44,6 +44,20 @@
             icon="o_school"
             label="بيانات الطلاب الأساسية"
           >
+            <q-item
+              class="q-ma-xs"
+              clickable
+              exact
+              to="/admin/student-registration-forms"
+            >
+              <q-item-section avatar>
+                <q-icon name="o_assignment" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>طلبات التسجيل</q-item-label>
+              </q-item-section>
+            </q-item>
+
             <q-item class="q-ma-xs" clickable exact to="/admin/student-list">
               <q-item-section avatar>
                 <q-icon name="o_people" />
@@ -52,17 +66,19 @@
                 <q-item-label>الطلاب المسجلين</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item class="q-ma-xs" clickable exact to="/admin/student-registration-forms">
-              <q-item-section avatar>
-                <q-icon name="o_assignment" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>طلبات التسجيل</q-item-label>
-              </q-item-section>
-            </q-item>
           </q-expansion-item>
-          <q-expansion-item class="q-ma-xs" expand-separator icon="o_settings" label="الإعدادات">
-            <q-item class="q-ma-xs" clickable exact to="/admin/settings-year-info">
+          <q-expansion-item
+            class="q-ma-xs"
+            expand-separator
+            icon="o_settings"
+            label="الإعدادات"
+          >
+            <q-item
+              class="q-ma-xs"
+              clickable
+              exact
+              to="/admin/settings-year-info"
+            >
               <q-item-section avatar>
                 <q-icon name="o_date_range" />
               </q-item-section>
@@ -84,7 +100,11 @@
         </q-list>
       </q-scroll-area>
 
-      <q-img class="absolute-top" src="statics/images/bg.png" style="height: 150px">
+      <q-img
+        class="absolute-top"
+        src="statics/images/bg.png"
+        style="height: 150px"
+      >
         <div style="width: 100%" class="text-center bg-transparent">
           <q-avatar size="80px" class="q-mb-sm">
             <img src="statics/images/avatar.jpg" />

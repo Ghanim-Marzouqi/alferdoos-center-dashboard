@@ -1065,18 +1065,22 @@ export default {
     },
     addSavedChapter(chapter) {
       let found = this.GET_CHAPTERS.find(value => value.name === chapter);
+      let isRegisteredChapter = this.studentForm.savedChapters.find(
+        value => value.name === chapter
+      );
 
-      if (found) {
+      if (found && !isRegisteredChapter) {
         this.studentForm.savedChapters.push(found);
-        console.log(this.studentForm.savedChapters);
       }
     },
     addSavedSurah(surah) {
       let found = this.GET_SURAHS.find(value => value.name === surah);
+      let isRegisteredSurah = this.studentForm.savedSurahs.find(
+        value => value.name === surah
+      );
 
-      if (found) {
+      if (found && !isRegisteredSurah) {
         this.studentForm.savedSurahs.push(found);
-        console.log(this.studentForm.savedSurahs);
       }
     },
     removeChapter(index) {

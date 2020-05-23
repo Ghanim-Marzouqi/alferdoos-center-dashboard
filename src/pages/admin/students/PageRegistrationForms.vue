@@ -11,7 +11,13 @@
         :loading="GET_LOADER"
       >
         <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
+          <q-input
+            borderless
+            dense
+            debounce="300"
+            v-model="filter"
+            placeholder="بحث"
+          >
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -21,15 +27,28 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="createdAt" :props="props">{{ props.row.createdAt | formatDate }}</q-td>
-            <q-td key="status" :props="props">{{ props.row.status | getStatus }}</q-td>
+            <q-td key="createdAt" :props="props">{{
+              props.row.createdAt | formatDate
+            }}</q-td>
+            <q-td key="status" :props="props">{{
+              props.row.status | getStatus
+            }}</q-td>
             <q-td key="show" :props="props">
               <q-btn dense flat @click.stop="showStudentDialog(props.row)">
                 <q-icon color="blue" name="o_visibility" />
               </q-btn>
             </q-td>
+            <q-td key="edit" :props="props">
+              <q-btn dense flat @click.stop="showApplicationStatus(props.row)">
+                <q-icon color="teal" name="o_edit" />
+              </q-btn>
+            </q-td>
             <q-td key="delete" :props="props">
-              <q-btn dense flat @click.stop="deleteStudentRegistrationForm(props.row.id)">
+              <q-btn
+                dense
+                flat
+                @click.stop="deleteStudentRegistrationForm(props.row.id)"
+              >
                 <q-icon color="red" name="o_delete" />
               </q-btn>
             </q-td>
@@ -39,7 +58,12 @@
     </div>
 
     <!-- Registered Student Dialog -->
-    <q-dialog v-model="showStudentModal" full-width persistent @hide="resetStudntData">
+    <q-dialog
+      v-model="isStudentDialogOpen"
+      full-width
+      persistent
+      @hide="resetStudntData"
+    >
       <q-card>
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">{{ registeredStudent.name }}</div>
@@ -54,23 +78,25 @@
               <div class="col-xs-12 col-md-8">
                 <p class="text-weight-bold">
                   انهى الصف:
-                  <span class="text-weight-bold text-blue">{{ getStudentGrade }}</span>
+                  <span class="text-weight-bold text-blue">{{
+                    getStudentGrade
+                  }}</span>
                 </p>
                 <div class="row">
                   <div class="col-xs-12 col-md-6">
                     <p class="text-weight-bold">
                       عدد المواد بتقدير (أ):
-                      <strong
-                        class="text-blue"
-                      >{{ registeredStudent.subjectANumber }}</strong>
+                      <strong class="text-blue">{{
+                        registeredStudent.subjectANumber
+                      }}</strong>
                     </p>
                   </div>
                   <div class="col-xs-12 col-md-6">
                     <p class="text-weight-bold">
                       عدد المواد بتقدير (ب):
-                      <strong
-                        class="text-blue"
-                      >{{ registeredStudent.subjectBNumber }}</strong>
+                      <strong class="text-blue">{{
+                        registeredStudent.subjectBNumber
+                      }}</strong>
                     </p>
                   </div>
                 </div>
@@ -81,13 +107,20 @@
                       <li
                         v-for="(chapter, i) in registeredStudent.savedChapters"
                         :key="i"
-                      >{{ chapter }}</li>
+                      >
+                        {{ chapter }}
+                      </li>
                     </ul>
                   </div>
                   <div class="col-xs-12 col-md-6">
                     <strong>السور المحفوظة:</strong>
                     <ul>
-                      <li v-for="(surah, i) in registeredStudent.savedSurahs" :key="i">{{ surah }}</li>
+                      <li
+                        v-for="(surah, i) in registeredStudent.savedSurahs"
+                        :key="i"
+                      >
+                        {{ surah }}
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -99,7 +132,8 @@
                     clickable
                     icon-right="o_get_app"
                     @click="downloadFile(certificate)"
-                  >شهادة {{ i + 1 }}</q-chip>
+                    >شهادة {{ i + 1 }}</q-chip
+                  >
                 </div>
               </div>
               <div class="col-xs-12 col-md-4 text-center">
@@ -112,7 +146,9 @@
                   <template v-slot:error>
                     <div
                       class="absolute-full flex flex-center bg-negative text-white"
-                    >لا يمكن تحميل الصورة</div>
+                    >
+                      لا يمكن تحميل الصورة
+                    </div>
                   </template>
                 </q-img>
               </div>
@@ -122,61 +158,72 @@
                 <P class="text-weight-bold">معلومات الحالة الصحية للطالب:</P>
                 <p>
                   هل يعاني الطالب أي مرض:
-                  <strong
-                    class="text-blue"
-                  >{{ registeredStudent.studentState === 'healthy' ? 'لا' : 'نعم' }}</strong>
+                  <strong class="text-blue">{{
+                    registeredStudent.studentState === "healthy" ? "لا" : "نعم"
+                  }}</strong>
                 </p>
                 <p>
                   الأعراض والأمراض التي يعاني منها الطالب:
-                  <span
-                    class="text-weight-bold"
-                  >{{ registeredStudent.diseases === '' ? 'لا يوجد' : registeredStudent.diseases }}</span>
+                  <span class="text-weight-bold">{{
+                    registeredStudent.diseases === ""
+                      ? "لا يوجد"
+                      : registeredStudent.diseases
+                  }}</span>
                 </p>
               </div>
               <div class="col-xs-12 col-md-4">
                 <P class="text-weight-bold">معلومات دراسية سابقة:</P>
                 <p>
                   هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم:
-                  <strong
-                    class="text-blue"
-                  >{{ registeredStudent.isLearntInCenterBefore === "yes" ? 'نعم' : 'لا' }}</strong>
+                  <strong class="text-blue">{{
+                    registeredStudent.isLearntInCenterBefore === "yes"
+                      ? "نعم"
+                      : "لا"
+                  }}</strong>
                 </p>
                 <p>
                   المكان:
-                  <span
-                    class="text-weight-bold"
-                  >{{ registeredStudent.oldCenterName === '' ? 'لم يسبق للطالب التعلم في مدرسة لتحفيظ القرآن' : registeredStudent.oldCenterName }}</span>
+                  <span class="text-weight-bold">{{
+                    registeredStudent.oldCenterName === ""
+                      ? "لم يسبق للطالب التعلم في مدرسة لتحفيظ القرآن"
+                      : registeredStudent.oldCenterName
+                  }}</span>
                 </p>
               </div>
               <div class="col-xs-12 col-md-4"></div>
             </div>
-            <P class="text-weight-bold text-indigo q-mt-md">معلومات إضافية عن الطالب:</P>
+            <P class="text-weight-bold text-indigo q-mt-md"
+              >معلومات إضافية عن الطالب:</P
+            >
             <div class="row q-ma-md">
               <div class="col-xs-12 col-md-4">
                 <P class="text-weight-bold">معلومات ولي الأمر:</P>
                 <p>
                   أسم ولي الأمر:
-                  <span
-                    class="text-weight-bold text-blue"
-                  >{{ registeredStudent.parentName }}</span>
+                  <span class="text-weight-bold text-blue">{{
+                    registeredStudent.parentName
+                  }}</span>
                 </p>
                 <p>
                   ارقام الهواتف:
-                  <span
-                    class="text-weight-bold text-blue"
-                  >{{ registeredStudent.firstPhoneNumber }}</span> -
-                  <span
-                    class="text-weight-bold text-blue"
-                  >{{ registeredStudent.secondPhoneNumber === '' ? 'لا يوجد' : registeredStudent.secondPhoneNumber }}</span>
+                  <span class="text-weight-bold text-blue">{{
+                    registeredStudent.firstPhoneNumber
+                  }}</span>
+                  -
+                  <span class="text-weight-bold text-blue">{{
+                    registeredStudent.secondPhoneNumber === ""
+                      ? "لا يوجد"
+                      : registeredStudent.secondPhoneNumber
+                  }}</span>
                 </p>
               </div>
               <div class="col-xs-12 col-md-4">
                 <P class="text-weight-bold">معلومات عن المركز:</P>
                 <p>
                   كيف عرفت عن المركز:
-                  <span
-                    class="text-weight-bold text-blue"
-                  >{{ registeredStudent.centerKnownBy }}</span>
+                  <span class="text-weight-bold text-blue">{{
+                    registeredStudent.centerKnownBy
+                  }}</span>
                 </p>
               </div>
               <div class="col-xs-12 col-md-4"></div>
@@ -186,6 +233,41 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="حسنا" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Edit Application Status -->
+    <q-dialog v-model="isEditApplicationDailogOpen" @hide="resetStudntData">
+      <q-card>
+        <q-card-section>
+          <p class="text-h4">تعديل حالة الطلب</p>
+        </q-card-section>
+        <q-card-section style="margin-top: -20px">
+          <div>
+            <q-radio
+              v-model="applicationStatus"
+              val="accept_for_exam"
+              label="قبول لإداء الأختبار"
+            />
+          </div>
+          <div>
+            <q-radio
+              v-model="applicationStatus"
+              val="reject"
+              label="رفض الطالب"
+            />
+          </div>
+        </q-card-section>
+        <q-card-actions>
+          <q-space></q-space>
+          <q-btn flat label="إلغاء" color="primary" v-close-popup />
+          <q-btn
+            flat
+            label="حفظ"
+            color="primary"
+            @click="editApplicationStatus"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -203,8 +285,10 @@ export default {
       showLink: "/student-dashboard",
       filter: "",
       loading: false,
-      showStudentModal: false,
+      isStudentDialogOpen: false,
+      isEditApplicationDailogOpen: false,
       registeredStudent: {},
+      applicationStatus: "",
       columns: [
         {
           name: "name",
@@ -237,10 +321,26 @@ export default {
           field: "show"
         },
         {
+          name: "edit",
+          align: "center",
+          label: "تعديل",
+          field: "edit"
+        },
+        {
           name: "delete",
           align: "center",
           label: "حذف",
           field: "delete"
+        }
+      ],
+      statuses: [
+        {
+          label: "قبول لأداء الإختبار",
+          value: "accept_for_exam"
+        },
+        {
+          label: "رفض الطلب",
+          value: "reject"
         }
       ]
     };
@@ -278,6 +378,7 @@ export default {
       "CLEAR_ERRORS_AND_MESSAGES",
       "SET_ERROR"
     ]),
+    editApplicationStatus() {},
     deleteStudentRegistrationForm(id) {
       this.$q
         .dialog({
@@ -292,7 +393,11 @@ export default {
     },
     showStudentDialog(student) {
       this.registeredStudent = student;
-      this.showStudentModal = true;
+      this.isStudentDialogOpen = true;
+    },
+    showApplicationStatus(student) {
+      this.registeredStudent = student;
+      this.isEditApplicationDailogOpen = true;
     },
     downloadFile(fileURL) {
       try {
@@ -405,5 +510,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
