@@ -1,6 +1,8 @@
 <template>
   <q-page padding>
-    <p class="text-h6 text-weight-bold">طلب تسجيل طالب جديد</p>
+    <p class="text-h6 text-weight-bold">
+      طلب تسجيل طالب جديد (<span v-html="getRegistrationPeriodStatus"></span>)
+    </p>
     <div class="q-pa-md">
       <q-stepper
         id="horizontal-stepper"
@@ -154,6 +156,7 @@
             <q-btn
               label="متابعة"
               color="primary"
+              :disable="!isRegistrationEnabled"
               @click="goToNextStep(2, 'hStudentInfoForm')"
             />
           </q-stepper-navigation>
@@ -977,6 +980,7 @@ export default {
     return {
       hStep: 1,
       vStep: 1,
+      isRegistrationEnabled: false,
       imagePreview: null,
       studentForm: {
         firstName: "",
@@ -1027,6 +1031,7 @@ export default {
   },
   created() {
     this.CLEAR_ERRORS_AND_MESSAGES();
+    this.FETCH_REGISTRATION_PERIOD();
   },
   mounted() {
     if (Object.keys(this.GET_USER).length > 0) {
@@ -1042,6 +1047,7 @@ export default {
       "GET_ERRORS",
       "GET_LOADER"
     ]),
+    ...mapGetters("admins", ["GET_REGISTRATION_PERIOD"]),
     getFirstPhoneNumber() {
       return `${this.GET_USER.phone}`.slice(4);
     },
@@ -1052,10 +1058,28 @@ export default {
     getAllSurahs() {
       let surahs = this.GET_SURAHS.map(surah => surah.name);
       return surahs;
+    },
+    getRegistrationPeriodStatus() {
+      // Get Registration Period Timestamp
+      let startDate = new Date(this.GET_REGISTRATION_PERIOD.startPeriodDate);
+      let endDate = new Date(this.GET_REGISTRATION_PERIOD.endPeriodDate);
+      let today = new Date();
+
+      if (
+        today.getTime() >= startDate.getTime() &&
+        today.getTime() <= endDate.getTime()
+      ) {
+        this.isRegistrationEnabled = true;
+        return "<span style='color: green'>التسجيل مفتوح</span>";
+      } else {
+        this.isRegistrationEnabled = false;
+        return "<span style='color: red'>التسجيل مغلق</span>";
+      }
     }
   },
   methods: {
     ...mapActions("parents", ["REGISTER_STUDENT", "CLEAR_ERRORS_AND_MESSAGES"]),
+    ...mapActions("admins", ["FETCH_REGISTRATION_PERIOD"]),
     async goToNextStep(step, form) {
       let valid = await this.$refs[form].validate();
       if (valid) {

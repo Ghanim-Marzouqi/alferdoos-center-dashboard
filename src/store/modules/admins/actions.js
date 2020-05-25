@@ -1,4 +1,4 @@
-import { Dialog, Loading, QSpinnerGears } from "quasar";
+import { date } from "quasar";
 import { FirebaseAuth, FirebaseDatabase } from "boot/firebase";
 import { COLLECTIONS } from "../../../config/constants";
 
@@ -230,6 +230,37 @@ const DELETE_REGISTERED_STUDENT = async ({ commit }, payload) => {
     commit("SET_ERROR", { code: "database/student-form-record-not-deleted" });
   }
 };
+
+const EDIT_APPLICATION_STATUS = async ({ commit }, payload) => {
+  // Activate Loader
+  commit("SET_LOADER", true);
+
+  try {
+    // Get Registered Student Data
+    let doc = await FirebaseDatabase.collection(COLLECTIONS.REGISTERED_STUDENTS)
+      .doc(payload.id)
+      .get();
+
+    if (doc.exists) {
+      await FirebaseDatabase.collection(COLLECTIONS.REGISTERED_STUDENTS)
+        .doc(payload.id)
+        .update({
+          status: payload.status,
+          rejectionReasons: payload.reasons
+        });
+
+      commit("SET_MESSAGE", { code: "database/application-status-updated" });
+    } else {
+      commit("SET_ERROR", { code: "database/registered-student-not-found" });
+    }
+  } catch (error) {
+    console.log("EDIT_APPLICATION_STATUS ERROR", error);
+    commit("SET_ERROR", { code: "database/edit-application-status-error" });
+  }
+
+  // Dectivate Loader
+  commit("SET_LOADER", false);
+};
 //#endregion
 
 //#region SETTINGS
@@ -352,6 +383,28 @@ const SET_REGISTRATION_PERIOD = async ({ commit }, payload) => {
     commit("SET_LOADER", false);
   }
 };
+
+const FETCH_REGISTRATION_PERIOD = async ({ commit }) => {
+  try {
+    let doc = await FirebaseDatabase.collection(COLLECTIONS.YEAR_INFO)
+      .doc(date.formatDate(Date.now(), "YYYY"))
+      .get();
+
+    if (doc.exists) {
+      commit("SET_REGISTRATION_PERIOD", {
+        id: doc.data().id,
+        name: doc.data().name,
+        startPeriodDate: doc.data().startPeriodDate,
+        endPeriodDate: doc.data().endPeriodDate
+      });
+    } else {
+      commit("SET_REGISTRATION_PERIOD", {});
+    }
+  } catch (error) {
+    console.log("FETCH_REGISTRATION_PERIOD ERROR", error);
+    commit("SET_ERROR", { code: "database/fetch-registration-period-info" });
+  }
+};
 //#endregion
 
 //#region GENERAL
@@ -386,5 +439,7 @@ export default {
   DELETE_REGISTERED_STUDENT,
   SET_YEAR_NAME,
   SET_REGISTRATION_PERIOD,
-  FETCH_YEAR_INFO
+  FETCH_YEAR_INFO,
+  EDIT_APPLICATION_STATUS,
+  FETCH_REGISTRATION_PERIOD
 };

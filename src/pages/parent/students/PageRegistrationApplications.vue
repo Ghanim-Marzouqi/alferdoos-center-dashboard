@@ -234,23 +234,11 @@
       @hide="resetStudntData"
     >
       <q-card>
-        <q-card-section class="row items-center q-pb-none">
-          <q-timeline color="secondary">
-            <q-timeline-entry heading>
-              حالة الطلب
-            </q-timeline-entry>
-            
-            <q-timeline-entry
-              title="الطلب قيد المراجعة"
-              :subtitle="getFormatedDate(registeredStudent.createdAt)"
-              color="orange"
-              icon="find_in_page"
-            >
-              <div>
-                طلبك حاليا قيد المراجعة. سيتم تحديث الطلب حال إنتهاء المراجعة
-              </div>
-            </q-timeline-entry>
-          </q-timeline>
+        <q-card-section>
+          <div class="text-h5">حالة الطلب</div>
+        </q-card-section>
+        <q-card-section>
+          <div>{{ getApplicationStatus }}</div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -332,6 +320,19 @@ export default {
       } else {
         return "غير معروف";
       }
+    },
+    getApplicationStatus() {
+      if (this.registeredStudent.status === "review") {
+        return "الطلب قيد المراجعة";
+      } else if (this.registeredStudent.status === "accept_for_exam") {
+        return "مقبول لأداء الإختبار";
+      } else if (this.registeredStudent.status === "accept_for_exam") {
+        return "مقبول للدراسة في المركز";
+      } else if (this.registeredStudent.status === "reject") {
+        return `تم رفض الطالب للأسباب التالية: ${this.registeredStudent.rejectionReasons}`;
+      } else {
+        return "حالة الطلب غير معروفة";
+      }
     }
   },
   methods: {
@@ -405,7 +406,7 @@ export default {
     },
     getStatus(val) {
       if (val === "review") return "الطلب قيد المراجعة";
-      else if (val === "accept_for_exam") return "مقبول للإختبار";
+      else if (val === "accept_for_exam") return "مقبول لأداء الإختبار";
       else if (val === "accept_for_study") return "مقبول للدراسة في المركز";
       else if (val === "reject") return "تم الرفض";
       else return "حالة الطلب غير معروفة";

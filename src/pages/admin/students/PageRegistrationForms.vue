@@ -39,7 +39,11 @@
               </q-btn>
             </q-td>
             <q-td key="edit" :props="props">
-              <q-btn dense flat @click.stop="showApplicationStatus(props.row)">
+              <q-btn
+                dense
+                flat
+                @click.stop="showApplicationStatusDialog(props.row)"
+              >
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
@@ -239,16 +243,16 @@
 
     <!-- Edit Application Status -->
     <q-dialog v-model="isEditApplicationDailogOpen" @hide="resetStudntData">
-      <q-card>
+      <q-card style="min-width: 300px">
         <q-card-section>
-          <p class="text-h4">تعديل حالة الطلب</p>
+          <div class="text-h5">تعديل حالة الطلب</div>
         </q-card-section>
         <q-card-section style="margin-top: -20px">
           <div>
             <q-radio
               v-model="applicationStatus"
               val="accept_for_exam"
-              label="قبول لإداء الأختبار"
+              label="قبول للأداء الأختبار"
             />
           </div>
           <div>
@@ -257,15 +261,28 @@
               val="reject"
               label="رفض الطالب"
             />
+            <q-input
+              v-if="applicationStatus === 'reject'"
+              v-model="applicationStatusReasons"
+              filled
+              label="أسباب الرفض"
+              type="textarea"
+            />
           </div>
         </q-card-section>
         <q-card-actions>
           <q-space></q-space>
-          <q-btn flat label="إلغاء" color="primary" v-close-popup />
+          <q-btn
+            flat
+            label="إلغاء"
+            color="primary"
+            @click="hideApplicationStatusDialog"
+          />
           <q-btn
             flat
             label="حفظ"
             color="primary"
+            :loading="GET_LOADER"
             @click="editApplicationStatus"
           />
         </q-card-actions>
@@ -276,7 +293,7 @@
 
 <script>
 import { date } from "quasar";
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 
 export default {
   name: "PageRegistrationForms",
@@ -289,6 +306,7 @@ export default {
       isEditApplicationDailogOpen: false,
       registeredStudent: {},
       applicationStatus: "",
+      applicationStatusReasons: "",
       columns: [
         {
           name: "name",
@@ -376,9 +394,17 @@ export default {
       "FETCH_REGISTERED_STUDENTS",
       "DELETE_REGISTERED_STUDENT",
       "CLEAR_ERRORS_AND_MESSAGES",
+      "EDIT_APPLICATION_STATUS",
       "SET_ERROR"
     ]),
-    editApplicationStatus() {},
+    editApplicationStatus() {
+      this.EDIT_APPLICATION_STATUS({
+        id: this.registeredStudent.id,
+        status: this.applicationStatus,
+        reasons: this.applicationStatusReasons
+      });
+      this.isEditApplicationDailogOpen = false;
+    },
     deleteStudentRegistrationForm(id) {
       this.$q
         .dialog({
@@ -395,9 +421,15 @@ export default {
       this.registeredStudent = student;
       this.isStudentDialogOpen = true;
     },
-    showApplicationStatus(student) {
+    showApplicationStatusDialog(student) {
       this.registeredStudent = student;
+      this.applicationStatus = student.status;
       this.isEditApplicationDailogOpen = true;
+    },
+    hideApplicationStatusDialog() {
+      this.registeredStudent = {};
+      this.applicationStatus = "";
+      this.isEditApplicationDailogOpen = false;
     },
     downloadFile(fileURL) {
       try {
@@ -407,7 +439,10 @@ export default {
           var blob = xhr.response;
           let link = document.createElement("a");
           link.href = window.URL.createObjectURL(blob);
-          link.download = `cer_${Date.now()}`;
+          link.download = `certificate_${date.formatDate(
+            Date.now(),
+            "YYYY_MM_DD_HH_mm_ss_a"
+          )}`;
           link.click();
         };
         xhr.open("GET", fileURL);
@@ -416,16 +451,16 @@ export default {
         SET_ERROR({ code: error.code });
         switch (error.code) {
           case "storage/object-not-found":
-            console.log("ERROR: storage/object-not-found");
+            this.SET_ERROR("storage/object-not-found");
             break;
           case "storage/unauthorized":
-            console.log("ERROR: storage/unauthorized");
+            this.SET_ERROR("storage/unauthorized");
             break;
           case "storage/canceled":
-            console.log("ERROR: storage/canceled");
+            this.SET_ERROR("storage/canceled");
             break;
           case "storage/unknown":
-            console.log("ERROR: storage/unknown");
+            this.SET_ERROR("storage/unknown");
             break;
         }
       }
@@ -440,7 +475,7 @@ export default {
     },
     getStatus(val) {
       if (val === "review") return "الطلب قيد المراجعة";
-      else if (val === "accept_for_exam") return "مقبول للإختبار";
+      else if (val === "accept_for_exam") return "مقبول لأداء الإختبار";
       else if (val === "accept_for_study") return "مقبول للدراسة في المركز";
       else if (val === "reject") return "تم الرفض";
       else return "حالة الطلب غير معروفة";
@@ -455,6 +490,15 @@ export default {
           this.$q.dialog({
             title: "تمت العملية بنجاح",
             message: "تم حذف الطلب بنجاح"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.FETCH_REGISTERED_STUDENTS();
+        }
+
+        if (messageCode === "database/application-status-updated") {
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تعديل حالة الطلب بنجاح"
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.FETCH_REGISTERED_STUDENTS();
@@ -501,6 +545,22 @@ export default {
           this.$q.dialog({
             title: "حدث خطأ",
             message: "حدث خطأ اثناء تنزيل الملف"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+        }
+
+        if (errorCode === "database/registered-student-not-found") {
+          this.$q.dialog({
+            title: "حدث خطأ",
+            message: "لم يتم العثور على بيانات الطالب"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+        }
+
+        if (errorCode === "database/edit-application-status-error") {
+          this.$q.dialog({
+            title: "حدث خطأ",
+            message: "حدث خطأ أثناء تعديل حالة الطلب"
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }

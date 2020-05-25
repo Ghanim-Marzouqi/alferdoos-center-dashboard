@@ -177,18 +177,8 @@ export default {
     },
     onPeriodFormSubmit() {
       // Get Timestamps
-      let todayTimestamp = Date.parse(date.formatDate(today, "YYYY/MM/DD"));
       let startDateTimestamp = Date.parse(this.startPeriodDate);
       let endDateTimestamp = Date.parse(this.endPeriodDate);
-
-      // Check if Start Period Date Is Bigger Or Equal To Today's Date
-      if (startDateTimestamp < todayTimestamp) {
-        this.$q.dialog({
-          title: "تنبيه",
-          message: "يجب أن يكون تاريخ بداية التسجيل أكبر أو يساوي تاريخ اليوم"
-        });
-        return;
-      }
 
       // Check if Start Period Date Is Less Or Equal To End Period Date
       if (startDateTimestamp > endDateTimestamp) {

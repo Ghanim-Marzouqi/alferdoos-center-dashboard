@@ -7,6 +7,7 @@ const GET_LOADER = state => state.loading;
 const GET_USER_REGISTRATION = state => state.is_user_registered;
 const GET_REGISTERED_STUDENTS = state => state.registered_students;
 const GET_YEAR_INFO = state => state.year_info;
+const GET_REGISTRATION_PERIOD = state => state.registration_period;
 
 export default {
   GET_USER,
@@ -17,5 +18,6 @@ export default {
   GET_LOADER,
   GET_USER_REGISTRATION,
   GET_REGISTERED_STUDENTS,
-  GET_YEAR_INFO
+  GET_YEAR_INFO,
+  GET_REGISTRATION_PERIOD
 };

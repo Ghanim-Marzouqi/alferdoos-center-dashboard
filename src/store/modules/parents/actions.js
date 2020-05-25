@@ -329,6 +329,7 @@ const FETCH_REGISTERED_FORMS = async ({ commit }, payload) => {
     secondPhoneNumber: doc.data().secondPhoneNumber,
     skills: doc.data().skills,
     status: doc.data().status,
+    rejectionReasons: doc.data().rejectionReasons,
     studentState: doc.data().studentState,
     subjectANumber: doc.data().subjectANumber,
     subjectBNumber: doc.data().subjectBNumber,
