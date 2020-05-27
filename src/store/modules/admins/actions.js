@@ -262,6 +262,52 @@ const EDIT_APPLICATION_STATUS = async ({ commit }, payload) => {
   // Dectivate Loader
   commit("SET_LOADER", false);
 };
+
+const FETCH_TO_BE_EXAMMED_STUDENTS = async ({ commit }) => {
+  // Activate Loader
+  commit("SET_LOADER", true);
+
+  // Fetch Registered Students
+  let snapshot = await FirebaseDatabase.collection(
+    COLLECTIONS.REGISTERED_STUDENTS
+  )
+    .where("status", "==", "accept_for_exam")
+    .orderBy("createdAt", "desc")
+    .get();
+
+  let docs = snapshot.docs;
+
+  // Create A New Array From Results
+  let toBeExammedStudents = docs.map(doc => ({
+    id: doc.id,
+    name: doc.data().name,
+    centerKnownBy: doc.data().centerKnownBy,
+    certificates: doc.data().certificates,
+    createdAt: doc.data().createdAt,
+    diseases: doc.data().diseases,
+    finishedClass: doc.data().finishedClass,
+    firstPhoneNumber: doc.data().firstPhoneNumber,
+    imageURL: doc.data().imageURL,
+    isLearntInCenterBefore: doc.data().isLearntInCenterBefore,
+    oldCenterName: doc.data().oldCenterName,
+    parentId: doc.data().parentId,
+    parentName: doc.data().parentName,
+    savedChapters: doc.data().savedChapters,
+    savedSurahs: doc.data().savedSurahs,
+    secondPhoneNumber: doc.data().secondPhoneNumber,
+    skills: doc.data().skills,
+    status: doc.data().status,
+    studentState: doc.data().studentState,
+    subjectANumber: doc.data().subjectANumber,
+    subjectBNumber: doc.data().subjectBNumber,
+    village: doc.data().village
+  }));
+
+  commit("SET_TO_BE_EXAMMED_STUDENTS", toBeExammedStudents);
+
+  // Deactivate Loader
+  commit("SET_LOADER", false);
+};
 //#endregion
 
 //#region SETTINGS
@@ -442,5 +488,6 @@ export default {
   SET_REGISTRATION_PERIOD,
   FETCH_YEAR_INFO,
   EDIT_APPLICATION_STATUS,
-  FETCH_REGISTRATION_PERIOD
+  FETCH_REGISTRATION_PERIOD,
+  FETCH_TO_BE_EXAMMED_STUDENTS
 };

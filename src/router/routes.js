@@ -22,13 +22,17 @@ const routes = [
         component: () => import("pages/admin/PageHome.vue")
       },
       {
-        path: "student-list",
-        component: () => import("pages/admin/students/PageStudentList.vue")
-      },
-      {
         path: "student-registration-forms",
         component: () =>
           import("pages/admin/students/PageRegistrationForms.vue")
+      },
+      {
+        path: "student-exams",
+        component: () => import("pages/admin/students/PageStudentExams.vue")
+      },
+      {
+        path: "student-list",
+        component: () => import("pages/admin/students/PageStudentList.vue")
       },
       {
         path: ":id/student-dashboard",

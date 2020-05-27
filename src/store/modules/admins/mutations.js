@@ -19,6 +19,9 @@ const SET_REGISTRATION = (state, value) => (state.is_user_registered = value);
 const SET_REGISTERED_STUDENTS = (state, students) =>
   (state.registered_students = students);
 
+const SET_TO_BE_EXAMMED_STUDENTS = (state, students) =>
+  (state.to_be_exammed_students = students);
+
 const SET_YEAR_INFO = (state, year_info) => (state.year_info = year_info);
 
 const SET_REGISTRATION_PERIOD = (state, period) =>
@@ -33,5 +36,6 @@ export default {
   SET_REGISTRATION,
   SET_REGISTERED_STUDENTS,
   SET_YEAR_INFO,
-  SET_REGISTRATION_PERIOD
+  SET_REGISTRATION_PERIOD,
+  SET_TO_BE_EXAMMED_STUDENTS
 };

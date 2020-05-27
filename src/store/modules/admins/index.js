@@ -158,7 +158,8 @@ const state = {
   is_user_registered: false,
   registered_students: [],
   year_info: {},
-  registration_period: {}
+  registration_period: {},
+  to_be_exammed_students: []
 };
 
 export default {

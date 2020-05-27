@@ -318,7 +318,6 @@ export default {
       }
     },
     getApplicationStatus() {
-      console.log("Student", this.registeredStudent);
       if (this.registeredStudent.status === "review") {
         return "الطلب قيد المراجعة";
       } else if (this.registeredStudent.status === "accept_for_exam") {

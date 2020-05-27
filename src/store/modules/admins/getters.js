@@ -6,6 +6,7 @@ const GET_SURAHS = state => state.surahs;
 const GET_LOADER = state => state.loading;
 const GET_USER_REGISTRATION = state => state.is_user_registered;
 const GET_REGISTERED_STUDENTS = state => state.registered_students;
+const GET_TO_BE_EXAMMED_STUDENTS = state => state.to_be_exammed_students;
 const GET_YEAR_INFO = state => state.year_info;
 const GET_REGISTRATION_PERIOD = state => state.registration_period;
 
@@ -19,5 +20,6 @@ export default {
   GET_USER_REGISTRATION,
   GET_REGISTERED_STUDENTS,
   GET_YEAR_INFO,
-  GET_REGISTRATION_PERIOD
+  GET_REGISTRATION_PERIOD,
+  GET_TO_BE_EXAMMED_STUDENTS
 };
