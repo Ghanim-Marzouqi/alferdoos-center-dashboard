@@ -11,13 +11,7 @@
         :loading="GET_LOADER"
       >
         <template v-slot:top-right>
-          <q-input
-            borderless
-            dense
-            debounce="300"
-            v-model="filter"
-            placeholder="بحث"
-          >
+          <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -27,32 +21,28 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="createdAt" :props="props">{{
+            <q-td key="createdAt" :props="props">
+              {{
               props.row.createdAt | formatDate
-            }}</q-td>
-            <q-td key="status" :props="props">{{
+              }}
+            </q-td>
+            <q-td key="status" :props="props">
+              {{
               props.row.status | getStatus
-            }}</q-td>
+              }}
+            </q-td>
             <q-td key="show" :props="props">
               <q-btn dense flat @click.stop="showStudentDialog(props.row)">
                 <q-icon color="blue" name="o_visibility" />
               </q-btn>
             </q-td>
             <q-td key="edit" :props="props">
-              <q-btn
-                dense
-                flat
-                @click.stop="showApplicationStatusDialog(props.row)"
-              >
+              <q-btn dense flat @click.stop="showApplicationStatusDialog(props.row)">
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
             <q-td key="delete" :props="props">
-              <q-btn
-                dense
-                flat
-                @click.stop="deleteStudentRegistrationForm(props.row.id)"
-              >
+              <q-btn dense flat @click.stop="deleteStudentRegistrationForm(props.row.id)">
                 <q-icon color="red" name="o_delete" />
               </q-btn>
             </q-td>
@@ -62,12 +52,7 @@
     </div>
 
     <!-- Registered Student Dialog -->
-    <q-dialog
-      v-model="isStudentDialogOpen"
-      full-width
-      persistent
-      @hide="resetStudntData"
-    >
+    <q-dialog v-model="isStudentDialogOpen" full-width persistent @hide="resetStudntData">
       <q-card>
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">{{ registeredStudent.name }}</div>
@@ -82,25 +67,31 @@
               <div class="col-xs-12 col-md-8">
                 <p class="text-weight-bold">
                   انهى الصف:
-                  <span class="text-weight-bold text-blue">{{
+                  <span class="text-weight-bold text-blue">
+                    {{
                     getStudentGrade
-                  }}</span>
+                    }}
+                  </span>
                 </p>
                 <div class="row">
                   <div class="col-xs-12 col-md-6">
                     <p class="text-weight-bold">
                       عدد المواد بتقدير (أ):
-                      <strong class="text-blue">{{
+                      <strong class="text-blue">
+                        {{
                         registeredStudent.subjectANumber
-                      }}</strong>
+                        }}
+                      </strong>
                     </p>
                   </div>
                   <div class="col-xs-12 col-md-6">
                     <p class="text-weight-bold">
                       عدد المواد بتقدير (ب):
-                      <strong class="text-blue">{{
+                      <strong class="text-blue">
+                        {{
                         registeredStudent.subjectBNumber
-                      }}</strong>
+                        }}
+                      </strong>
                     </p>
                   </div>
                 </div>
@@ -111,20 +102,13 @@
                       <li
                         v-for="(chapter, i) in registeredStudent.savedChapters"
                         :key="i"
-                      >
-                        {{ chapter }}
-                      </li>
+                      >{{ chapter }}</li>
                     </ul>
                   </div>
                   <div class="col-xs-12 col-md-6">
                     <strong>السور المحفوظة:</strong>
                     <ul>
-                      <li
-                        v-for="(surah, i) in registeredStudent.savedSurahs"
-                        :key="i"
-                      >
-                        {{ surah }}
-                      </li>
+                      <li v-for="(surah, i) in registeredStudent.savedSurahs" :key="i">{{ surah }}</li>
                     </ul>
                   </div>
                 </div>
@@ -136,8 +120,7 @@
                     clickable
                     icon-right="o_get_app"
                     @click="downloadFile(certificate)"
-                    >شهادة {{ i + 1 }}</q-chip
-                  >
+                  >شهادة {{ i + 1 }}</q-chip>
                 </div>
               </div>
               <div class="col-xs-12 col-md-4 text-center">
@@ -150,9 +133,7 @@
                   <template v-slot:error>
                     <div
                       class="absolute-full flex flex-center bg-negative text-white"
-                    >
-                      لا يمكن تحميل الصورة
-                    </div>
+                    >لا يمكن تحميل الصورة</div>
                   </template>
                 </q-img>
               </div>
@@ -162,72 +143,86 @@
                 <P class="text-weight-bold">معلومات الحالة الصحية للطالب:</P>
                 <p>
                   هل يعاني الطالب أي مرض:
-                  <strong class="text-blue">{{
+                  <strong class="text-blue">
+                    {{
                     registeredStudent.studentState === "healthy" ? "لا" : "نعم"
-                  }}</strong>
+                    }}
+                  </strong>
                 </p>
                 <p>
                   الأعراض والأمراض التي يعاني منها الطالب:
-                  <span class="text-weight-bold">{{
+                  <span class="text-weight-bold">
+                    {{
                     registeredStudent.diseases === ""
-                      ? "لا يوجد"
-                      : registeredStudent.diseases
-                  }}</span>
+                    ? "لا يوجد"
+                    : registeredStudent.diseases
+                    }}
+                  </span>
                 </p>
               </div>
               <div class="col-xs-12 col-md-4">
                 <P class="text-weight-bold">معلومات دراسية سابقة:</P>
                 <p>
                   هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم:
-                  <strong class="text-blue">{{
+                  <strong class="text-blue">
+                    {{
                     registeredStudent.isLearntInCenterBefore === "yes"
-                      ? "نعم"
-                      : "لا"
-                  }}</strong>
+                    ? "نعم"
+                    : "لا"
+                    }}
+                  </strong>
                 </p>
                 <p>
                   المكان:
-                  <span class="text-weight-bold">{{
+                  <span class="text-weight-bold">
+                    {{
                     registeredStudent.oldCenterName === ""
-                      ? "لم يسبق للطالب التعلم في مدرسة لتحفيظ القرآن"
-                      : registeredStudent.oldCenterName
-                  }}</span>
+                    ? "لم يسبق للطالب التعلم في مدرسة لتحفيظ القرآن"
+                    : registeredStudent.oldCenterName
+                    }}
+                  </span>
                 </p>
               </div>
               <div class="col-xs-12 col-md-4"></div>
             </div>
-            <P class="text-weight-bold text-indigo q-mt-md"
-              >معلومات إضافية عن الطالب:</P
-            >
+            <P class="text-weight-bold text-indigo q-mt-md">معلومات إضافية عن الطالب:</P>
             <div class="row q-ma-md">
               <div class="col-xs-12 col-md-4">
                 <P class="text-weight-bold">معلومات ولي الأمر:</P>
                 <p>
                   أسم ولي الأمر:
-                  <span class="text-weight-bold text-blue">{{
+                  <span class="text-weight-bold text-blue">
+                    {{
                     registeredStudent.parentName
-                  }}</span>
+                    }}
+                  </span>
                 </p>
                 <p>
                   ارقام الهواتف:
-                  <span class="text-weight-bold text-blue">{{
+                  <span class="text-weight-bold text-blue">
+                    {{
                     registeredStudent.firstPhoneNumber
-                  }}</span>
+                    }}
+                  </span>
                   -
-                  <span class="text-weight-bold text-blue">{{
+                  <span class="text-weight-bold text-blue">
+                    {{
                     registeredStudent.secondPhoneNumber === ""
-                      ? "لا يوجد"
-                      : registeredStudent.secondPhoneNumber
-                  }}</span>
+                    ? "لا يوجد"
+                    : registeredStudent.secondPhoneNumber
+                    }}
+                  </span>
                 </p>
               </div>
               <div class="col-xs-12 col-md-4">
                 <P class="text-weight-bold">معلومات عن المركز:</P>
                 <p>
                   كيف عرفت عن المركز:
-                  <span class="text-weight-bold text-blue">{{
+                  <span class="text-weight-bold text-blue">
+                    {{
                     registeredStudent.centerKnownBy
-                  }}</span>
+                    }}
+                  </span>
                 </p>
               </div>
               <div class="col-xs-12 col-md-4"></div>
@@ -256,11 +251,7 @@
             />
           </div>
           <div>
-            <q-radio
-              v-model="applicationStatus"
-              val="reject"
-              label="رفض الطالب"
-            />
+            <q-radio v-model="applicationStatus" val="reject" label="رفض الطالب" />
             <q-input
               v-if="applicationStatus === 'reject'"
               v-model="applicationStatusReasons"
@@ -272,12 +263,7 @@
         </q-card-section>
         <q-card-actions>
           <q-space></q-space>
-          <q-btn
-            flat
-            label="إلغاء"
-            color="primary"
-            @click="hideApplicationStatusDialog"
-          />
+          <q-btn flat label="إلغاء" color="primary" @click="hideApplicationStatusDialog" />
           <q-btn
             flat
             label="حفظ"
@@ -422,13 +408,20 @@ export default {
       this.isStudentDialogOpen = true;
     },
     showApplicationStatusDialog(student) {
+      console.log("Student", student);
       this.registeredStudent = student;
       this.applicationStatus = student.status;
+      this.applicationStatusReasons =
+        typeof student.rejectionReasons !== "undefined" &&
+        student.rejectionReasons !== ""
+          ? student.rejectionReasons
+          : "";
       this.isEditApplicationDailogOpen = true;
     },
     hideApplicationStatusDialog() {
       this.registeredStudent = {};
       this.applicationStatus = "";
+      this.applicationStatusReasons = "";
       this.isEditApplicationDailogOpen = false;
     },
     downloadFile(fileURL) {
