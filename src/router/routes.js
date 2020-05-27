@@ -41,6 +41,10 @@ const routes = [
       {
         path: "settings-year-info",
         component: () => import("pages/admin/settings/PageYearInfoSettings.vue")
+      },
+      {
+        path: "settings-prepare-exams",
+        component: () => import("pages/admin/settings/PagePrepareExams.vue")
       }
     ]
   },

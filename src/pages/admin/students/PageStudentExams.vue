@@ -11,7 +11,13 @@
         :loading="GET_LOADER"
       >
         <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
+          <q-input
+            borderless
+            dense
+            debounce="300"
+            v-model="filter"
+            placeholder="بحث"
+          >
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -21,14 +27,20 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="createdAt" :props="props">{{ props.row.createdAt | formatDate }}</q-td>
+            <q-td key="createdAt" :props="props">{{
+              props.row.createdAt | formatDate
+            }}</q-td>
             <q-td key="write" :props="props">
-              <q-btn dense flat>
+              <q-btn
+                dense
+                flat
+                @click.stop="showErrorDialog('الإختبار التحريري')"
+              >
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
             <q-td key="recite" :props="props">
-              <q-btn dense flat>
+              <q-btn dense flat @click.stop="showErrorDialog('التسميع')">
                 <q-icon color="blue" name="o_hearing" />
               </q-btn>
             </q-td>
@@ -36,6 +48,18 @@
         </template>
       </q-table>
     </div>
+
+    <!-- Error Dialog -->
+    <q-dialog v-model="isErrorDialogOpen">
+      <q-card>
+        <q-card-section>
+          <div class="text-h5">حصل خطأ</div>
+          <div class="text-h6 q-mt-4">
+            حصل خطأ أثناء محاولة عرض {{ examType }}
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -48,6 +72,8 @@ export default {
   data() {
     return {
       filter: "",
+      examType: "",
+      isErrorDialogOpen: false,
       columns: [
         {
           name: "name",
@@ -98,7 +124,11 @@ export default {
       "CLEAR_ERRORS_AND_MESSAGES",
       "EDIT_APPLICATION_STATUS",
       "SET_ERROR"
-    ])
+    ]),
+    showErrorDialog(exam) {
+      this.examType = exam;
+      this.isErrorDialogOpen = true;
+    }
   },
   filters: {
     formatDate(val) {
@@ -108,5 +138,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

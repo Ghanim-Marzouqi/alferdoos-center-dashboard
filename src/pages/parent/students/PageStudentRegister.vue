@@ -4,6 +4,8 @@
       طلب تسجيل طالب جديد (<span v-html="getRegistrationPeriodStatus"></span>)
     </p>
     <div class="q-pa-md">
+
+      <!-- Horizontal Stepper -->
       <q-stepper
         id="horizontal-stepper"
         v-model="hStep"
@@ -307,6 +309,7 @@
             <q-btn
               label="متابعة"
               color="primary"
+              :disable="!isRegistrationEnabled"
               @click="goToNextStep(3, 'hSubjectInfoForm')"
             />
             <q-btn
@@ -486,6 +489,7 @@
               :loading="GET_LOADER"
               label="إرسال"
               color="primary"
+              :disable="!isRegistrationEnabled"
               @click="onSubmit('hMoretInfoForm')"
             />
             <q-btn
@@ -494,6 +498,7 @@
               type="reset"
               color="primary"
               class="q-ml-sm text-weight-bold"
+              :disable="!isRegistrationEnabled"
               @click="() => (hStep = 2)"
             />
           </q-stepper-navigation>
@@ -656,6 +661,7 @@
             <q-btn
               label="متابعة"
               color="primary"
+              :disable="!isRegistrationEnabled"
               @click="goToNextStep(2, 'vStudentInfoForm')"
             />
           </q-stepper-navigation>
@@ -806,6 +812,7 @@
             <q-btn
               label="متابعة"
               color="primary"
+              :disable="!isRegistrationEnabled"
               @click="goToNextStep(3, 'vSubjectInfoForm')"
             />
             <q-btn
@@ -954,6 +961,7 @@
               :loading="GET_LOADER"
               label="إرسال"
               color="primary"
+              :disable="!isRegistrationEnabled"
               @click="onSubmit('vMoretInfoForm')"
             />
             <q-btn
@@ -962,6 +970,7 @@
               type="reset"
               color="primary"
               class="q-ml-sm text-weight-bold"
+              :disable="!isRegistrationEnabled"
               @click="() => (vStep = 2)"
             />
           </q-stepper-navigation>

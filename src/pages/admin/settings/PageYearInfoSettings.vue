@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <p class="text-h6">الإعدادات</p>
+    <p class="text-h6">إعدادات السنة الدراسية</p>
 
     <!-- Year Name Table -->
     <div class="row q-pa-md">
@@ -38,9 +38,10 @@
           </thead>
           <tbody>
             <tr>
-              <td
-                class="text-left"
-              >{{ GET_YEAR_INFO.startPeriodDate | getDate }} - {{ GET_YEAR_INFO.endPeriodDate | getDate }}</td>
+              <td class="text-left">
+                {{ GET_YEAR_INFO.startPeriodDate | getDate }} -
+                {{ GET_YEAR_INFO.endPeriodDate | getDate }}
+              </td>
               <td class="text-right">
                 <q-btn dense flat @click="isDateDialogOpen = true">
                   <q-icon name="o_edit" color="primary" />
@@ -71,7 +72,12 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn flat label="حفظ" @click="saveCurrentYear" :loading="GET_LOADER" />
+          <q-btn
+            flat
+            label="حفظ"
+            @click="saveCurrentYear"
+            :loading="GET_LOADER"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -101,10 +107,20 @@
               </q-icon>
             </template>
           </q-input>
-          <q-input v-model="endPeriodDate" outlined readonly mask="date" class="q-mt-md">
+          <q-input
+            v-model="endPeriodDate"
+            outlined
+            readonly
+            mask="date"
+            class="q-mt-md"
+          >
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qEndDateProxy" transition-show="scale" transition-hide="scale">
+                <q-popup-proxy
+                  ref="qEndDateProxy"
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
                   <q-date
                     v-model="endPeriodDate"
                     mask="YYYY/MM/DD"
@@ -118,7 +134,12 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn flat label="حفظ" @click="onPeriodFormSubmit" :loading="GET_LOADER" />
+          <q-btn
+            flat
+            label="حفظ"
+            @click="onPeriodFormSubmit"
+            :loading="GET_LOADER"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -294,5 +315,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
