@@ -169,10 +169,16 @@ const SURAHS = [
 
 // Vuex Getters
 const GETTERS = {
-  AUTH: {},
+  AUTH: {
+    GET_USER: "GET_USER"
+  },
   SETTINGS: {},
   STUDNETS: {},
-  UI: {},
+  UI: {
+    GET_LOADING: "GET_LOADING",
+    GET_ERRORS: "GET_ERRORS",
+    GET_MESSAGES: "GET_MESSAGES"
+  },
   SHARED: {}
 };
 

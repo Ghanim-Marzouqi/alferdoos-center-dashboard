@@ -9,7 +9,9 @@ const state = {
 };
 
 // Getters
-const getters = {};
+const getters = {
+  GET_USER: state => state.user
+};
 
 // Actions
 const actions = {

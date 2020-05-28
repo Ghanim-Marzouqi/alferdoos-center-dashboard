@@ -84,7 +84,7 @@
                         size="lg"
                         class="full-width text-subtitle2"
                         label="تسجيل الدخول"
-                        :loading="GET_LOADER"
+                        :loading="GET_LOADING"
                       />
                       <q-btn
                         @click="goToResetPasswordPage"
@@ -138,7 +138,7 @@
                         size="lg"
                         class="full-width text-subtitle2"
                         label="تسجيل الدخول"
-                        :loading="GET_LOADER"
+                        :loading="GET_LOADING"
                       />
                       <q-btn
                         v-if="formData.isPhoneAuthChosen"
@@ -171,7 +171,12 @@
 import { mapActions, mapGetters } from "vuex";
 import { auth, firestore } from "firebase";
 import { FirebaseAuth } from "boot/firebase";
-import { COLLECTIONS, ADMIN_EMAIL } from "../../../config/constants";
+import {
+  COLLECTIONS,
+  ADMIN_EMAIL,
+  GETTERS,
+  ACTIONS
+} from "../../../config/constants";
 
 export default {
   name: "AdminPageLogin",
@@ -197,11 +202,11 @@ export default {
     this.CLEAR_ERRORS_AND_MESSAGES();
   },
   computed: {
-    ...mapGetters("admins", [
-      "GET_USER",
-      "GET_ERRORS",
-      "GET_MESSAGES",
-      "GET_LOADER"
+    ...mapGetters("auth", [GETTERS.AUTH.GET_USER]),
+    ...mapGetters("ui", [
+      GETTERS.UI.GET_ERRORS,
+      GETTERS.UI.GET_MESSAGES,
+      GETTERS.UI.GET_LOADING
     ]),
     getErrorMessage() {
       if (this.GET_ERRORS.length > 0) {
@@ -224,12 +229,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions("admins", [
-      "TRIGGER_USER_STATE",
-      "LOGIN",
-      "SET_ERROR",
-      "CLEAR_ERRORS_AND_MESSAGES",
-      "SET_LOADER"
+    ...mapActions("auth", [
+      ACTIONS.AUTH.LOGIN,
+      ACTIONS.AUTH.TRIGGER_USER_STATE
+    ]),
+    ...mapActions("ui", [
+      ACTIONS.UI.SET_ERROR,
+      ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
+      ACTIONS.UI.SET_LOADING
     ]),
     isEmailValid(email) {
       return email == "" ? "" : this.reg.test(email) ? true : false;

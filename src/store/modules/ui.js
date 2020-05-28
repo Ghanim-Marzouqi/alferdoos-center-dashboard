@@ -9,7 +9,11 @@ const state = {
 };
 
 // Getters
-const getters = {};
+const getters = {
+  GET_LOADING: state => state.loading,
+  GET_ERRORS: state => state.errors,
+  GET_MESSAGES: state => state.messages
+};
 
 // Actions
 const actions = {
