@@ -1,22 +1,25 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import admins from "./modules/admins";
-import parents from "./modules/parents";
-import teachers from "./modules/teacher";
+// Vuex Store Modules
+import auth from "./modules/auth";
+import students from "./modules/students";
+import settings from "./modules/settings";
+import ui from "./modules/ui";
 import shared from "./modules/shared";
 
 Vue.use(Vuex);
 
-export default function (/* { ssrContext } */) {
+export default function(/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      admins,
-      parents,
-      teachers,
-      shared,
+      auth,
+      students,
+      settings,
+      ui,
+      shared
     },
-    strict: process.env.DEV,
+    strict: process.env.DEV
   });
 
   return Store;
