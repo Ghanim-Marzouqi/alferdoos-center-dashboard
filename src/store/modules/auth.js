@@ -162,7 +162,7 @@ const actions = {
       // Check If User Logged In
       if (user) {
         // Fetch User Data
-        let doc = await FirebaseDatabase.collection(payload.collection)
+        let doc = await FirebaseDatabase.collection(payload)
           .doc(user.uid)
           .get();
 
@@ -260,13 +260,16 @@ const actions = {
 
 // Mutations
 const mutations = {
-  SET_USER: (state, user) => (state.user = user),
-  SET_REGISTRATION_STATE: (state, value) => (state.isUserRegistered = value)
+  SET_USER(state, user) {
+    state.user = user;
+  },
+  SET_REGISTRATION_STATE(state, value) {
+    state.isUserRegistered = value;
+  }
 };
 
 // Export
 export default {
-  namespaced: true,
   state,
   getters,
   actions,

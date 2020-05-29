@@ -36,13 +36,17 @@ const actions = {
 
 // Mutations
 const mutations = {
-  SET_LOADING: (state, value) => (state.loading = value),
-  SET_MESSAGE: (state, message) => {
+  SET_LOADING(state, value) {
+    state.loading = value;
+  },
+  SET_MESSAGE(state, message) {
     state.errors = [];
     state.messages.push(message);
   },
-  SET_ERROR: (state, error) => state.errors.push(error),
-  RESET_ERRORS_AND_MESSAGES: state => {
+  SET_ERROR(state, error) {
+    state.errors.push(error);
+  },
+  RESET_ERRORS_AND_MESSAGES(state) {
     state.errors = [];
     state.messages = [];
   }
@@ -50,7 +54,6 @@ const mutations = {
 
 // Export
 export default {
-  namespaced: true,
   state,
   getters,
   actions,

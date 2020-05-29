@@ -13,10 +13,10 @@ Vue.use(Vuex);
 export default function(/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
+      ui,
       auth,
       students,
       settings,
-      ui,
       shared
     },
     strict: process.env.DEV

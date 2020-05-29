@@ -5,9 +5,15 @@
         <div class="column text-center">
           <div class="col">
             <router-link :to="{ path: '/' }" exact>
-              <img src="~assets/images/logo_white.png" width="300px" height="auto" />
+              <img
+                src="~assets/images/logo_white.png"
+                width="300px"
+                height="auto"
+              />
             </router-link>
-            <p class="text-white text-h6 text-weight-bold">تسجيل دخول مدير النظام</p>
+            <p class="text-white text-h6 text-weight-bold">
+              تسجيل دخول مدير النظام
+            </p>
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
@@ -17,7 +23,6 @@
                 class="text-grey"
                 active-color="primary"
                 indicator-color="primary"
-                align="justify"
               >
                 <q-tab name="email" label="البريد الإلكتروني" />
                 <q-tab name="phone" label="رقم الهاتف" />
@@ -28,7 +33,9 @@
                 @before-transition="() => CLEAR_ERRORS_AND_MESSAGES()"
               >
                 <q-tab-panel name="email" class="q-pa-none">
-                  <p class="text-red q-mt-sm" v-if="GET_ERRORS.length > 0">{{ getErrorMessage }}</p>
+                  <p class="text-red q-mt-sm" v-if="GET_ERRORS.length > 0">
+                    {{ getErrorMessage }}
+                  </p>
                   <q-form
                     ref="emailAndPasswordForm"
                     @submit="onEmailAndPasswordFormSubmit"
@@ -46,11 +53,12 @@
                         label="البريد الإلكتروني"
                         lazy-rules
                         :rules="[
-                      val =>
-                        (val && val.length > 0) ||
-                        'الرجاء كتابة البريد الإلكتروني',
-                      val => isEmailValid(val) || 'البريد الإلكتروني غير صحيح'
-                    ]"
+                          val =>
+                            (val && val.length > 0) ||
+                            'الرجاء كتابة البريد الإلكتروني',
+                          val =>
+                            isEmailValid(val) || 'البريد الإلكتروني غير صحيح'
+                        ]"
                       />
                       <q-input
                         class="q-mt-sm"
@@ -63,13 +71,18 @@
                         label="كلمة المرور"
                         lazy-rules
                         :rules="[
-                      val =>
-                        (val && val.length > 5) || 'الرجاء كتابة كلمة المرور'
-                    ]"
+                          val =>
+                            (val && val.length > 5) ||
+                            'الرجاء كتابة كلمة المرور'
+                        ]"
                       >
                         <template v-slot:append>
                           <q-icon
-                            :name="formData.isPassword ? 'visibility_off' : 'visibility'"
+                            :name="
+                              formData.isPassword
+                                ? 'visibility_off'
+                                : 'visibility'
+                            "
                             class="cursor-pointer"
                             color="primary"
                             @click="formData.isPassword = !formData.isPassword"
@@ -96,9 +109,15 @@
                   </q-form>
                 </q-tab-panel>
                 <q-tab-panel name="phone" class="q-pa-none">
-                  <p class="text-red q-mt-sm" v-if="GET_ERRORS.length > 0">{{ getErrorMessage }}</p>
+                  <p class="text-red q-mt-sm" v-if="GET_ERRORS.length > 0">
+                    {{ getErrorMessage }}
+                  </p>
                   <div id="recaptcha-container" class="q-mt-sm"></div>
-                  <q-form ref="phoneForm" @submit="onPhoneFormSubmit" class="q-gutter-md">
+                  <q-form
+                    ref="phoneForm"
+                    @submit="onPhoneFormSubmit"
+                    class="q-gutter-md"
+                  >
                     <q-card-section>
                       <q-input
                         class="q-mb-sm"
@@ -111,9 +130,14 @@
                         label="رقم الهاتف"
                         lazy-rules
                         :rules="[
-                          val => (val !== null && val !== '') || 'الرجاء كتابة رقم الهاتف',
+                          val =>
+                            (val !== null && val !== '') ||
+                            'الرجاء كتابة رقم الهاتف',
                           val => val.length === 8 || 'رقم الهاتف غير صحيح',
-                          val => val.substring(0, 1) === '9' || val.substring(0, 1) == '7' || 'رقم الهاتف غير صحيح'
+                          val =>
+                            val.substring(0, 1) === '9' ||
+                            val.substring(0, 1) == '7' ||
+                            'رقم الهاتف غير صحيح'
                         ]"
                       />
                       <q-input
@@ -198,16 +222,16 @@ export default {
     };
   },
   created() {
-    this.TRIGGER_USER_STATE();
+    this.TRIGGER_USER_STATE(COLLECTIONS.ADMINS);
     this.CLEAR_ERRORS_AND_MESSAGES();
   },
   computed: {
-    ...mapGetters("auth", [GETTERS.AUTH.GET_USER]),
-    ...mapGetters("ui", [
-      GETTERS.UI.GET_ERRORS,
-      GETTERS.UI.GET_MESSAGES,
-      GETTERS.UI.GET_LOADING
-    ]),
+    ...mapGetters({
+      GET_USER: GETTERS.AUTH.GET_USER,
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+      GET_ERRORS: GETTERS.UI.GET_ERRORS,
+      GET_LOADING: GETTERS.UI.GET_LOADING
+    }),
     getErrorMessage() {
       if (this.GET_ERRORS.length > 0) {
         if (this.GET_ERRORS[0].code === "auth/user-not-found") {
@@ -229,15 +253,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions("auth", [
-      ACTIONS.AUTH.LOGIN,
-      ACTIONS.AUTH.TRIGGER_USER_STATE
-    ]),
-    ...mapActions("ui", [
-      ACTIONS.UI.SET_ERROR,
-      ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
-      ACTIONS.UI.SET_LOADING
-    ]),
+    ...mapActions({
+      LOGIN: ACTIONS.AUTH.LOGIN,
+      TRIGGER_USER_STATE: ACTIONS.AUTH.TRIGGER_USER_STATE,
+      SET_LOADING: ACTIONS.UI.SET_LOADING,
+      SET_ERROR: ACTIONS.UI.SET_ERROR,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+    }),
     isEmailValid(email) {
       return email == "" ? "" : this.reg.test(email) ? true : false;
     },
@@ -377,5 +399,8 @@ export default {
   border-radius: 4px;
   border-right: 1px solid #d8d8d8;
   overflow: hidden;
+}
+.q-tab {
+  width: 100%;
 }
 </style>
