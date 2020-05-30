@@ -5,14 +5,24 @@
         <div class="column text-center">
           <div class="col">
             <router-link :to="{ path: '/' }" exact>
-              <img src="~assets/images/logo_white.png" width="300px" height="auto" />
+              <img
+                src="~assets/images/logo_white.png"
+                width="300px"
+                height="auto"
+              />
             </router-link>
-            <p class="text-white text-h6 text-weight-bold">تسجيل ولي أمر جديد</p>
+            <p class="text-white text-h6 text-weight-bold">
+              تسجيل ولي أمر جديد
+            </p>
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
-              <p class="text-red" v-if="GET_ERRORS.length > 0">{{ getErrorMessage }}</p>
-              <p class="text-green" v-if="GET_MESSAGES.length > 0">{{ GET_MESSAGES[0] }}</p>
+              <p class="text-red" v-if="GET_ERRORS.length > 0">
+                {{ getErrorMessage }}
+              </p>
+              <p class="text-green" v-if="GET_MESSAGES.length > 0">
+                {{ GET_MESSAGES[0] }}
+              </p>
               <div id="recaptcha-container"></div>
               <q-form v-if="!isOTPEnabled" @submit="onSubmit">
                 <q-card-section>
@@ -85,7 +95,9 @@
                   >
                     <template v-slot:append>
                       <q-icon
-                        :name="formData.isPassword ? 'visibility_off' : 'visibility'"
+                        :name="
+                          formData.isPassword ? 'visibility_off' : 'visibility'
+                        "
                         class="cursor-pointer"
                         color="primary"
                         @click="formData.isPassword = !formData.isPassword"
@@ -111,7 +123,9 @@
                   >
                     <template v-slot:append>
                       <q-icon
-                        :name="formData.isPassword ? 'visibility_off' : 'visibility'"
+                        :name="
+                          formData.isPassword ? 'visibility_off' : 'visibility'
+                        "
                         class="cursor-pointer"
                         color="primary"
                         @click="formData.isPassword = !formData.isPassword"
@@ -126,7 +140,7 @@
                     size="lg"
                     class="full-width text-weight-medium"
                     label="تسجيل جديد"
-                    :loading="GET_LOADER"
+                    :loading="GET_LOADING"
                   />
                   <q-btn
                     unelevated
@@ -149,7 +163,8 @@
                     label="رمز التحقق"
                     lazy-rules
                     :rules="[
-                      val => (val && val.length === 6) || 'الرجاء كتابة رمز التحقق'
+                      val =>
+                        (val && val.length === 6) || 'الرجاء كتابة رمز التحقق'
                     ]"
                   />
                 </q-card-section>
@@ -160,7 +175,7 @@
                     size="lg"
                     class="full-width text-weight-medium"
                     label="تحقق من الرمز"
-                    :loading="GET_LOADER"
+                    :loading="GET_LOADING"
                   />
                   <q-btn
                     unelevated
@@ -182,7 +197,12 @@
 import { mapActions, mapGetters } from "vuex";
 import { auth, firestore } from "firebase";
 import { FirebaseAuth } from "boot/firebase";
-import { COLLECTIONS } from "../../../config/constants";
+import {
+  COLLECTIONS,
+  GETTERS,
+  ERRORS,
+  ACTIONS
+} from "../../../config/constants";
 
 export default {
   name: "PageRegister",
@@ -203,22 +223,22 @@ export default {
     };
   },
   created() {
-    this.TRIGGER_USER_REGISTRATION();
+    this.TRIGGER_USER_REGISTRATION_STATE();
   },
   computed: {
-    ...mapGetters("parents", [
-      "GET_ERRORS",
-      "GET_MESSAGES",
-      "GET_LOADER",
-      "GET_USER_REGISTRATION"
-    ]),
+    ...mapGetters({
+      GET_USER_REGISTRATION_STATE: GETTERS.AUTH.GET_USER_REGISTRATION_STATE,
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+      GET_ERRORS: GETTERS.UI.GET_ERRORS
+    }),
     getErrorMessage() {
       if (this.GET_ERRORS.length > 0) {
-        if (this.GET_ERRORS[0].code === "auth/email-already-in-use") {
+        if (this.GET_ERRORS[0].code === ERRORS.AUTH.EMAIL_ALREADY_IN_USE) {
           return "المستخدم مسجل بالفعل";
-        } else if (this.GET_ERRORS[0].code === "auth/otp-not-sent") {
+        } else if (this.GET_ERRORS[0].code === ERRORS.AUTH.OTP_NOT_SENT) {
           return "لا يمكن إرسال رمز التحقق";
-        } else if (this.GET_ERRORS[0].code === "auth/otp-not-verified") {
+        } else if (this.GET_ERRORS[0].code === ERRORS.AUTH.OTP_NOT_VERIFIED) {
           return "لم يتم التحقق من الرمز";
         } else {
           return "حدث خطأ أثناء التسجيل";
@@ -227,14 +247,15 @@ export default {
     }
   },
   methods: {
-    ...mapActions("parents", [
-      "REGISTER",
-      "CLEAR_ERRORS_AND_MESSAGES",
-      "SET_MESSAGE",
-      "SET_ERROR",
-      "TRIGGER_USER_REGISTRATION",
-      "SET_LOADER"
-    ]),
+    ...mapActions({
+      REGISTER: ACTIONS.AUTH.REGISTER,
+      TRIGGER_USER_REGISTRATION_STATE:
+        ACTIONS.AUTH.TRIGGER_USER_REGISTRATION_STATE,
+      SET_LOADING: ACTIONS.UI.SET_LOADING,
+      SET_MESSAGE: ACTIONS.UI.SET_MESSAGE,
+      SET_ERROR: ACTIONS.UI.SET_ERROR,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+    }),
     isEmailValid(email) {
       return email == "" ? "" : this.reg.test(email) ? true : false;
     },
@@ -255,7 +276,7 @@ export default {
         );
       } catch (error) {
         this.SET_ERROR({
-          code: "auth/otp-not-sent"
+          code: ERRORS.AUTH.OTP_NOT_SENT
         });
       }
     },
@@ -265,7 +286,7 @@ export default {
         this.CLEAR_ERRORS_AND_MESSAGES();
 
         // Activate Loader
-        this.SET_LOADER(true);
+        this.SET_LOADING(true);
 
         // Set Language Code
         FirebaseAuth.languageCode = "ar";
@@ -293,8 +314,8 @@ export default {
             // Sign Out User
             await FirebaseAuth.signOut();
 
-            // Deactivate Loader
-            this.SET_LOADER(false);
+            // Deactivate Loading
+            this.SET_LOADING(false);
 
             // Display Success Massage
             this.SET_MESSAGE("تم التسجيل بنجاح");
@@ -305,15 +326,15 @@ export default {
         } else {
           console.log("Credentail Is Not Defined");
           this.SET_ERROR({
-            code: "auth/otp-not-verified"
+            code: ERRORS.AUTH.OTP_NOT_VERIFIED
           });
         }
       } catch (error) {
         console.log(error);
-        // Deactivate Loader
-        this.SET_LOADER(false);
+        // Deactivate Loading
+        this.SET_LOADING(false);
         this.SET_ERROR({
-          code: "auth/otp-not-verified"
+          code: ERRORS.AUTH.OTP_NOT_VERIFIED
         });
       }
     },
@@ -329,7 +350,7 @@ export default {
     }
   },
   watch: {
-    GET_USER_REGISTRATION: function(newState, oldState) {
+    GET_USER_REGISTRATION_STATE: function(newState, oldState) {
       console.log("User Registered", JSON.stringify(newState));
       if (newState) {
         // Enable OTP SMS Sending

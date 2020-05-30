@@ -199,7 +199,8 @@ import {
   COLLECTIONS,
   ADMIN_EMAIL,
   GETTERS,
-  ACTIONS
+  ACTIONS,
+  ERRORS
 } from "../../../config/constants";
 
 export default {
@@ -213,7 +214,8 @@ export default {
         password: "",
         phone: "",
         isPassword: true,
-        isPhoneAuthChosen: false
+        isPhoneAuthChosen: false,
+        collection: COLLECTIONS.ADMINS
       },
       loginMethod: "email",
       appVerifier: null,
@@ -234,17 +236,19 @@ export default {
     }),
     getErrorMessage() {
       if (this.GET_ERRORS.length > 0) {
-        if (this.GET_ERRORS[0].code === "auth/user-not-found") {
+        if (this.GET_ERRORS[0].code === ERRORS.AUTH.USER_NOT_FOUND) {
           return "المستخدم غير مسجل";
-        } else if (this.GET_ERRORS[0].code === "auth/phone-not-found") {
+        } else if (this.GET_ERRORS[0].code === ERRORS.AUTH.PHONE_NOT_FOUND) {
           return "رقم الهاتف غير مسجل";
-        } else if (this.GET_ERRORS[0].code === "auth/wrong-password") {
+        } else if (this.GET_ERRORS[0].code === ERRORS.AUTH.WRONG_PASSWORD) {
           return "كلمة المرور غير صحيحة";
-        } else if (this.GET_ERRORS[0].code === "databse/user-inactive") {
+        } else if (this.GET_ERRORS[0].code === ERRORS.DATABASE.USER_INACTIVE) {
           return "حساب المستخدم موقوف";
-        } else if (this.GET_ERRORS[0].code === "auth/email-not-verified") {
+        } else if (this.GET_ERRORS[0].code === ERRORS.AUTH.EMAIL_NOT_VERIFIED) {
           return "لم يتم التحقق من البريد الإلكتروني للمستخدم";
-        } else if (this.GET_ERRORS[0].code === "auth/email-or-phone-inactive") {
+        } else if (
+          this.GET_ERRORS[0].code === ERRORS.AUTH.EMAIL_OR_PHONE_INACTIVE
+        ) {
           return "لم يتم تفعيل البريد الإلكتروني / رقم الهاتف";
         } else {
           return "حدث خطأ اثناء تسجيل الدخول";
@@ -284,8 +288,8 @@ export default {
       console.log(valid);
 
       if (valid) {
-        // Activate Loader
-        this.SET_LOADER(true);
+        // Activate Loading
+        this.SET_LOADING(true);
 
         // Check If Phone Is Registered
         let querySnapShot = await firestore()
@@ -318,13 +322,13 @@ export default {
             this.sendOTP(this.formData.phone);
           }
 
-          // Deactivate Loader
-          this.SET_LOADER(false);
+          // Deactivate Loading
+          this.SET_LOADING(false);
         } else {
-          // Deactivate Loader
-          this.SET_LOADER(false);
+          // Deactivate Loading
+          this.SET_LOADING(false);
           this.SET_ERROR({
-            code: "auth/phone-not-found"
+            code: ERRORS.AUTH.PHONE_NOT_FOUND
           });
         }
       }
@@ -348,22 +352,24 @@ export default {
         });
     },
     async verifyOTP() {
-      // Activate Loader
-      this.SET_LOADER(true);
+      // Activate Loading
+      this.SET_LOADING(true);
 
       try {
         // Verify OTP
         await window.confirmationResult.confirm(this.otpCode);
 
-        // Deactivate Loader
-        this.SET_LOADER(false);
+        // Deactivate Loading
+        this.SET_LOADING(false);
       } catch (error) {
         console.log(error);
 
-        // Deactivate Loader
-        this.SET_LOADER(false);
+        // Deactivate Loading
+        this.SET_LOADING(false);
+
+        // Set Error (OTP Not Verified)
         this.SET_ERROR({
-          code: "auth/otp-not-verified"
+          code: ERRORS.AUTH.OTP_NOT_VERIFIED
         });
       }
     },

@@ -42,7 +42,7 @@ const actions = {
     } catch (error) {
       console.log("FETCH_YEAR_INFO", error);
       // Set Error
-      commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.YEAR_INFO_ERROR });
+      commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.DATABASE.YEAR_INFO_ERROR });
     }
   },
 
@@ -93,7 +93,7 @@ const actions = {
       // Display Error In Console
       console.log("SET_YEAR_NAME", error);
       // Set Error (Set Year Name Action)
-      commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.YEAR_INFO_ERROR });
+      commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.DATABASE.YEAR_INFO_ERROR });
       // Deactivate Loader
       commit("SET_LOADER", false);
     }
@@ -115,7 +115,9 @@ const actions = {
       // Check If Year Info Data Not Exists
       if (!doc.exists) {
         // Set Error
-        commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.YEAR_INFO_NOT_FOUND });
+        commit(MUTATIONS.UI.SET_ERROR, {
+          code: ERRORS.DATABASE.YEAR_INFO_NOT_FOUND
+        });
 
         // Deactivate Loading
         commit(MUTATIONS.UI.SET_LOADING, false);
@@ -140,7 +142,7 @@ const actions = {
       // Display Error In Console
       console.log("SET_REGISTRATION_PERIOD", error);
       // Set Error (Year Info Error)
-      commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.YEAR_INFO_ERROR });
+      commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.DATABASE.YEAR_INFO_ERROR });
       // Deactivate Loading
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
@@ -169,7 +171,7 @@ const actions = {
       console.log("FETCH_REGISTRATION_PERIOD", error);
       // Set Error (Fetch Registration Period Error)
       commit(MUTATIONS.UI.SET_ERROR, {
-        code: ERRORS.FETCH_REGISTRATION_PERIOD_ERROR
+        code: ERRORS.DATABASE.FETCH_REGISTRATION_PERIOD_ERROR
       });
     }
   }

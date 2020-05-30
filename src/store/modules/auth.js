@@ -10,7 +10,8 @@ const state = {
 
 // Getters
 const getters = {
-  GET_USER: state => state.user
+  GET_USER: state => state.user,
+  GET_USER_REGISTRATION_STATE: state => state.isUserRegistered
 };
 
 // Actions
@@ -63,21 +64,21 @@ const actions = {
             } else {
               // Set Error (User Inactive)
               commit(MUTATIONS.UI.SET_ERROR, {
-                code: ERRORS.USER_INACTIVE
+                code: ERRORS.DATABASE.USER_INACTIVE
               });
               await FirebaseAuth.signOut();
             }
           } else {
             // Set Error (User Not Found)
             commit(MUTATIONS.UI.SET_ERROR, {
-              code: ERRORS.USER_NOT_FOUND
+              code: ERRORS.DATABASE.USER_NOT_FOUND
             });
             await FirebaseAuth.signOut();
           }
         } else {
           // Set Error (Email Not Verified)
           commit(MUTATIONS.UI.SET_ERROR, {
-            code: ERRORS.EMAIL_NOT_VERIFIED
+            code: ERRORS.AUTH.EMAIL_NOT_VERIFIED
           });
 
           // Re-Send Email Verification
@@ -207,13 +208,13 @@ const actions = {
             } else {
               // Set Error (Email Or Phone Inctivated)
               this.SET_ERROR({
-                code: ERRORS.EMAIL_OR_PHONE_INACTIVE
+                code: ERRORS.AUTH.EMAIL_OR_PHONE_INACTIVE
               });
             }
           } else {
             // Set Error (User Not Found)
             commit(MUTATIONS.UI.SET_ERROR, {
-              code: ERRORS.USER_INACTIVE
+              code: ERRORS.DATABASE.USER_INACTIVE
             });
           }
         } else {

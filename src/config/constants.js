@@ -170,7 +170,8 @@ const SURAHS = [
 // Vuex Getters
 const GETTERS = {
   AUTH: {
-    GET_USER: "GET_USER"
+    GET_USER: "GET_USER",
+    GET_USER_REGISTRATION_STATE: "GET_USER_REGISTRATION_STATE"
   },
   SETTINGS: {},
   STUDNETS: {},
@@ -237,26 +238,39 @@ const MUTATIONS = {
 
 // Error Codes
 const ERRORS = {
-  USER_INACTIVE: "databse/user-inactive",
-  USER_NOT_FOUND: "auth/user-not-found",
-  EMAIL_NOT_VERIFIED: "auth/email-not-verified",
-  EMAIL_OR_PHONE_INACTIVE: "auth/email-or-phone-inactive",
-  STUDENT_FORM_RECORD_NOT_DELETED: "database/student-form-record-not-deleted",
-  STUDENT_NOT_FOUND: "database/student-not-found",
-  EDIT_APPLICATION_STATUS_ERROR: "database/edit-application-status-error",
-  YEAR_INFO_ERROR: "database/year-info-error",
-  YEAR_INFO_NOT_FOUND: "database/year-info-not-found",
-  FETCH_REGISTRATION_PERIOD_ERROR: "database/fetch-registration-period-error"
+  AUTH: {
+    USER_NOT_FOUND: "auth/user-not-found",
+    PHONE_NOT_FOUND: "auth/phone-not-found",
+    EMAIL_NOT_VERIFIED: "auth/email-not-verified",
+    EMAIL_OR_PHONE_INACTIVE: "auth/email-or-phone-inactive",
+    EMAIL_ALREADY_IN_USE: "auth/email-already-in-use",
+    WRONG_PASSWORD: "auth/wrong-password",
+    OTP_NOT_SENT: "auth/otp-not-sent",
+    OTP_NOT_VERIFIED: "auth/otp-not-verified"
+  },
+  DATABASE: {
+    USER_INACTIVE: "databse/user-inactive",
+    USER_NOT_FOUND: "database/user-not-found",
+    STUDENT_FORM_RECORD_NOT_DELETED: "database/student-form-record-not-deleted",
+    STUDENT_NOT_FOUND: "database/student-not-found",
+    EDIT_APPLICATION_STATUS_ERROR: "database/edit-application-status-error",
+    YEAR_INFO_ERROR: "database/year-info-error",
+    YEAR_INFO_NOT_FOUND: "database/year-info-not-found",
+    FETCH_REGISTRATION_PERIOD_ERROR: "database/fetch-registration-period-error"
+  }
 };
 
 // Message Codes
 const MESSAGES = {
-  STUDENT_FORM_RECORD_DELETED: "database/student-form-record-deleted",
-  APPLICATION_STATUS_UPDATED: "database/application-status-updated",
-  YEAR_INFO_CREATED: "database/year-info-created",
-  YEAR_INFO_UPDATED: "database/year-info-updated",
-  YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
-    "database/year-info-registration-period-updated"
+  AUTH: {},
+  DATABASE: {
+    STUDENT_FORM_RECORD_DELETED: "database/student-form-record-deleted",
+    APPLICATION_STATUS_UPDATED: "database/application-status-updated",
+    YEAR_INFO_CREATED: "database/year-info-created",
+    YEAR_INFO_UPDATED: "database/year-info-updated",
+    YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
+      "database/year-info-registration-period-updated"
+  }
 };
 
 //  Admin Email

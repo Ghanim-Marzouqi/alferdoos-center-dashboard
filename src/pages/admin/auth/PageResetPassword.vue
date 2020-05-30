@@ -5,16 +5,21 @@
         <div class="column text-center">
           <div class="col">
             <router-link :to="{ path: '/' }" exact>
-              <img src="~assets/images/logo_white.png" width="300px" height="auto" />
+              <img
+                src="~assets/images/logo_white.png"
+                width="300px"
+                height="auto"
+              />
             </router-link>
-            <p class="text-white text-h6 text-weight-bold">إعادة تعيين كلمة المرور</p>
+            <p class="text-white text-h6 text-weight-bold">
+              إعادة تعيين كلمة المرور
+            </p>
           </div>
           <div class="row">
             <q-card square bordered class="q-pa-lg shadow-1">
-              <p
-                class="text-red"
-                v-if="GET_ERRORS.length > 0"
-              >لم يتم العثور على البريد الإلكتروني المدخل</p>
+              <p class="text-red" v-if="GET_ERRORS.length > 0">
+                لم يتم العثور على البريد الإلكتروني المدخل
+              </p>
               <p class="text-green" v-if="GET_MESSAGES.length > 0">
                 تم الإرسال بنجاح. الرجاء تفقد البريد الخاص بك لإعادة تعيين كلمة
                 المرور
@@ -65,6 +70,9 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { GETTERS, ACTIONS } from "../../../config/constants";
+
+// ...mapActions("admins", ["RESET_PASSWORD", "CLEAR_ERRORS_AND_MESSAGES"]),
 
 export default {
   name: "PageResetPassword",
@@ -76,9 +84,16 @@ export default {
       reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
     };
   },
-  computed: mapGetters("admins", ["GET_ERRORS", "GET_MESSAGES", "GET_LOADER"]),
+  computed: mapGetters({
+    GET_LOADER: GETTERS.UI.GET_LOADING,
+    GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+    GET_ERRORS: GETTERS.UI.GET_ERRORS
+  }),
   methods: {
-    ...mapActions("admins", ["RESET_PASSWORD", "CLEAR_ERRORS_AND_MESSAGES"]),
+    ...mapActions({
+      RESET_PASSWORD: ACTIONS.AUTH.RESET_PASSWORD,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+    }),
     isEmailValid(email) {
       return email == "" ? "" : this.reg.test(email) ? true : false;
     },

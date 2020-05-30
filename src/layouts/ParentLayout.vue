@@ -44,7 +44,11 @@
         </q-list>
       </q-scroll-area>
 
-      <q-img class="absolute-top" src="statics/images/bg.png" style="height: 150px">
+      <q-img
+        class="absolute-top"
+        src="statics/images/bg.png"
+        style="height: 150px"
+      >
         <div style="width: 100%" class="text-center bg-transparent">
           <q-avatar size="80px" class="q-mb-sm">
             <img src="statics/images/avatar.jpg" />
@@ -62,6 +66,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import { GETTERS, ACTIONS } from "../config/constants";
 
 export default {
   name: "Layout",
@@ -87,9 +92,9 @@ export default {
       this.$router.replace("/parent-login");
     }
   },
-  computed: mapGetters("parents", ["GET_USER"]),
+  computed: mapGetters({ GET_USER: GETTERS.AUTH.GET_USER }),
   methods: {
-    ...mapActions("parents", ["LOGOUT"]),
+    ...mapActions({ LOGOUT: ACTIONS.AUTH.LOGOUT }),
     logout() {
       this.LOGOUT();
     }

@@ -189,7 +189,7 @@ const actions = {
       console.log("DELETE_STUDENT", error);
       // Commit Error Message
       commit(MUTATIONS.UI.SET_ERROR, {
-        code: ERRORS.STUDENT_FORM_RECORD_NOT_DELETED
+        code: ERRORS.DATABASE.STUDENT_FORM_RECORD_NOT_DELETED
       });
     }
   },
@@ -219,7 +219,9 @@ const actions = {
         });
       } else {
         // Set Error (Student Not Found)
-        commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.STUDENT_NOT_FOUND });
+        commit(MUTATIONS.UI.SET_ERROR, {
+          code: ERRORS.DATABASE.STUDENT_NOT_FOUND
+        });
       }
 
       // Deactivate Loading
@@ -229,7 +231,7 @@ const actions = {
       console.log("EDIT_APPLICATION_STATUS ERROR", error);
       // Set Error (Edit Application Status Error)
       commit(MUTATIONS.UI.SET_ERROR, {
-        code: ERRORS.EDIT_APPLICATION_STATUS_ERROR
+        code: ERRORS.DATABASE.EDIT_APPLICATION_STATUS_ERROR
       });
       // Deactivate Loading
       commit(MUTATIONS.UI.SET_LOADING, false);
