@@ -4,14 +4,20 @@
     <div class="q-pa-md">
       <q-table
         title="قائمة الطلبات المقدمة للمركز"
-        :data="GET_REGISTERED_FORMS"
+        :data="GET_STUDENTS"
         :columns="columns"
         row-key="id"
         :filter="filter"
-        :loading="GET_LOADER"
+        :loading="GET_LOADING"
       >
         <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
+          <q-input
+            borderless
+            dense
+            debounce="300"
+            v-model="filter"
+            placeholder="بحث"
+          >
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -22,15 +28,15 @@
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
             <q-td key="createdAt" :props="props">
-              {{
-              props.row.createdAt | formatDate
-              }}
+              {{ props.row.createdAt | formatDate }}
             </q-td>
             <q-td key="status" :props="props">
               <p
                 id="application-status"
                 @click="showRegisteredApplicationStatusDialog(props.row)"
-              >{{ props.row.status | getStatus }}</p>
+              >
+                {{ props.row.status | getStatus }}
+              </p>
             </q-td>
             <q-td key="show" :props="props">
               <q-btn dense flat @click.stop="showStudentDialog(props.row)">
@@ -43,7 +49,12 @@
     </div>
 
     <!-- Registered Student Dialog -->
-    <q-dialog v-model="showStudentModal" full-width persistent @hide="resetStudntData">
+    <q-dialog
+      v-model="showStudentModal"
+      full-width
+      persistent
+      @hide="resetStudntData"
+    >
       <q-card>
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">{{ registeredStudent.name }}</div>
@@ -59,9 +70,7 @@
                 <p class="text-weight-bold">
                   انهى الصف:
                   <span class="text-weight-bold text-blue">
-                    {{
-                    getStudentGrade
-                    }}
+                    {{ getStudentGrade }}
                   </span>
                 </p>
                 <div class="row">
@@ -69,9 +78,7 @@
                     <p class="text-weight-bold">
                       عدد المواد بتقدير (أ):
                       <strong class="text-blue">
-                        {{
-                        registeredStudent.subjectANumber
-                        }}
+                        {{ registeredStudent.subjectANumber }}
                       </strong>
                     </p>
                   </div>
@@ -79,9 +86,7 @@
                     <p class="text-weight-bold">
                       عدد المواد بتقدير (ب):
                       <strong class="text-blue">
-                        {{
-                        registeredStudent.subjectBNumber
-                        }}
+                        {{ registeredStudent.subjectBNumber }}
                       </strong>
                     </p>
                   </div>
@@ -93,13 +98,20 @@
                       <li
                         v-for="(chapter, i) in registeredStudent.savedChapters"
                         :key="i"
-                      >{{ chapter }}</li>
+                      >
+                        {{ chapter }}
+                      </li>
                     </ul>
                   </div>
                   <div class="col-xs-12 col-md-6">
                     <strong>السور المحفوظة:</strong>
                     <ul>
-                      <li v-for="(surah, i) in registeredStudent.savedSurahs" :key="i">{{ surah }}</li>
+                      <li
+                        v-for="(surah, i) in registeredStudent.savedSurahs"
+                        :key="i"
+                      >
+                        {{ surah }}
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -111,7 +123,8 @@
                     clickable
                     icon-right="o_get_app"
                     @click="downloadFile(certificate)"
-                  >شهادة {{ i + 1 }}</q-chip>
+                    >شهادة {{ i + 1 }}</q-chip
+                  >
                 </div>
               </div>
               <div class="col-xs-12 col-md-4 text-center">
@@ -124,7 +137,9 @@
                   <template v-slot:error>
                     <div
                       class="absolute-full flex flex-center bg-negative text-white"
-                    >لا يمكن تحميل الصورة</div>
+                    >
+                      لا يمكن تحميل الصورة
+                    </div>
                   </template>
                 </q-img>
               </div>
@@ -136,7 +151,9 @@
                   هل يعاني الطالب أي مرض:
                   <strong class="text-blue">
                     {{
-                    registeredStudent.studentState === "healthy" ? "لا" : "نعم"
+                      registeredStudent.studentState === "healthy"
+                        ? "لا"
+                        : "نعم"
                     }}
                   </strong>
                 </p>
@@ -144,9 +161,9 @@
                   الأعراض والأمراض التي يعاني منها الطالب:
                   <span class="text-weight-bold">
                     {{
-                    registeredStudent.diseases === ""
-                    ? "لا يوجد"
-                    : registeredStudent.diseases
+                      registeredStudent.diseases === ""
+                        ? "لا يوجد"
+                        : registeredStudent.diseases
                     }}
                   </span>
                 </p>
@@ -157,9 +174,9 @@
                   هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم:
                   <strong class="text-blue">
                     {{
-                    registeredStudent.isLearntInCenterBefore === "yes"
-                    ? "نعم"
-                    : "لا"
+                      registeredStudent.isLearntInCenterBefore === "yes"
+                        ? "نعم"
+                        : "لا"
                     }}
                   </strong>
                 </p>
@@ -167,40 +184,38 @@
                   المكان:
                   <span class="text-weight-bold">
                     {{
-                    registeredStudent.oldCenterName === ""
-                    ? "لم يسبق للطالب التعلم في مدرسة لتحفيظ القرآن"
-                    : registeredStudent.oldCenterName
+                      registeredStudent.oldCenterName === ""
+                        ? "لم يسبق للطالب التعلم في مدرسة لتحفيظ القرآن"
+                        : registeredStudent.oldCenterName
                     }}
                   </span>
                 </p>
               </div>
               <div class="col-xs-12 col-md-4"></div>
             </div>
-            <P class="text-weight-bold text-indigo q-mt-md">معلومات إضافية عن الطالب:</P>
+            <P class="text-weight-bold text-indigo q-mt-md"
+              >معلومات إضافية عن الطالب:</P
+            >
             <div class="row q-ma-md">
               <div class="col-xs-12 col-md-4">
                 <P class="text-weight-bold">معلومات ولي الأمر:</P>
                 <p>
                   أسم ولي الأمر:
                   <span class="text-weight-bold text-blue">
-                    {{
-                    registeredStudent.parentName
-                    }}
+                    {{ registeredStudent.parentName }}
                   </span>
                 </p>
                 <p>
                   ارقام الهواتف:
                   <span class="text-weight-bold text-blue">
-                    {{
-                    registeredStudent.firstPhoneNumber
-                    }}
+                    {{ registeredStudent.firstPhoneNumber }}
                   </span>
                   -
                   <span class="text-weight-bold text-blue">
                     {{
-                    registeredStudent.secondPhoneNumber === ""
-                    ? "لا يوجد"
-                    : registeredStudent.secondPhoneNumber
+                      registeredStudent.secondPhoneNumber === ""
+                        ? "لا يوجد"
+                        : registeredStudent.secondPhoneNumber
                     }}
                   </span>
                 </p>
@@ -210,9 +225,7 @@
                 <p>
                   كيف عرفت عن المركز:
                   <span class="text-weight-bold text-blue">
-                    {{
-                    registeredStudent.centerKnownBy
-                    }}
+                    {{ registeredStudent.centerKnownBy }}
                   </span>
                 </p>
               </div>
@@ -228,7 +241,10 @@
     </q-dialog>
 
     <!-- Registered Application Status -->
-    <q-dialog v-model="showRegisteredApplicationStatusModal" @hide="resetStudntData">
+    <q-dialog
+      v-model="showRegisteredApplicationStatusModal"
+      @hide="resetStudntData"
+    >
       <q-card>
         <q-card-section>
           <div class="text-h5">حالة الطلب</div>
@@ -244,6 +260,13 @@
 <script>
 import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
+import {
+  GETTERS,
+  ACTIONS,
+  STUDENT_GRADE,
+  STUDENT_STATUS,
+  ERRORS
+} from "../../../config/constants";
 
 export default {
   name: "PageRegistrationForms",
@@ -291,24 +314,30 @@ export default {
   },
   created() {
     if (Object.keys(this.GET_USER).length > 0) {
-      this.FETCH_REGISTERED_FORMS(this.GET_USER.id);
+      this.FETCH_STUDENTS_BY_PARENT_ID({ parentId: this.GET_USER.id });
     }
   },
   computed: {
-    ...mapGetters("parents", [
-      "GET_USER",
-      "GET_REGISTERED_FORMS",
-      "GET_LOADER",
-      "GET_MESSAGES",
-      "GET_ERRORS"
-    ]),
+    ...mapGetters({
+      GET_USER: GETTERS.AUTH.GET_USER,
+      GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+      GET_ERRORS: GETTERS.UI.GET_ERRORS
+    }),
     getStudentGrade() {
       if (Object.keys(this.registeredStudent).length > 0) {
-        if (this.registeredStudent.finishedClass === "grade_seven") {
+        if (
+          this.registeredStudent.finishedClass === STUDENT_GRADE.GRADE_SEVEN
+        ) {
           return "السابع";
-        } else if (this.registeredStudent.finishedClass === "grade_eight") {
+        } else if (
+          this.registeredStudent.finishedClass === STUDENT_GRADE.GRADE_EIGHT
+        ) {
           return "الثامن";
-        } else if (this.registeredStudent.finishedClass === "grade_nine") {
+        } else if (
+          this.registeredStudent.finishedClass === STUDENT_GRADE.GRADE_NINE
+        ) {
           return "التاسع";
         } else {
           return "غير معروف";
@@ -318,13 +347,13 @@ export default {
       }
     },
     getApplicationStatus() {
-      if (this.registeredStudent.status === "review") {
+      if (this.registeredStudent.status === STUDENT_STATUS.REVIEW) {
         return "الطلب قيد المراجعة";
-      } else if (this.registeredStudent.status === "accept_for_exam") {
+      } else if (this.registeredStudent.status === STUDENT_STATUS.EXAM) {
         return "مقبول لأداء الإختبار";
-      } else if (this.registeredStudent.status === "accept_for_exam") {
+      } else if (this.registeredStudent.status === STUDENT_STATUS.STUDY) {
         return "مقبول للدراسة في المركز";
-      } else if (this.registeredStudent.status === "reject") {
+      } else if (this.registeredStudent.status === STUDENT_STATUS.REJECT) {
         return `تم رفض الطالب للأسباب التالية: ${this.registeredStudent.rejectionReasons}`;
       } else {
         return "حالة الطلب غير معروفة";
@@ -332,24 +361,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions("parents", [
-      "FETCH_REGISTERED_FORMS",
-      "DELETE_REGISTERED_STUDENT",
-      "CLEAR_ERRORS_AND_MESSAGES",
-      "SET_ERROR"
-    ]),
-    deleteStudentRegistrationForm(id) {
-      this.$q
-        .dialog({
-          title: "تنبيه",
-          message: "هل أنت واثق من أنك تريد حذف هذا الطلب؟",
-          cancel: true,
-          persistent: true
-        })
-        .onOk(() => {
-          this.DELETE_REGISTERED_STUDENT(id);
-        });
-    },
+    ...mapActions({
+      FETCH_STUDENTS_BY_PARENT_ID: ACTIONS.STUDNETS.FETCH_STUDENTS_BY_PARENT_ID,
+      DELETE_STUDENT: ACTIONS.STUDNETS.DELETE_STUDENT,
+      SET_ERROR: ACTIONS.UI.SET_ERROR,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+    }),
     showStudentDialog(student) {
       this.registeredStudent = student;
       this.showStudentModal = true;
@@ -366,25 +383,27 @@ export default {
           var blob = xhr.response;
           let link = document.createElement("a");
           link.href = window.URL.createObjectURL(blob);
-          link.download = `cer_${Date.now()}`;
+          link.download = `certificate_${date.formatDate(
+            Date.now(),
+            "YYYY_MM_DD_HH_mm_ss_a"
+          )}`;
           link.click();
         };
         xhr.open("GET", fileURL);
         xhr.send();
       } catch (error) {
-        SET_ERROR({ code: error.code });
         switch (error.code) {
-          case "storage/object-not-found":
-            console.log("ERROR: storage/object-not-found");
+          case ERRORS.STORAGE.OBJECT_NOT_FOUND:
+            this.SET_ERROR(ERRORS.STORAGE.OBJECT_NOT_FOUND);
             break;
-          case "storage/unauthorized":
-            console.log("ERROR: storage/unauthorized");
+          case ERRORS.STORAGE.UNAUTHORIZED:
+            this.SET_ERROR(ERRORS.STORAGE.UNAUTHORIZED);
             break;
-          case "storage/canceled":
-            console.log("ERROR: storage/canceled");
+          case ERRORS.STORAGE.CANCELED:
+            this.SET_ERROR(ERRORS.STORAGE.CANCELED);
             break;
-          case "storage/unknown":
-            console.log("ERROR: storage/unknown");
+          case ERRORS.STORAGE.UNKNOWN:
+            this.SET_ERROR(ERRORS.STORAGE.UNKNOWN);
             break;
         }
       }
@@ -401,41 +420,19 @@ export default {
       return `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`;
     },
     getStatus(val) {
-      if (val === "review") return "الطلب قيد المراجعة";
-      else if (val === "accept_for_exam") return "مقبول لأداء الإختبار";
-      else if (val === "accept_for_study") return "مقبول للدراسة في المركز";
-      else if (val === "reject") return "تم الرفض";
+      if (val === STUDENT_STATUS.REVIEW) return "الطلب قيد المراجعة";
+      else if (val === STUDENT_STATUS.EXAM) return "مقبول لأداء الإختبار";
+      else if (val === STUDENT_STATUS.STUDY) return "مقبول للدراسة في المركز";
+      else if (val === STUDENT_STATUS.REJECT) return "تم الرفض";
       else return "حالة الطلب غير معروفة";
     }
   },
   watch: {
-    GET_MESSAGES: function(newState, oldState) {
-      if (newState.length > 0) {
-        let messageCode = newState[0].code;
-
-        if (messageCode === "database/student-form-record-deleted") {
-          this.$q.dialog({
-            title: "تمت العملية بنجاح",
-            message: "تم حذف الطلب بنجاح"
-          });
-          this.CLEAR_ERRORS_AND_MESSAGES();
-          this.FETCH_REGISTERED_STUDENTS();
-        }
-      }
-    },
     GET_ERRORS: function(newState, oldState) {
       if (newState.length > 0) {
         let errorCode = newState[0].code;
 
-        if (errorCode === "database/student-form-record-not-deleted") {
-          this.$q.dialog({
-            title: "فشلت العملية",
-            message: "حدث خطأ اثناء حذف المستخدم"
-          });
-          this.CLEAR_ERRORS_AND_MESSAGES();
-        }
-
-        if (errorCode === "storage/object-not-found") {
+        if (errorCode === ERRORS.STORAGE.OBJECT_NOT_FOUND) {
           this.$q.dialog({
             title: "حدث خطأ",
             message: "لم يتم العثور على الملف"
@@ -443,7 +440,7 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
 
-        if (errorCode === "storage/unauthorized") {
+        if (errorCode === ERRORS.STORAGE.UNAUTHORIZED) {
           this.$q.dialog({
             title: "حدث خطأ",
             message: "لا تملك الصلاحيات لتحميل الملف"
@@ -451,7 +448,7 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
 
-        if (errorCode === "storage/canceled") {
+        if (errorCode === ERRORS.STORAGE.CANCELED) {
           this.$q.dialog({
             title: "حدث خطأ",
             message: "تم إلغاء تنزيل الملف"
@@ -459,7 +456,7 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
 
-        if (errorCode === "storage/unknown") {
+        if (errorCode === ERRORS.STORAGE.UNKNOWN) {
           this.$q.dialog({
             title: "حدث خطأ",
             message: "حدث خطأ اثناء تنزيل الملف"
@@ -468,9 +465,6 @@ export default {
         }
       }
     }
-  },
-  components: {
-    TimelineEntry: () => import("components/TimelineEntry.vue")
   }
 };
 </script>

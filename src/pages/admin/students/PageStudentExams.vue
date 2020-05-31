@@ -4,11 +4,11 @@
     <div class="q-pa-md">
       <q-table
         title="قائمة الطلاب المؤهلين لإداء الإختبار"
-        :data="GET_TO_BE_EXAMMED_STUDENTS"
+        :data="GET_STUDENTS"
         :columns="columns"
         row-key="id"
         :filter="filter"
-        :loading="GET_LOADER"
+        :loading="GET_LOADING"
       >
         <template v-slot:top-right>
           <q-input
@@ -64,8 +64,9 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
 import { date } from "quasar";
+import { mapGetters, mapActions } from "vuex";
+import { GETTERS, ACTIONS, STUDENT_STATUS } from "../../../config/constants";
 
 export default {
   name: "PageStudentExams",
@@ -107,24 +108,24 @@ export default {
     };
   },
   created() {
-    this.FETCH_TO_BE_EXAMMED_STUDENTS();
+    this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
   },
   computed: {
-    ...mapGetters("admins", [
-      "GET_TO_BE_EXAMMED_STUDENTS",
-      "GET_LOADER",
-      "GET_MESSAGES",
-      "GET_ERRORS"
-    ])
+    ...mapGetters({
+      GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+      GET_ERRORS: GETTERS.UI.GET_ERRORS
+    })
   },
   methods: {
-    ...mapActions("admins", [
-      "FETCH_TO_BE_EXAMMED_STUDENTS",
-      "DELETE_REGISTERED_STUDENT",
-      "CLEAR_ERRORS_AND_MESSAGES",
-      "EDIT_APPLICATION_STATUS",
-      "SET_ERROR"
-    ]),
+    ...mapActions({
+      FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
+      DELETE_STUDENT: ACTIONS.STUDNETS.DELETE_STUDENT,
+      EDIT_STUDENT_STATUS: ACTIONS.STUDNETS.EDIT_STUDENT_STATUS,
+      SET_ERROR: ACTIONS.UI.SET_ERROR,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+    }),
     showErrorDialog(exam) {
       this.examType = exam;
       this.isErrorDialogOpen = true;

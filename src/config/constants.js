@@ -7,6 +7,12 @@ const COLLECTIONS = {
   YEARS: "years"
 };
 
+const STUDENT_GRADE = {
+  GRADE_SEVEN: "grade_seven",
+  GRADE_EIGHT: "grade_eight",
+  GRADE_NINE: "grade_nine"
+};
+
 // Student Statuses
 const STUDENT_STATUS = {
   REVIEW: "review",
@@ -167,14 +173,43 @@ const SURAHS = [
   { id: 114, name: "الناس", chapter: 30, phrases: 6 }
 ];
 
+// Villages
+const VILLAGES = [
+  "معمد",
+  "المعري",
+  "البلاد",
+  "الفيقين",
+  "البياض",
+  "الشعيبة",
+  "حي جامع",
+  "المعيول",
+  "عز",
+  "متان",
+  "اخرى"
+];
+
+const KNOWN_BY = [
+  "مواقع التواصل الإجتماعي",
+  "إعلان",
+  "اصدقاء",
+  "ولي الأمر",
+  "الموقع",
+  "اخرى"
+];
+
 // Vuex Getters
 const GETTERS = {
   AUTH: {
     GET_USER: "GET_USER",
     GET_USER_REGISTRATION_STATE: "GET_USER_REGISTRATION_STATE"
   },
-  SETTINGS: {},
-  STUDNETS: {},
+  SETTINGS: {
+    GET_YEAR_INFO: "GET_YEAR_INFO",
+    GET_REGISTRATION_PERIOD: "GET_REGISTRATION_PERIOD"
+  },
+  STUDNETS: {
+    GET_STUDENTS: "GET_STUDENTS"
+  },
   UI: {
     GET_LOADING: "GET_LOADING",
     GET_ERRORS: "GET_ERRORS",
@@ -201,6 +236,7 @@ const ACTIONS = {
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
+    FETCH_STUDENTS_BY_PARENT_ID: "FETCH_STUDENTS_BY_PARENT_ID",
     REGISTER_STUDENT: "REGISTER_STUDENT",
     DELETE_STUDENT: "DELETE_STUDENT",
     EDIT_STUDENT_STATUS: "EDIT_STUDENT_STATUS"
@@ -253,10 +289,16 @@ const ERRORS = {
     USER_NOT_FOUND: "database/user-not-found",
     STUDENT_FORM_RECORD_NOT_DELETED: "database/student-form-record-not-deleted",
     STUDENT_NOT_FOUND: "database/student-not-found",
-    EDIT_APPLICATION_STATUS_ERROR: "database/edit-application-status-error",
+    EDIT_STUDENT_STATUS_ERROR: "database/edit-student-status-error",
     YEAR_INFO_ERROR: "database/year-info-error",
     YEAR_INFO_NOT_FOUND: "database/year-info-not-found",
     FETCH_REGISTRATION_PERIOD_ERROR: "database/fetch-registration-period-error"
+  },
+  STORAGE: {
+    OBJECT_NOT_FOUND: "storage/object-not-found",
+    UNAUTHORIZED: "storage/unauthorized",
+    CANCELED: "storage/canceled",
+    UNKNOWN: "storage/unknown"
   }
 };
 
@@ -265,7 +307,7 @@ const MESSAGES = {
   AUTH: {},
   DATABASE: {
     STUDENT_FORM_RECORD_DELETED: "database/student-form-record-deleted",
-    APPLICATION_STATUS_UPDATED: "database/application-status-updated",
+    STUDENT_STATUS_UPDATED: "database/student-status-updated",
     YEAR_INFO_CREATED: "database/year-info-created",
     YEAR_INFO_UPDATED: "database/year-info-updated",
     YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
@@ -280,9 +322,12 @@ const ADMIN_EMAIL = "altomohcompany1@gmail.com";
 export {
   COLLECTIONS,
   ADMIN_EMAIL,
+  STUDENT_GRADE,
   STUDENT_STATUS,
   CHAPTERS,
   SURAHS,
+  VILLAGES,
+  KNOWN_BY,
   GETTERS,
   ACTIONS,
   MUTATIONS,

@@ -1,5 +1,6 @@
 // Import Needed Modules
-import { FirebaseDatabase } from "boot/firebase";
+import { Dialog } from "quasar";
+import { FirebaseDatabase, FirebaseStorage } from "boot/firebase";
 import {
   COLLECTIONS,
   MUTATIONS,
@@ -14,12 +15,14 @@ const state = {
 };
 
 // Getters
-const getters = {};
+const getters = {
+  GET_STUDENTS: state => state.students
+};
 
 // Actions
 const actions = {
   async FETCH_STUDENTS({ commit }, payload) {
-    // Activate Loader
+    // Activate Loading
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
@@ -27,7 +30,7 @@ const actions = {
       let snapshot = null;
 
       // Check Student Status And Fetch Student Based On Status
-      if (payload.status) {
+      if (payload.status !== "") {
         snapshot = await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
           .where("status", "==", payload.status)
           .orderBy("createdAt", "desc")
@@ -76,6 +79,73 @@ const actions = {
     } catch (error) {
       // Display Error In Console
       console.log("FETCH_STUDENTS", error);
+      // Set Error (Fetch Student Action)
+      commit(MUTATIONS.UI.SET_ERROR, error);
+      // Deactivate Loader
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async FETCH_STUDENTS_BY_PARENT_ID({ commit }, payload) {
+    // Activate Loading
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      // Create Students Snapshot Instance
+      let snapshot = null;
+
+      // Check Student Status And Fetch Student Based On Status
+      if (payload.status) {
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
+          .where("status", "==", payload.status)
+          .where("parentId", "==", payload.parentId)
+          .orderBy("createdAt", "desc")
+          .get();
+      } else {
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
+          .where("parentId", "==", payload.parentId)
+          .orderBy("createdAt", "desc")
+          .get();
+      }
+
+      // Get Students Records
+      let docs = snapshot.docs;
+
+      // Create A New Array From Students Records
+      let students = docs.map(doc => ({
+        id: doc.id,
+        name: doc.data().name,
+        centerKnownBy: doc.data().centerKnownBy,
+        certificates: doc.data().certificates,
+        createdAt: doc.data().createdAt,
+        diseases: doc.data().diseases,
+        finishedClass: doc.data().finishedClass,
+        firstPhoneNumber: doc.data().firstPhoneNumber,
+        imageURL: doc.data().imageURL,
+        isLearntInCenterBefore: doc.data().isLearntInCenterBefore,
+        oldCenterName: doc.data().oldCenterName,
+        parentId: doc.data().parentId,
+        parentName: doc.data().parentName,
+        savedChapters: doc.data().savedChapters,
+        savedSurahs: doc.data().savedSurahs,
+        secondPhoneNumber: doc.data().secondPhoneNumber,
+        skills: doc.data().skills,
+        status: doc.data().status,
+        rejectionReasons: doc.data().rejectionReasons,
+        studentState: doc.data().studentState,
+        subjectANumber: doc.data().subjectANumber,
+        subjectBNumber: doc.data().subjectBNumber,
+        village: doc.data().village
+      }));
+
+      // Set Students
+      commit(MUTATIONS.STUDNETS.SET_STUDENTS, students);
+
+      // Deactivate Loader
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    } catch (error) {
+      // Display Error In Console
+      console.log("FETCH_STUDENTS_BY_PARENT_ID", error);
       // Set Error (Fetch Student Action)
       commit(MUTATIONS.UI.SET_ERROR, error);
       // Deactivate Loader
@@ -182,7 +252,7 @@ const actions = {
 
       // Commit Success Message
       commit(MUTATIONS.UI.SET_MESSAGE, {
-        code: MESSAGES.STUDENT_FORM_RECORD_DELETED
+        code: MESSAGES.DATABASE.STUDENT_FORM_RECORD_DELETED
       });
     } catch (error) {
       // Display Error In Console
@@ -215,7 +285,7 @@ const actions = {
 
         // Set Message
         commit(MUTATIONS.UI.SET_MESSAGE, {
-          code: MESSAGES.APPLICATION_STATUS_UPDATED
+          code: MESSAGES.DATABASE.STUDENT_STATUS_UPDATED
         });
       } else {
         // Set Error (Student Not Found)
@@ -231,7 +301,7 @@ const actions = {
       console.log("EDIT_APPLICATION_STATUS ERROR", error);
       // Set Error (Edit Application Status Error)
       commit(MUTATIONS.UI.SET_ERROR, {
-        code: ERRORS.DATABASE.EDIT_APPLICATION_STATUS_ERROR
+        code: ERRORS.DATABASE.EDIT_STUDENT_STATUS_ERROR
       });
       // Deactivate Loading
       commit(MUTATIONS.UI.SET_LOADING, false);

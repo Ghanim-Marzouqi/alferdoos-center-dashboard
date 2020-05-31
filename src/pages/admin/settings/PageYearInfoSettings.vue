@@ -76,7 +76,7 @@
             flat
             label="حفظ"
             @click="saveCurrentYear"
-            :loading="GET_LOADER"
+            :loading="GET_LOADING"
           />
         </q-card-actions>
       </q-card>
@@ -138,7 +138,7 @@
             flat
             label="حفظ"
             @click="onPeriodFormSubmit"
-            :loading="GET_LOADER"
+            :loading="GET_LOADING"
           />
         </q-card-actions>
       </q-card>
@@ -149,6 +149,7 @@
 <script>
 import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
+import { GETTERS, ACTIONS, MESSAGES, ERRORS } from "../../../config/constants";
 
 // Get Today's Date
 const today = new Date();
@@ -170,12 +171,12 @@ export default {
     this.FETCH_YEAR_INFO();
   },
   computed: {
-    ...mapGetters("admins", [
-      "GET_LOADER",
-      "GET_YEAR_INFO",
-      "GET_MESSAGES",
-      "GET_ERRORS"
-    ]),
+    ...mapGetters({
+      GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+      GET_ERRORS: GETTERS.UI.GET_ERRORS
+    }),
     getTodayDate() {
       return date.toISOString
         .split("T")[0]
@@ -184,12 +185,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions("admins", [
-      "FETCH_YEAR_INFO",
-      "SET_YEAR_NAME",
-      "SET_REGISTRATION_PERIOD",
-      "CLEAR_ERRORS_AND_MESSAGES"
-    ]),
+    ...mapActions({
+      FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
+      SET_YEAR_NAME: ACTIONS.SETTINGS.SET_YEAR_NAME,
+      SET_REGISTRATION_PERIOD: ACTIONS.SETTINGS.SET_REGISTRATION_PERIOD,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+    }),
     saveCurrentYear() {
       if (this.currentYear === "") return;
 
@@ -242,7 +243,7 @@ export default {
         // Get Message Code
         let messageCode = newState[0].code;
 
-        if (messageCode === "database/year-info-created") {
+        if (messageCode === MESSAGES.DATABASE.YEAR_INFO_CREATED) {
           // Clear Messages
           this.CLEAR_ERRORS_AND_MESSAGES();
 
@@ -259,7 +260,7 @@ export default {
           this.isYearDialogOpen = false;
         }
 
-        if (messageCode === "database/year-info-updated") {
+        if (messageCode === MESSAGES.DATABASE.YEAR_INFO_UPDATED) {
           // Clear Messages
           this.CLEAR_ERRORS_AND_MESSAGES();
 
@@ -276,7 +277,10 @@ export default {
           this.isYearDialogOpen = false;
         }
 
-        if (messageCode === "database/year-info-registration-period-updated") {
+        if (
+          messageCode ===
+          MESSAGES.DATABASE.YEAR_INFO_REGISTRATION_PERIOD_UPDATED
+        ) {
           // Clear Messages
           this.CLEAR_ERRORS_AND_MESSAGES();
 
@@ -299,7 +303,7 @@ export default {
         // Get Message Code
         let errorCode = newState[0].code;
 
-        if (errorCode === "database/year-info-error") {
+        if (errorCode === ERRORS.DATABASE.YEAR_INFO_ERROR) {
           // Clear Messages
           this.CLEAR_ERRORS_AND_MESSAGES();
 

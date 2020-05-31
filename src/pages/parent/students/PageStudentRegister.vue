@@ -4,7 +4,6 @@
       طلب تسجيل طالب جديد (<span v-html="getRegistrationPeriodStatus"></span>)
     </p>
     <div class="q-pa-md">
-
       <!-- Horizontal Stepper -->
       <q-stepper
         id="horizontal-stepper"
@@ -486,7 +485,7 @@
           </div>
           <q-stepper-navigation>
             <q-btn
-              :loading="GET_LOADER"
+              :loading="GET_LOADING"
               label="إرسال"
               color="primary"
               :disable="!isRegistrationEnabled"
@@ -958,7 +957,7 @@
           </q-form>
           <q-stepper-navigation>
             <q-btn
-              :loading="GET_LOADER"
+              :loading="GET_LOADING"
               label="إرسال"
               color="primary"
               :disable="!isRegistrationEnabled"
@@ -982,6 +981,15 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import {
+  CHAPTERS,
+  SURAHS,
+  VILLAGES,
+  KNOWN_BY,
+  GETTERS,
+  ACTIONS,
+  STUDENT_STATUS
+} from "../../../config/constants";
 
 export default {
   name: "PageParentStudentRegister",
@@ -1015,27 +1023,8 @@ export default {
         image: null,
         certificates: []
       },
-      villages: [
-        "معمد",
-        "المعري",
-        "البلاد",
-        "الفيقين",
-        "البياض",
-        "الشعيبة",
-        "حي جامع",
-        "المعيول",
-        "عز",
-        "متان",
-        "اخرى"
-      ],
-      centerKnownList: [
-        "مواقع التواصل الإجتماعي",
-        "إعلان",
-        "اصدقاء",
-        "ولي الأمر",
-        "الموقع",
-        "اخرى"
-      ]
+      villages: VILLAGES,
+      centerKnownList: KNOWN_BY
     };
   },
   created() {
@@ -1048,24 +1037,22 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("parents", [
-      "GET_USER",
-      "GET_CHAPTERS",
-      "GET_SURAHS",
-      "GET_MESSAGES",
-      "GET_ERRORS",
-      "GET_LOADER"
-    ]),
-    ...mapGetters("admins", ["GET_REGISTRATION_PERIOD"]),
+    ...mapGetters({
+      GET_USER: GETTERS.AUTH.GET_USER,
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+      GET_ERRORS: GETTERS.UI.GET_ERRORS,
+      GET_REGISTRATION_PERIOD: GETTERS.SETTINGS.GET_REGISTRATION_PERIOD
+    }),
     getFirstPhoneNumber() {
       return `${this.GET_USER.phone}`.slice(4);
     },
     getAllChapters() {
-      let chapters = this.GET_CHAPTERS.map(chapter => chapter.name);
+      let chapters = CHAPTERS.map(chapter => chapter.name);
       return chapters;
     },
     getAllSurahs() {
-      let surahs = this.GET_SURAHS.map(surah => surah.name);
+      let surahs = SURAHS.map(surah => surah.name);
       return surahs;
     },
     getRegistrationPeriodStatus() {
@@ -1087,8 +1074,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions("parents", ["REGISTER_STUDENT", "CLEAR_ERRORS_AND_MESSAGES"]),
-    ...mapActions("admins", ["FETCH_REGISTRATION_PERIOD"]),
+    ...mapActions({
+      FETCH_REGISTRATION_PERIOD: ACTIONS.SETTINGS.FETCH_REGISTRATION_PERIOD,
+      REGISTER_STUDENT: ACTIONS.STUDNETS.REGISTER_STUDENT,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+    }),
     async goToNextStep(step, form) {
       let valid = await this.$refs[form].validate();
       if (valid) {
@@ -1097,7 +1087,7 @@ export default {
       }
     },
     addSavedChapter(chapter) {
-      let found = this.GET_CHAPTERS.find(value => value.name === chapter);
+      let found = CHAPTERS.find(value => value.name === chapter);
       let isRegisteredChapter = this.studentForm.savedChapters.find(
         value => value.name === chapter
       );
@@ -1107,7 +1097,7 @@ export default {
       }
     },
     addSavedSurah(surah) {
-      let found = this.GET_SURAHS.find(value => value.name === surah);
+      let found = SURAHS.find(value => value.name === surah);
       let isRegisteredSurah = this.studentForm.savedSurahs.find(
         value => value.name === surah
       );
@@ -1155,7 +1145,8 @@ export default {
           image: this.studentForm.image,
           certificates: this.studentForm.certificates,
           parentId: this.GET_USER.id,
-          parentName: this.GET_USER.name
+          parentName: this.GET_USER.name,
+          status: STUDENT_STATUS.REVIEW
         });
       }
     }
@@ -1191,9 +1182,6 @@ export default {
         this.hStep = 1;
         this.vStep = 1;
       }
-    },
-    GET_ERRORS: function(value) {
-      console.log(value);
     }
   }
 };

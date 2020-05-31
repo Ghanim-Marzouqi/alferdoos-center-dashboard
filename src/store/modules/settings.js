@@ -15,7 +15,10 @@ const state = {
 };
 
 // Getters
-const getters = {};
+const getters = {
+  GET_YEAR_INFO: state => state.yearInfo,
+  GET_REGISTRATION_PERIOD: state => state.registrationPeriod
+};
 
 // Actions
 const actions = {
@@ -72,7 +75,9 @@ const actions = {
           });
 
         // Set Message
-        commit(MUTATIONS.UI.SET_MESSAGE, { code: MESSAGES.YEAR_INFO_CREATED });
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.YEAR_INFO_CREATED
+        });
 
         // Deactivate Loading
         commit(MUTATIONS.UI.SET_LOADING, false);
@@ -85,7 +90,9 @@ const actions = {
           });
 
         // Set Message
-        commit(MUTATIONS.UI.SET_MESSAGE, { code: MESSAGES.YEAR_INFO_UPDATED });
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.YEAR_INFO_UPDATED
+        });
         // Deactivate Loading
         commit(MUTATIONS.UI.SET_LOADING, false);
       }
@@ -132,7 +139,7 @@ const actions = {
 
         // Set Messages
         commit(MUTATIONS.UI.SET_MESSAGE, {
-          code: MESSAGES.YEAR_INFO_REGISTRATION_PERIOD_UPDATED
+          code: MESSAGES.DATABASE.YEAR_INFO_REGISTRATION_PERIOD_UPDATED
         });
 
         // Deactivate Loading
