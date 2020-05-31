@@ -10,7 +10,7 @@
           title="اسئلة الإختبار التحريري"
           :columns="columns"
           :data="data"
-          row-key="name"
+          row-key="text"
         >
           <template v-slot:header="props">
             <q-tr :props="props">
