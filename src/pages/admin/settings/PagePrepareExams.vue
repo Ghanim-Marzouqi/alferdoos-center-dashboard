@@ -298,24 +298,7 @@ export default {
       question: {
         text: "",
         marks: "",
-        options: [
-          {
-            text: "104",
-            isCorrect: false
-          },
-          {
-            text: "114",
-            isCorrect: true
-          },
-          {
-            text: "124",
-            isCorrect: false
-          },
-          {
-            text: "134",
-            isCorrect: false
-          }
-        ]
+        options: []
       },
       option: {
         text: "",

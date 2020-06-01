@@ -34,13 +34,12 @@
               <q-btn
                 dense
                 flat
-                @click.stop="showErrorDialog('الإختبار التحريري')"
               >
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
             <q-td key="recite" :props="props">
-              <q-btn dense flat @click.stop="showErrorDialog('التسميع')">
+              <q-btn dense flat>
                 <q-icon color="blue" name="o_hearing" />
               </q-btn>
             </q-td>
@@ -49,17 +48,6 @@
       </q-table>
     </div>
 
-    <!-- Error Dialog -->
-    <q-dialog v-model="isErrorDialogOpen">
-      <q-card>
-        <q-card-section>
-          <div class="text-h5">حصل خطأ</div>
-          <div class="text-h6 q-mt-4">
-            حصل خطأ أثناء محاولة عرض {{ examType }}
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
@@ -125,11 +113,7 @@ export default {
       EDIT_STUDENT_STATUS: ACTIONS.STUDNETS.EDIT_STUDENT_STATUS,
       SET_ERROR: ACTIONS.UI.SET_ERROR,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
-    }),
-    showErrorDialog(exam) {
-      this.examType = exam;
-      this.isErrorDialogOpen = true;
-    }
+    })
   },
   filters: {
     formatDate(val) {
