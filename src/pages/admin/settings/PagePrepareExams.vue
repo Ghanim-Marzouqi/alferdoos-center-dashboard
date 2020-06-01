@@ -52,7 +52,12 @@
 
     <!-- Written Exam Table -->
     <div class="row q-pa-md">
-      <q-btn class="q-mb-md" color="primary">إضافة سؤال جديد</q-btn>
+      <q-btn
+        class="q-mb-md"
+        color="primary"
+        @click="isAddQuestionDialogOpen = true"
+        >إضافة سؤال جديد</q-btn
+      >
       <div class="col-12">
         <q-table
           title="اسئلة الإختبار التحريري"
@@ -90,7 +95,7 @@
             <q-tr v-show="props.expand" :props="props">
               <q-td colspan="100%">
                 <div class="text-left">
-                  <ul>
+                  <ol>
                     <li v-for="(answer, i) in props.row.answers" :key="i">
                       <span
                         :style="
@@ -99,7 +104,7 @@
                         >{{ answer.name }}</span
                       >
                     </li>
-                  </ul>
+                  </ol>
                 </div>
               </q-td>
             </q-tr>
@@ -177,6 +182,96 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- Add Question Dialog -->
+    <q-dialog v-model="isAddQuestionDialogOpen">
+      <q-card style="width: 400px">
+        <q-card-section>
+          <div class="text-h6">إضافة سؤال</div>
+          <div class="q-ma-2">
+            <q-input
+              class="q-mt-sm"
+              filled
+              v-model="question.text"
+              label="نص السؤال"
+              type="text"
+              :rules="[val => val.length > 0 || 'الرجاء إدخال نص السؤال']"
+            />
+            <q-input
+              class="q-mt-sm"
+              filled
+              v-model="question.marks"
+              label="درجة السؤال"
+              type="number"
+              :rules="[val => val > 0 || 'الرجاء إدخال رقم أكبر من صفر']"
+            />
+            <div class="row q-my-sm">
+              <div class="col-12">
+                <p class="text-body1">
+                  <q-btn
+                    round
+                    dense
+                    color="primary"
+                    @click="isAddOptionDialogOpen = true"
+                  >
+                    <q-icon name="add"></q-icon>
+                  </q-btn>
+                  <span class="q-pa-sm">إضافة خيار إلى السؤال</span>
+                </p>
+                <ol>
+                  <li v-for="(option, i) in question.options" :key="i">
+                    <span
+                      :style="option.isCorrect ? 'color: green' : 'color: red'"
+                      >{{ option.text }}</span
+                    >
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </q-card-section>
+        <q-card-actions>
+          <q-space></q-space>
+          <q-btn dense flat color="primary" @click="closeAddQuestionDialog"
+            >إلغاء</q-btn
+          >
+          <q-btn dense flat color="primary">حفظ</q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Add Option Dialog -->
+    <q-dialog v-model="isAddOptionDialogOpen">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">إضافة خيار</div>
+          <div class="q-ma-2">
+            <q-input
+              class="q-mt-sm"
+              filled
+              v-model="question.text"
+              label="نص الخيار"
+              type="text"
+              :rules="[val => val.length > 0 || 'الرجاء إدخال نص السؤال']"
+            />
+            <q-select
+              filled
+              v-model="option.isCorrect"
+              label="هل هذه هي الإجابة الصحيحة؟"
+              :options="questionOptions"
+              behavior="menu"
+            />
+          </div>
+        </q-card-section>
+        <q-card-actions>
+          <q-space></q-space>
+          <q-btn dense flat color="primary" @click="closeAddOptionDialog"
+            >إلغاء</q-btn
+          >
+          <q-btn dense flat color="primary">حفظ</q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -196,8 +291,46 @@ export default {
     return {
       isWrittenExamDialogOpen: false,
       isReciteExamDialogOpen: false,
+      isAddQuestionDialogOpen: false,
+      isAddOptionDialogOpen: false,
       writtenExamMarks: "",
       reciteExamMarks: "",
+      question: {
+        text: "",
+        marks: "",
+        options: [
+          {
+            text: "104",
+            isCorrect: false
+          },
+          {
+            text: "114",
+            isCorrect: true
+          },
+          {
+            text: "124",
+            isCorrect: false
+          },
+          {
+            text: "134",
+            isCorrect: false
+          }
+        ]
+      },
+      option: {
+        text: "",
+        isCorrect: "لا"
+      },
+      questionOptions: [
+        {
+          label: "لا",
+          value: false
+        },
+        {
+          label: "نعم",
+          value: true
+        }
+      ],
       columns: [
         {
           name: "question",
@@ -303,6 +436,23 @@ export default {
         reciteExamMarks: Number.parseInt(this.reciteExamMarks)
       });
       this.isReciteExamDialogOpen = false;
+    },
+    closeAddQuestionDialog() {
+      this.question = {
+        text: "",
+        marks: "",
+        answers: []
+      };
+
+      this.isAddQuestionDialogOpen = false;
+    },
+    closeAddOptionDialog() {
+      this.option = {
+        text: "",
+        isCorrect: "لا"
+      };
+
+      this.isAddOptionDialogOpen = false;
     }
   },
   watch: {
