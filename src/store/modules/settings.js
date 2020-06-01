@@ -3,6 +3,7 @@ import { date } from "quasar";
 import { FirebaseDatabase } from "boot/firebase";
 import {
   COLLECTIONS,
+  EXAM_TYPE,
   MUTATIONS,
   MESSAGES,
   ERRORS
@@ -39,7 +40,9 @@ const actions = {
           id: doc.data().id,
           name: doc.data().name,
           startPeriodDate: doc.data().startPeriodDate,
-          endPeriodDate: doc.data().endPeriodDate
+          endPeriodDate: doc.data().endPeriodDate,
+          writtenExamMarks: doc.data().writtenExamMarks,
+          reciteExamMarks: doc.data().reciteExamMarks
         });
       }
     } catch (error) {
@@ -180,6 +183,59 @@ const actions = {
       commit(MUTATIONS.UI.SET_ERROR, {
         code: ERRORS.DATABASE.FETCH_REGISTRATION_PERIOD_ERROR
       });
+    }
+  },
+
+  async SET_EXAM_TOTAL_MARKS({ commit }, payload) {
+    // Activate Loading
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      // Get Date
+      let date = new Date();
+
+      // Get Year Info If Exists
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+        .doc(date.getFullYear().toString())
+        .get();
+
+      // Check If Year Data Exists
+      if (doc.exists) {
+        // Set Exam Marks
+        if (payload.examType === EXAM_TYPE.WRITTEN) {
+          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+            .doc(doc.id)
+            .update({
+              writtenExamMarks: payload.writtenExamMarks
+            });
+
+          commit(MUTATIONS.UI.SET_MESSAGE, {
+            code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
+          });
+        } else if (payload.examType === EXAM_TYPE.RECITE) {
+          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+            .doc(doc.id)
+            .update({
+              reciteExamMarks: payload.reciteExamMarks
+            });
+
+          commit(MUTATIONS.UI.SET_MESSAGE, {
+            code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
+          });
+        }
+      }
+
+      // Deactivate Loading
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    } catch (error) {
+      // Display Error In Console
+      console.log("SET_EXAM_TOTAL_MARKS ERROR", error);
+      // Set Error (Set Exam Marks Error)
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.SET_EXAM_MARKS_ERROR
+      });
+      // Deactivate Loading
+      commit(MUTATIONS.UI.SET_LOADING, false);
     }
   }
 };

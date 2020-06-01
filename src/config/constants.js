@@ -197,6 +197,11 @@ const KNOWN_BY = [
   "اخرى"
 ];
 
+const EXAM_TYPE = {
+  WRITTEN: "written",
+  RECITE: "recite"
+};
+
 // Vuex Getters
 const GETTERS = {
   AUTH: {
@@ -232,7 +237,8 @@ const ACTIONS = {
     FETCH_YEAR_INFO: "FETCH_YEAR_INFO",
     SET_YEAR_NAME: "SET_YEAR_NAME",
     SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
-    FETCH_REGISTRATION_PERIOD: "FETCH_REGISTRATION_PERIOD"
+    FETCH_REGISTRATION_PERIOD: "FETCH_REGISTRATION_PERIOD",
+    SET_EXAM_TOTAL_MARKS: "SET_EXAM_TOTAL_MARKS"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -292,7 +298,8 @@ const ERRORS = {
     EDIT_STUDENT_STATUS_ERROR: "database/edit-student-status-error",
     YEAR_INFO_ERROR: "database/year-info-error",
     YEAR_INFO_NOT_FOUND: "database/year-info-not-found",
-    FETCH_REGISTRATION_PERIOD_ERROR: "database/fetch-registration-period-error"
+    FETCH_REGISTRATION_PERIOD_ERROR: "database/fetch-registration-period-error",
+    SET_EXAM_MARKS_ERROR: "database/set_exam_marks_error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
@@ -311,7 +318,8 @@ const MESSAGES = {
     YEAR_INFO_CREATED: "database/year-info-created",
     YEAR_INFO_UPDATED: "database/year-info-updated",
     YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
-      "database/year-info-registration-period-updated"
+      "database/year-info-registration-period-updated",
+    EXAM_MARKS_UPDATED: "database/exam_marks_updated"
   }
 };
 
@@ -328,6 +336,7 @@ export {
   SURAHS,
   VILLAGES,
   KNOWN_BY,
+  EXAM_TYPE,
   GETTERS,
   ACTIONS,
   MUTATIONS,

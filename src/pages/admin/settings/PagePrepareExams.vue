@@ -2,6 +2,54 @@
   <q-page padding>
     <p class="text-h6">إعداد الإختبارات</p>
 
+    <!-- Written Exam Marks Table -->
+    <div class="row q-pa-md">
+      <div class="col-12">
+        <q-markup-table>
+          <thead>
+            <tr>
+              <th class="text-left">مجموع درجات الإختبار التحريري</th>
+              <th class="text-right">تعديل</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left">{{ getWrittenExamMarks }} درجة</td>
+              <td class="text-right">
+                <q-btn dense flat @click="isWrittenExamDialogOpen = true">
+                  <q-icon name="o_edit" color="primary" />
+                </q-btn>
+              </td>
+            </tr>
+          </tbody>
+        </q-markup-table>
+      </div>
+    </div>
+
+    <!-- Recite Exam Marks Table -->
+    <div class="row q-pa-md">
+      <div class="col-12">
+        <q-markup-table>
+          <thead>
+            <tr>
+              <th class="text-left">مجموع درجات التسميع</th>
+              <th class="text-right">تعديل</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left">{{ getReciteExamMarks }} درجة</td>
+              <td class="text-right">
+                <q-btn dense flat @click="isReciteExamDialogOpen = true">
+                  <q-icon name="o_edit" color="primary" />
+                </q-btn>
+              </td>
+            </tr>
+          </tbody>
+        </q-markup-table>
+      </div>
+    </div>
+
     <!-- Written Exam Table -->
     <div class="row q-pa-md">
       <q-btn class="q-mb-md" color="primary">إضافة سؤال جديد</q-btn>
@@ -60,37 +108,96 @@
       </div>
     </div>
 
-    <!-- Year Name Table -->
-    <div class="row q-pa-md">
-      <div class="col-12">
-        <q-markup-table>
-          <thead>
-            <tr>
-              <th class="text-left">التسميع</th>
-              <th class="text-right">تعديل</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="text-left">10 درجات</td>
-              <td class="text-right">
-                <q-btn dense flat>
-                  <q-icon name="o_edit" color="primary" />
-                </q-btn>
-              </td>
-            </tr>
-          </tbody>
-        </q-markup-table>
-      </div>
-    </div>
+    <!-- Written Exam Dialog -->
+    <q-dialog v-model="isWrittenExamDialogOpen">
+      <q-card>
+        <q-card-section>
+          <div class="q-ma-2">
+            <q-input
+              filled
+              v-model="writtenExamMarks"
+              label="درجة الإختبار التحريري"
+              type="number"
+              :rules="[val => val > 0 || 'الرجاء إدخال رقم أكبر من صفر']"
+            />
+          </div>
+        </q-card-section>
+        <q-card-actions>
+          <q-space></q-space>
+          <q-btn
+            dense
+            flat
+            color="primary"
+            @click="isWrittenExamDialogOpen = false"
+            >إلغاء</q-btn
+          >
+          <q-btn
+            dense
+            flat
+            color="primary"
+            @click="setWrittenExamMarks"
+            :disable="disableWrittenExamButton"
+            >حفظ</q-btn
+          >
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Recite Exam Dialog -->
+    <q-dialog v-model="isReciteExamDialogOpen">
+      <q-card>
+        <q-card-section>
+          <div class="q-ma-2">
+            <q-input
+              filled
+              v-model="reciteExamMarks"
+              label="درجة التسميع"
+              type="number"
+              :rules="[val => val > 0 || 'الرجاء إدخال رقم أكبر من صفر']"
+            />
+          </div>
+        </q-card-section>
+        <q-card-actions>
+          <q-space></q-space>
+          <q-btn
+            dense
+            flat
+            color="primary"
+            @click="isReciteExamDialogOpen = false"
+            >إلغاء</q-btn
+          >
+          <q-btn
+            dense
+            flat
+            color="primary"
+            @click="setReciteExamMarks"
+            :disable="disableReciteExamButton"
+            >حفظ</q-btn
+          >
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+import {
+  GETTERS,
+  ACTIONS,
+  EXAM_TYPE,
+  MESSAGES,
+  ERRORS
+} from "../../../config/constants";
+
 export default {
   name: "PagePrepareExams",
   data() {
     return {
+      isWrittenExamDialogOpen: false,
+      isReciteExamDialogOpen: false,
+      writtenExamMarks: "",
+      reciteExamMarks: "",
       columns: [
         {
           name: "question",
@@ -132,8 +239,114 @@ export default {
         }
       ]
     };
+  },
+  created() {
+    this.FETCH_YEAR_INFO();
+  },
+  computed: {
+    ...mapGetters({
+      GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+      GET_ERRORS: GETTERS.UI.GET_ERRORS
+    }),
+    getWrittenExamMarks() {
+      let marks =
+        typeof this.GET_YEAR_INFO.writtenExamMarks !== "undefined"
+          ? this.GET_YEAR_INFO.writtenExamMarks
+          : 0;
+      return marks;
+    },
+    getReciteExamMarks() {
+      let marks =
+        typeof this.GET_YEAR_INFO.reciteExamMarks !== "undefined"
+          ? this.GET_YEAR_INFO.reciteExamMarks
+          : 0;
+      return marks;
+    },
+    disableWrittenExamButton() {
+      if (
+        Number.parseInt(this.writtenExamMarks) <= 0 ||
+        this.writtenExamMarks === ""
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    disableReciteExamButton() {
+      if (
+        Number.parseInt(this.reciteExamMarks) <= 0 ||
+        this.reciteExamMarks === ""
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+  methods: {
+    ...mapActions({
+      FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
+      SET_EXAM_TOTAL_MARKS: ACTIONS.SETTINGS.SET_EXAM_TOTAL_MARKS,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+    }),
+    setWrittenExamMarks() {
+      this.SET_EXAM_TOTAL_MARKS({
+        examType: EXAM_TYPE.WRITTEN,
+        writtenExamMarks: Number.parseInt(this.writtenExamMarks)
+      });
+      this.isWrittenExamDialogOpen = false;
+    },
+    setReciteExamMarks() {
+      this.SET_EXAM_TOTAL_MARKS({
+        examType: EXAM_TYPE.RECITE,
+        reciteExamMarks: Number.parseInt(this.reciteExamMarks)
+      });
+      this.isReciteExamDialogOpen = false;
+    }
+  },
+  watch: {
+    GET_MESSAGES: function(newState, oldState) {
+      if (newState.length > 0) {
+        let messageCode = newState[0].code;
+
+        if (messageCode === MESSAGES.DATABASE.EXAM_MARKS_UPDATED) {
+          // Clear Messages
+          this.CLEAR_ERRORS_AND_MESSAGES();
+
+          // Get Updated Exam Marks
+          this.FETCH_YEAR_INFO();
+
+          // Display Success Message
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تحديث درجات اللإختبار بنجاح"
+          });
+        }
+      }
+    },
+    GET_ERRORS: function(newState, oldState) {
+      if (newState.length > 0) {
+        let errorCode = newState[0].code;
+
+        if (errorCode === ERRORS.DATABASE.SET_EXAM_MARKS_ERROR) {
+          // Clear Errors
+          this.CLEAR_ERRORS_AND_MESSAGES();
+
+          // Display Error Dialog
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ أثناء تحديث درجات الإختبار"
+          });
+        }
+      }
+    }
   }
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.q-card {
+  min-width: 290px;
+}
+</style>
