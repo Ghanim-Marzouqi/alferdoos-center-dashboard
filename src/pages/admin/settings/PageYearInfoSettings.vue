@@ -17,7 +17,7 @@
               <td class="text-left">{{ GET_YEAR_INFO.name }}</td>
               <td class="text-right">
                 <q-btn dense flat @click="isYearDialogOpen = true">
-                  <q-icon name="o_edit" color="primary" />
+                  <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>
@@ -44,7 +44,7 @@
               </td>
               <td class="text-right">
                 <q-btn dense flat @click="isDateDialogOpen = true">
-                  <q-icon name="o_edit" color="primary" />
+                  <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>

@@ -4,7 +4,8 @@ const COLLECTIONS = {
   PARENTS: "parents",
   TEACHERS: "teachers",
   STUDENTS: "students",
-  YEARS: "years"
+  YEARS: "years",
+  QUESTIONS: "questions"
 };
 
 const STUDENT_GRADE = {
@@ -199,7 +200,10 @@ const KNOWN_BY = [
 
 const EXAM_TYPE = {
   WRITTEN: "written",
-  RECITE: "recite"
+  RECITE: "recite",
+  READING: "reading",
+  COMMON_KNOWLEDGE: "commonKnowledge",
+  PERSONAL: "personal"
 };
 
 // Vuex Getters
@@ -210,7 +214,8 @@ const GETTERS = {
   },
   SETTINGS: {
     GET_YEAR_INFO: "GET_YEAR_INFO",
-    GET_REGISTRATION_PERIOD: "GET_REGISTRATION_PERIOD"
+    GET_REGISTRATION_PERIOD: "GET_REGISTRATION_PERIOD",
+    GET_QUESTIONS: "GET_QUESTIONS"
   },
   STUDNETS: {
     GET_STUDENTS: "GET_STUDENTS"
@@ -238,7 +243,9 @@ const ACTIONS = {
     SET_YEAR_NAME: "SET_YEAR_NAME",
     SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
     FETCH_REGISTRATION_PERIOD: "FETCH_REGISTRATION_PERIOD",
-    SET_EXAM_TOTAL_MARKS: "SET_EXAM_TOTAL_MARKS"
+    SET_EXAM_TOTAL_MARKS: "SET_EXAM_TOTAL_MARKS",
+    SET_QUESTION: "SET_QUESTION",
+    FETCH_QUESTIONS: "FETCH_QUESTIONS"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -264,7 +271,8 @@ const MUTATIONS = {
   },
   SETTINGS: {
     SET_YEAR_INFO: "SET_YEAR_INFO",
-    SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD"
+    SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
+    SET_QUESTIONS: "SET_QUESTIONS"
   },
   STUDNETS: {
     SET_STUDENTS: "SET_STUDENTS"
@@ -299,7 +307,8 @@ const ERRORS = {
     YEAR_INFO_ERROR: "database/year-info-error",
     YEAR_INFO_NOT_FOUND: "database/year-info-not-found",
     FETCH_REGISTRATION_PERIOD_ERROR: "database/fetch-registration-period-error",
-    SET_EXAM_MARKS_ERROR: "database/set_exam_marks_error"
+    SET_EXAM_MARKS_ERROR: "database/set_exam_marks_error",
+    SET_QUESTION_ERROR: "database/set_question_error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
@@ -319,7 +328,8 @@ const MESSAGES = {
     YEAR_INFO_UPDATED: "database/year-info-updated",
     YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
       "database/year-info-registration-period-updated",
-    EXAM_MARKS_UPDATED: "database/exam_marks_updated"
+    EXAM_MARKS_UPDATED: "database/exam_marks_updated",
+    QUESTION_ADDED: "database/question-added"
   }
 };
 

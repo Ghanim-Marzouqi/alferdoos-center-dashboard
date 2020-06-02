@@ -12,13 +12,15 @@ import {
 // State
 const state = {
   yearInfo: {},
-  registrationPeriod: {}
+  registrationPeriod: {},
+  questions: []
 };
 
 // Getters
 const getters = {
   GET_YEAR_INFO: state => state.yearInfo,
-  GET_REGISTRATION_PERIOD: state => state.registrationPeriod
+  GET_REGISTRATION_PERIOD: state => state.registrationPeriod,
+  GET_QUESTIONS: state => state.questions
 };
 
 // Actions
@@ -42,7 +44,10 @@ const actions = {
           startPeriodDate: doc.data().startPeriodDate,
           endPeriodDate: doc.data().endPeriodDate,
           writtenExamMarks: doc.data().writtenExamMarks,
-          reciteExamMarks: doc.data().reciteExamMarks
+          reciteExamMarks: doc.data().reciteExamMarks,
+          personalExamMarks: doc.data().personalExamMarks,
+          readingExamMarks: doc.data().readingExamMarks,
+          commonKnowledgeExamMarks: doc.data().commonKnowledgeExamMarks
         });
       }
     } catch (error) {
@@ -222,6 +227,36 @@ const actions = {
           commit(MUTATIONS.UI.SET_MESSAGE, {
             code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
           });
+        } else if (payload.examType === EXAM_TYPE.PERSONAL) {
+          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+            .doc(doc.id)
+            .update({
+              personalExamMarks: payload.personalExamMarks
+            });
+
+          commit(MUTATIONS.UI.SET_MESSAGE, {
+            code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
+          });
+        } else if (payload.examType === EXAM_TYPE.READING) {
+          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+            .doc(doc.id)
+            .update({
+              readingExamMarks: payload.readingExamMarks
+            });
+
+          commit(MUTATIONS.UI.SET_MESSAGE, {
+            code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
+          });
+        } else if (payload.examType === EXAM_TYPE.COMMON_KNOWLEDGE) {
+          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+            .doc(doc.id)
+            .update({
+              commonKnowledgeExamMarks: payload.commonKnowledgeExamMarks
+            });
+
+          commit(MUTATIONS.UI.SET_MESSAGE, {
+            code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
+          });
         }
       }
 
@@ -237,6 +272,71 @@ const actions = {
       // Deactivate Loading
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
+  },
+
+  async SET_QUESTION({ commit }, payload) {
+    // Activate Loading
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let createdAt = Date.now();
+
+      // Add Created At Timestamp
+      payload.createdAt = createdAt;
+
+      // Add New Question
+      await FirebaseDatabase.collection(COLLECTIONS.QUESTIONS)
+        .doc(createdAt.toString())
+        .set(payload);
+
+      // Set Success Message
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.QUESTION_ADDED
+      });
+
+      // Deactivate Loading
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    } catch (error) {
+      // Display Error In Console
+      console.log("SET_QUESTION ERROR", error);
+      // Set Error (Add Question Error)
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.SET_QUESTION_ERROR
+      });
+      // Deactivate Loading
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async FETCH_QUESTIONS({ commit }) {
+    try {
+      // Fetch All Questions
+      let snapshot = await FirebaseDatabase.collection(COLLECTIONS.QUESTIONS)
+        .orderBy("createdAt", "asc")
+        .get();
+
+      let docs = snapshot.docs;
+
+      // Create New Question Array
+      let questions = docs.map(question => ({
+        id: question.id,
+        text: question.data().text,
+        marks: question.data().marks,
+        options: question.data().options,
+        createdAt: question.data().createdAt
+      }));
+
+      if (questions.length > 0) {
+        // Set Questions Array
+        commit(MUTATIONS.SETTINGS.SET_QUESTIONS, questions);
+      } else {
+        // Reset Question Array To Zero
+        commit(MUTATIONS.SETTINGS.SET_QUESTIONS, []);
+      }
+    } catch (error) {
+      // Display Error In Console
+      console.log("FETCH_QUESTIONS ERROR", error);
+    }
   }
 };
 
@@ -244,7 +344,8 @@ const actions = {
 const mutations = {
   SET_YEAR_INFO: (state, info) => (state.yearInfo = info),
   SET_REGISTRATION_PERIOD: (state, period) =>
-    (state.registrationPeriod = period)
+    (state.registrationPeriod = period),
+  SET_QUESTIONS: (state, questions) => (state.questions = questions)
 };
 
 // Export
