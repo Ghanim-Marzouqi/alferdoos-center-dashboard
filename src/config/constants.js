@@ -245,7 +245,8 @@ const ACTIONS = {
     FETCH_REGISTRATION_PERIOD: "FETCH_REGISTRATION_PERIOD",
     SET_EXAM_TOTAL_MARKS: "SET_EXAM_TOTAL_MARKS",
     SET_QUESTION: "SET_QUESTION",
-    FETCH_QUESTIONS: "FETCH_QUESTIONS"
+    FETCH_QUESTIONS: "FETCH_QUESTIONS",
+    DELETE_QUESTION: "DELETE_QUESTION"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -308,7 +309,8 @@ const ERRORS = {
     YEAR_INFO_NOT_FOUND: "database/year-info-not-found",
     FETCH_REGISTRATION_PERIOD_ERROR: "database/fetch-registration-period-error",
     SET_EXAM_MARKS_ERROR: "database/set_exam_marks_error",
-    SET_QUESTION_ERROR: "database/set_question_error"
+    SET_QUESTION_ERROR: "database/set_question_error",
+    DELETE_QUESTION_ERROR: "database/delete-question-error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
@@ -329,7 +331,8 @@ const MESSAGES = {
     YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
       "database/year-info-registration-period-updated",
     EXAM_MARKS_UPDATED: "database/exam_marks_updated",
-    QUESTION_ADDED: "database/question-added"
+    QUESTION_ADDED: "database/question-added",
+    QUESTION_DELETED: "database/question-deleted"
   }
 };
 

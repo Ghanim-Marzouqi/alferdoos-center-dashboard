@@ -43,9 +43,7 @@
             </tr>
             <tr>
               <td class="text-left">الثقافة العامة</td>
-              <td class="text-center">
-                {{ getCommonKnowledgeExamMarks }} درجة
-              </td>
+              <td class="text-center">{{ getCommonKnowledgeExamMarks }} درجة</td>
               <td class="text-right">
                 <q-btn dense flat @click="onCommonKnowledgeExamDialoqOpened">
                   <q-icon name="o_edit" color="teal" />
@@ -63,9 +61,7 @@
             </tr>
             <tr>
               <td class="text-left text-weight-bold">المجموع الكلي للدرجات</td>
-              <td class="text-center text-weight-bold">
-                {{ getTotalMarks }} درجة
-              </td>
+              <td class="text-center text-weight-bold">{{ getTotalMarks }} درجة</td>
               <td class="text-right"></td>
             </tr>
           </tbody>
@@ -81,17 +77,14 @@
           class="q-mb-md"
           color="primary"
           @click="isAddQuestionDialogOpen = true"
-          >إضافة سؤال جديد</q-btn
-        >
+        >إضافة سؤال جديد</q-btn>
       </div>
       <div class="col-12">
         <q-table :columns="columns" :data="GET_QUESTIONS" row-key="text">
           <template v-slot:header="props">
             <q-tr :props="props">
               <q-th auto-width />
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                {{ col.label }}
-              </q-th>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">{{ col.label }}</q-th>
             </q-tr>
           </template>
 
@@ -109,19 +102,10 @@
                   "
                 />
               </q-td>
-              <q-td auto-width>
-                {{ props.row.text }}
-              </q-td>
-              <q-td auto-width class="text-center">
-                {{ props.row.marks }}
-              </q-td>
+              <q-td auto-width>{{ props.row.text }}</q-td>
+              <q-td auto-width class="text-center">{{ props.row.marks }}</q-td>
               <q-td auto-width class="text-right">
-                <q-btn dense flat color="teal">
-                  <q-icon name="o_edit"></q-icon>
-                </q-btn>
-              </q-td>
-              <q-td auto-width class="text-right">
-                <q-btn dense flat color="red">
+                <q-btn dense flat color="red" @click="onDeleteQuestion(props.row)">
                   <q-icon name="o_delete"></q-icon>
                 </q-btn>
               </q-td>
@@ -135,8 +119,7 @@
                         :style="
                           option.isCorrect.value ? 'color: green' : 'color: red'
                         "
-                        >{{ option.text }}</span
-                      >
+                      >{{ option.text }}</span>
                     </li>
                   </ol>
                 </div>
@@ -163,21 +146,14 @@
         </q-card-section>
         <q-card-actions>
           <q-space></q-space>
-          <q-btn
-            dense
-            flat
-            color="primary"
-            @click="isWrittenExamDialogOpen = false"
-            >إلغاء</q-btn
-          >
+          <q-btn dense flat color="primary" @click="isWrittenExamDialogOpen = false">إلغاء</q-btn>
           <q-btn
             dense
             flat
             color="primary"
             @click="setWrittenExamMarks"
             :disable="disableWrittenExamButton"
-            >حفظ</q-btn
-          >
+          >حفظ</q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -198,21 +174,14 @@
         </q-card-section>
         <q-card-actions>
           <q-space></q-space>
-          <q-btn
-            dense
-            flat
-            color="primary"
-            @click="isReciteExamDialogOpen = false"
-            >إلغاء</q-btn
-          >
+          <q-btn dense flat color="primary" @click="isReciteExamDialogOpen = false">إلغاء</q-btn>
           <q-btn
             dense
             flat
             color="primary"
             @click="setReciteExamMarks"
             :disable="disableReciteExamButton"
-            >حفظ</q-btn
-          >
+          >حفظ</q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -233,21 +202,14 @@
         </q-card-section>
         <q-card-actions>
           <q-space></q-space>
-          <q-btn
-            dense
-            flat
-            color="primary"
-            @click="isPersonalExamDialogOpen = false"
-            >إلغاء</q-btn
-          >
+          <q-btn dense flat color="primary" @click="isPersonalExamDialogOpen = false">إلغاء</q-btn>
           <q-btn
             dense
             flat
             color="primary"
             @click="setPersonalExamMarks"
             :disable="disablePersonalExamButton"
-            >حفظ</q-btn
-          >
+          >حفظ</q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -268,21 +230,14 @@
         </q-card-section>
         <q-card-actions>
           <q-space></q-space>
-          <q-btn
-            dense
-            flat
-            color="primary"
-            @click="isReadingExamDialogOpen = false"
-            >إلغاء</q-btn
-          >
+          <q-btn dense flat color="primary" @click="isReadingExamDialogOpen = false">إلغاء</q-btn>
           <q-btn
             dense
             flat
             color="primary"
             @click="setReadingExamMarks"
             :disable="disableReadingExamButton"
-            >حفظ</q-btn
-          >
+          >حفظ</q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -303,21 +258,14 @@
         </q-card-section>
         <q-card-actions>
           <q-space></q-space>
-          <q-btn
-            dense
-            flat
-            color="primary"
-            @click="isCommonKnowledgeExamDialogOpen = false"
-            >إلغاء</q-btn
-          >
+          <q-btn dense flat color="primary" @click="isCommonKnowledgeExamDialogOpen = false">إلغاء</q-btn>
           <q-btn
             dense
             flat
             color="primary"
             @click="setCommonKnowledgeExamMarks"
             :disable="disableCommonKnowledgeExamButton"
-            >حفظ</q-btn
-          >
+          >حفظ</q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -348,23 +296,12 @@
               <q-list style="width: 100%">
                 <q-item>
                   <q-item-section avatar>
-                    <q-btn
-                      dense
-                      round
-                      size="sm"
-                      color="primary"
-                      @click="addQuestionOption"
-                    >
+                    <q-btn dense round size="sm" color="primary" @click="addQuestionOption">
                       <q-icon name="o_add" />
                     </q-btn>
                   </q-item-section>
                   <q-item-section>
-                    <q-input
-                      v-model="option.text"
-                      label="إضف خيار للسؤال"
-                      dense
-                      filled
-                    ></q-input>
+                    <q-input v-model="option.text" label="إضف خيار للسؤال" dense filled></q-input>
                   </q-item-section>
                   <q-item-section side>
                     <q-select
@@ -378,22 +315,15 @@
                 </q-item>
                 <q-item v-for="(option, i) in question.options" :key="i">
                   <q-item-section avatar>
-                    <q-btn
-                      dense
-                      round
-                      size="sm"
-                      color="primary"
-                      @click="removeQuestionOption(i)"
-                    >
+                    <q-btn dense round size="sm" color="primary" @click="removeQuestionOption(i)">
                       <q-icon name="o_remove" />
                     </q-btn>
                   </q-item-section>
-                  <q-item-section>
-                    {{ option.text }}
-                  </q-item-section>
-                  <q-item-section class="text-center" style="width: 100%">
-                    {{ option.isCorrect.label }}
-                  </q-item-section>
+                  <q-item-section>{{ option.text }}</q-item-section>
+                  <q-item-section
+                    class="text-center"
+                    style="width: 100%"
+                  >{{ option.isCorrect.label }}</q-item-section>
                 </q-item>
               </q-list>
             </div>
@@ -401,17 +331,20 @@
         </q-card-section>
         <q-card-actions>
           <q-space></q-space>
-          <q-btn dense flat color="primary" @click="closeAddQuestionDialog"
-            >إلغاء</q-btn
-          >
-          <q-btn
-            dense
-            flat
-            color="primary"
-            :loading="GET_LOADING"
-            @click="addQuestion"
-            >حفظ</q-btn
-          >
+          <q-btn dense flat color="primary" @click="closeAddQuestionDialog">إلغاء</q-btn>
+          <q-btn dense flat color="primary" :loading="GET_LOADING" @click="addQuestion">حفظ</q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Delete Question Dialog -->
+    <q-dialog v-model="isDeleteQuestionDialogOpen">
+      <q-card>
+        <q-card-section>هل أنت متأكد من حذف السؤال؟</q-card-section>
+        <q-card-actions>
+          <q-space></q-space>
+          <q-btn dense flat color="primary" @click="closeDeleteQuestionDialog">إلغاء</q-btn>
+          <q-btn dense flat color="primary" :loading="GET_LOADING" @click="deleteQuestion">نعم</q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -438,7 +371,7 @@ export default {
       isReadingExamDialogOpen: false,
       isCommonKnowledgeExamDialogOpen: false,
       isAddQuestionDialogOpen: false,
-      isAddOptionDialogOpen: false,
+      isDeleteQuestionDialogOpen: false,
       writtenExamMarks: "",
       reciteExamMarks: "",
       personalExamMarks: "",
@@ -480,13 +413,6 @@ export default {
           label: "الدرجة",
           field: row => row.marks,
           align: "center"
-        },
-        {
-          name: "edit",
-          required: true,
-          label: "تعديل",
-          field: "edit",
-          align: "right"
         },
         {
           name: "delete",
@@ -611,7 +537,8 @@ export default {
       FETCH_QUESTIONS: ACTIONS.SETTINGS.FETCH_QUESTIONS,
       SET_EXAM_TOTAL_MARKS: ACTIONS.SETTINGS.SET_EXAM_TOTAL_MARKS,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
-      SET_QUESTION: ACTIONS.SETTINGS.SET_QUESTION
+      SET_QUESTION: ACTIONS.SETTINGS.SET_QUESTION,
+      DELETE_QUESTION: ACTIONS.SETTINGS.DELETE_QUESTION
     }),
     onWrittenExamDialoqOpened() {
       this.writtenExamMarks = this.getWrittenExamMarks;
@@ -701,6 +628,23 @@ export default {
         marks: Number.parseInt(this.question.marks),
         options: this.question.options
       });
+    },
+    onDeleteQuestion(question) {
+      this.question = question;
+      this.isDeleteQuestionDialogOpen = true;
+    },
+    closeDeleteQuestionDialog() {
+      this.question = {
+        text: "",
+        marks: "",
+        options: []
+      };
+
+      this.isDeleteQuestionDialogOpen = false;
+    },
+    deleteQuestion() {
+      let questionId = this.question.id;
+      this.DELETE_QUESTION(questionId);
     }
   },
   watch: {
@@ -745,6 +689,30 @@ export default {
             message: "تمت إضافة سؤال جديد بنجاح"
           });
         }
+
+        if (messageCode === MESSAGES.DATABASE.QUESTION_DELETED) {
+          // Fetch Questions
+          this.FETCH_QUESTIONS();
+
+          // Clear Messages
+          this.CLEAR_ERRORS_AND_MESSAGES();
+
+          // Reset Question
+          this.question = {
+            text: "",
+            marks: "",
+            options: []
+          };
+
+          // Dismiss Delete Question Dialog
+          this.isDeleteQuestionDialogOpen = false;
+
+          // Display Success Message
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم حذف السؤال بنجاح"
+          });
+        }
       }
     },
     GET_ERRORS: function(newState, oldState) {
@@ -770,6 +738,17 @@ export default {
           this.$q.dialog({
             title: "خطأ",
             message: "حدث خطأ أثناء إضافة سؤال جديد الإختبار"
+          });
+        }
+
+        if (errorCode === ERRORS.DATABASE.DELETE_QUESTION_ERROR) {
+          // Clear Errors
+          this.CLEAR_ERRORS_AND_MESSAGES();
+
+          // Display Error Dialog
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ أثناء حذف السؤال"
           });
         }
       }

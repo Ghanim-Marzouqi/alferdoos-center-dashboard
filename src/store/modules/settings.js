@@ -337,6 +337,35 @@ const actions = {
       // Display Error In Console
       console.log("FETCH_QUESTIONS ERROR", error);
     }
+  },
+
+  async DELETE_QUESTION({ commit }, payload) {
+    // Activate Loading
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      // Delete Question By Id
+      await FirebaseDatabase.collection(COLLECTIONS.QUESTIONS)
+        .doc(payload)
+        .delete();
+
+      // Set Successful Message
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.QUESTION_DELETED
+      });
+
+      // Deactivate Loading
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    } catch (error) {
+      // Display Error In Console
+      console.log("DELETE_QUESTION ERROR", error);
+      // Set Error (Delete Question Error)
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.DELETE_QUESTION_ERROR
+      });
+      // Deactivate Loading
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
   }
 };
 
