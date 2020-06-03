@@ -3,7 +3,7 @@
     <p class="text-h6 text-weight-bold">الإختبارات</p>
     <div class="q-pa-md">
       <q-table
-        title="قائمة الطلاب المؤهلين لإداء الإختبار"
+        title="قائمة الطلاب المؤهلين لأداء الإختبار"
         :data="GET_STUDENTS"
         :columns="columns"
         row-key="id"
@@ -11,13 +11,7 @@
         :loading="GET_LOADING"
       >
         <template v-slot:top-right>
-          <q-input
-            borderless
-            dense
-            debounce="300"
-            v-model="filter"
-            placeholder="بحث"
-          >
+          <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -27,14 +21,9 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="createdAt" :props="props">{{
-              props.row.createdAt | formatDate
-            }}</q-td>
+            <q-td key="createdAt" :props="props">{{ props.row.createdAt | formatDate }}</q-td>
             <q-td key="write" :props="props">
-              <q-btn
-                dense
-                flat
-              >
+              <q-btn dense flat>
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
@@ -43,11 +32,25 @@
                 <q-icon color="blue" name="o_hearing" />
               </q-btn>
             </q-td>
+            <q-td key="read" :props="props">
+              <q-btn dense flat>
+                <q-icon color="purple" name="o_record_voice_over" />
+              </q-btn>
+            </q-td>
+            <q-td key="commoknowledge" :props="props">
+              <q-btn dense flat>
+                <q-icon color="indigo" name="o_local_library" />
+              </q-btn>
+            </q-td>
+            <q-td key="personal" :props="props">
+              <q-btn dense flat>
+                <q-icon color="blue" name="o_sentiment_satisfied_alt" />
+              </q-btn>
+            </q-td>
           </q-tr>
         </template>
       </q-table>
     </div>
-
   </q-page>
 </template>
 
@@ -83,14 +86,32 @@ export default {
         {
           name: "write",
           align: "center",
-          label: "إختبار تحريري",
+          label: "الإملاء",
           field: "write"
         },
         {
           name: "recite",
           align: "center",
-          label: "تسميع",
+          label: "التسميع",
           field: "recite"
+        },
+        {
+          name: "read",
+          align: "center",
+          label: "التلاوة",
+          field: "read"
+        },
+        {
+          name: "commoknowledge",
+          align: "center",
+          label: "الثقافة العامة",
+          field: "commoknowledge"
+        },
+        {
+          name: "personal",
+          align: "center",
+          label: "المهارات الشخصية",
+          field: "personal"
         }
       ]
     };
