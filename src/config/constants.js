@@ -5,7 +5,8 @@ const COLLECTIONS = {
   TEACHERS: "teachers",
   STUDENTS: "students",
   YEARS: "years",
-  QUESTIONS: "questions"
+  QUESTIONS: "questions",
+  EXAM_MARKS: "examMarks"
 };
 
 const STUDENT_GRADE = {
@@ -215,7 +216,8 @@ const GETTERS = {
   SETTINGS: {
     GET_YEAR_INFO: "GET_YEAR_INFO",
     GET_REGISTRATION_PERIOD: "GET_REGISTRATION_PERIOD",
-    GET_QUESTIONS: "GET_QUESTIONS"
+    GET_QUESTIONS: "GET_QUESTIONS",
+    GET_EXAM_MARKS: "GET_EXAM_MARKS"
   },
   STUDNETS: {
     GET_STUDENTS: "GET_STUDENTS"
@@ -246,7 +248,8 @@ const ACTIONS = {
     SET_EXAM_TOTAL_MARKS: "SET_EXAM_TOTAL_MARKS",
     SET_QUESTION: "SET_QUESTION",
     FETCH_QUESTIONS: "FETCH_QUESTIONS",
-    DELETE_QUESTION: "DELETE_QUESTION"
+    DELETE_QUESTION: "DELETE_QUESTION",
+    FETCH_EXAM_TOTAL_MARKS: "FETCH_EXAM_TOTAL_MARKS"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -273,7 +276,8 @@ const MUTATIONS = {
   SETTINGS: {
     SET_YEAR_INFO: "SET_YEAR_INFO",
     SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
-    SET_QUESTIONS: "SET_QUESTIONS"
+    SET_QUESTIONS: "SET_QUESTIONS",
+    SET_EXAM_MARKS: "SET_EXAM_MARKS"
   },
   STUDNETS: {
     SET_STUDENTS: "SET_STUDENTS"
@@ -310,7 +314,8 @@ const ERRORS = {
     FETCH_REGISTRATION_PERIOD_ERROR: "database/fetch-registration-period-error",
     SET_EXAM_MARKS_ERROR: "database/set_exam_marks_error",
     SET_QUESTION_ERROR: "database/set_question_error",
-    DELETE_QUESTION_ERROR: "database/delete-question-error"
+    DELETE_QUESTION_ERROR: "database/delete-question-error",
+    FETCH_EXAM_TOTAL_MARKS_ERROR: "database/fetch-exam-total-marks-error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",

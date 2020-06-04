@@ -3,7 +3,6 @@ import { date } from "quasar";
 import { FirebaseDatabase } from "boot/firebase";
 import {
   COLLECTIONS,
-  EXAM_TYPE,
   MUTATIONS,
   MESSAGES,
   ERRORS
@@ -13,14 +12,16 @@ import {
 const state = {
   yearInfo: {},
   registrationPeriod: {},
-  questions: []
+  questions: [],
+  examMarks: []
 };
 
 // Getters
 const getters = {
   GET_YEAR_INFO: state => state.yearInfo,
   GET_REGISTRATION_PERIOD: state => state.registrationPeriod,
-  GET_QUESTIONS: state => state.questions
+  GET_QUESTIONS: state => state.questions,
+  GET_EXAM_MARKS: state => state.examMarks
 };
 
 // Actions
@@ -42,12 +43,7 @@ const actions = {
           id: doc.data().id,
           name: doc.data().name,
           startPeriodDate: doc.data().startPeriodDate,
-          endPeriodDate: doc.data().endPeriodDate,
-          writtenExamMarks: doc.data().writtenExamMarks,
-          reciteExamMarks: doc.data().reciteExamMarks,
-          personalExamMarks: doc.data().personalExamMarks,
-          readingExamMarks: doc.data().readingExamMarks,
-          commonKnowledgeExamMarks: doc.data().commonKnowledgeExamMarks
+          endPeriodDate: doc.data().endPeriodDate
         });
       }
     } catch (error) {
@@ -196,68 +192,37 @@ const actions = {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
-      // Get Date
-      let date = new Date();
-
-      // Get Year Info If Exists
-      let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)
-        .doc(date.getFullYear().toString())
+      // Get Exam Marks
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.EXAM_MARKS)
+        .doc(payload.examType)
         .get();
 
-      // Check If Year Data Exists
+      // Check Exam Marks If Exists
       if (doc.exists) {
-        // Set Exam Marks
-        if (payload.examType === EXAM_TYPE.WRITTEN) {
-          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
-            .doc(doc.id)
-            .update({
-              writtenExamMarks: payload.writtenExamMarks
-            });
-
-          commit(MUTATIONS.UI.SET_MESSAGE, {
-            code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
+        // Update Exam Marks
+        await FirebaseDatabase.collection(COLLECTIONS.EXAM_MARKS)
+          .doc(doc.id)
+          .update({
+            marks: payload.marks,
+            marksDistribution: payload.marksDistribution
           });
-        } else if (payload.examType === EXAM_TYPE.RECITE) {
-          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
-            .doc(doc.id)
-            .update({
-              reciteExamMarks: payload.reciteExamMarks
-            });
 
-          commit(MUTATIONS.UI.SET_MESSAGE, {
-            code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
+        // Set Success Message
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
+        });
+      } else {
+        await FirebaseDatabase.collection(COLLECTIONS.EXAM_MARKS)
+          .doc(payload.examType)
+          .set({
+            marks: payload.marks,
+            marksDistribution: payload.marksDistribution
           });
-        } else if (payload.examType === EXAM_TYPE.PERSONAL) {
-          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
-            .doc(doc.id)
-            .update({
-              personalExamMarks: payload.personalExamMarks
-            });
 
-          commit(MUTATIONS.UI.SET_MESSAGE, {
-            code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
-          });
-        } else if (payload.examType === EXAM_TYPE.READING) {
-          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
-            .doc(doc.id)
-            .update({
-              readingExamMarks: payload.readingExamMarks
-            });
-
-          commit(MUTATIONS.UI.SET_MESSAGE, {
-            code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
-          });
-        } else if (payload.examType === EXAM_TYPE.COMMON_KNOWLEDGE) {
-          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
-            .doc(doc.id)
-            .update({
-              commonKnowledgeExamMarks: payload.commonKnowledgeExamMarks
-            });
-
-          commit(MUTATIONS.UI.SET_MESSAGE, {
-            code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
-          });
-        }
+        // Set Success Message
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.EXAM_MARKS_UPDATED
+        });
       }
 
       // Deactivate Loading
@@ -271,6 +236,33 @@ const actions = {
       });
       // Deactivate Loading
       commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async FETCH_EXAM_TOTAL_MARKS({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(
+        COLLECTIONS.EXAM_MARKS
+      ).get();
+
+      // Get All Records
+      let docs = snapshot.docs;
+
+      // Create a New Array Of Exam Marks
+      let marks = docs.map(doc => ({
+        id: doc.id,
+        marks: doc.data().marks,
+        marksDistribution: doc.data().marksDistribution
+      }));
+
+      commit(MUTATIONS.SETTINGS.SET_EXAM_MARKS, marks);
+    } catch (error) {
+      // Display Error In Console
+      console.log("FETCH_EXAM_TOTAL_MARKS ERROR", error);
+      // Set Error (Fetch Exam Marks Error)
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.FETCH_EXAM_TOTAL_MARKS_ERROR
+      });
     }
   },
 
@@ -374,7 +366,8 @@ const mutations = {
   SET_YEAR_INFO: (state, info) => (state.yearInfo = info),
   SET_REGISTRATION_PERIOD: (state, period) =>
     (state.registrationPeriod = period),
-  SET_QUESTIONS: (state, questions) => (state.questions = questions)
+  SET_QUESTIONS: (state, questions) => (state.questions = questions),
+  SET_EXAM_MARKS: (state, marks) => (state.examMarks = marks)
 };
 
 // Export

@@ -72,12 +72,7 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn
-            flat
-            label="حفظ"
-            @click="saveCurrentYear"
-            :loading="GET_LOADING"
-          />
+          <q-btn flat label="حفظ" @click="saveCurrentYear" :loading="GET_LOADING" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -107,20 +102,10 @@
               </q-icon>
             </template>
           </q-input>
-          <q-input
-            v-model="endPeriodDate"
-            outlined
-            readonly
-            mask="date"
-            class="q-mt-md"
-          >
+          <q-input v-model="endPeriodDate" outlined readonly mask="date" class="q-mt-md">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  ref="qEndDateProxy"
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
+                <q-popup-proxy ref="qEndDateProxy" transition-show="scale" transition-hide="scale">
                   <q-date
                     v-model="endPeriodDate"
                     mask="YYYY/MM/DD"
@@ -134,12 +119,7 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn
-            flat
-            label="حفظ"
-            @click="onPeriodFormSubmit"
-            :loading="GET_LOADING"
-          />
+          <q-btn flat label="حفظ" @click="onPeriodFormSubmit" :loading="GET_LOADING" />
         </q-card-actions>
       </q-card>
     </q-dialog>

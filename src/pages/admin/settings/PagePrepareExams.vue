@@ -16,52 +16,56 @@
           <tbody>
             <tr>
               <td class="text-left">الإملاء</td>
-              <td class="text-center">{{ getWrittenExamMarks }} درجة</td>
+              <td class="text-center">{{ getExam('written').marks }} درجة</td>
               <td class="text-right">
-                <q-btn dense flat @click="onWrittenExamDialoqOpened">
+                <q-btn dense flat @click="onExamDialogOpened('درجة الإملاء', 'written')">
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>
             <tr>
               <td class="text-left">التسميع</td>
-              <td class="text-center">{{ getReciteExamMarks }} درجة</td>
+              <td class="text-center">{{ getExam('recite').marks }} درجة</td>
               <td class="text-right">
-                <q-btn dense flat @click="onReciteExamDialoqOpened">
+                <q-btn dense flat @click="onExamDialogOpened('درجة التسميع', 'recite')">
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>
             <tr>
               <td class="text-left">التلاوة</td>
-              <td class="text-center">{{ getReadingExamMarks }} درجة</td>
+              <td class="text-center">{{ getExam('reading').marks }} درجة</td>
               <td class="text-right">
-                <q-btn dense flat @click="onReadingExamDialoqOpened">
+                <q-btn dense flat @click="onExamDialogOpened('درجة التلاوة', 'reading')">
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>
             <tr>
               <td class="text-left">الثقافة العامة</td>
-              <td class="text-center">{{ getCommonKnowledgeExamMarks }} درجة</td>
+              <td class="text-center">{{ getExam('commonKnowledge').marks }} درجة</td>
               <td class="text-right">
-                <q-btn dense flat @click="onCommonKnowledgeExamDialoqOpened">
+                <q-btn
+                  dense
+                  flat
+                  @click="onExamDialogOpened('درجة الثقافة العامة', 'commonKnowledge')"
+                >
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>
             <tr>
               <td class="text-left">المهارات الشخصية</td>
-              <td class="text-center">{{ getPersonalExamMarks }} درجة</td>
+              <td class="text-center">{{ getExam('personal').marks }} درجة</td>
               <td class="text-right">
-                <q-btn dense flat @click="onPersonalExamDialoqOpened">
+                <q-btn dense flat @click="onExamDialogOpened('درجة المهارات الشخصية', 'personal')">
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>
             <tr>
               <td class="text-left text-weight-bold">المجموع الكلي للدرجات</td>
-              <td class="text-center text-weight-bold">{{ getTotalMarks }} درجة</td>
+              <td class="text-center text-weight-bold">{{ getExamTotalMarks }} درجة</td>
               <td class="text-right"></td>
             </tr>
           </tbody>
@@ -130,224 +134,17 @@
       </div>
     </div>
 
-    <!-- Written Exam Dialog -->
-    <q-dialog v-model="isWrittenExamDialogOpen">
-      <q-card>
-        <q-card-section>
-          <div class="q-ma-2">
-            <q-input
-              filled
-              v-model="writtenExamMarks"
-              label="درجة إختبار الإملاء"
-              type="number"
-              :rules="[val => val > 0 || 'الرجاء إدخال رقم أكبر من صفر']"
-            />
-          </div>
-        </q-card-section>
-        <q-card-actions>
-          <q-space></q-space>
-          <q-btn dense flat color="primary" @click="isWrittenExamDialogOpen = false">إلغاء</q-btn>
-          <q-btn
-            dense
-            flat
-            color="primary"
-            @click="setWrittenExamMarks"
-            :disable="disableWrittenExamButton"
-          >حفظ</q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Recite Exam Dialog -->
-    <q-dialog v-model="isReciteExamDialogOpen">
-      <q-card>
-        <q-card-section>
-          <div class="q-ma-2">
-            <q-input
-              filled
-              v-model="reciteExamMarks"
-              label="درجة التسميع"
-              type="number"
-              :rules="[val => val > 0 || 'الرجاء إدخال رقم أكبر من صفر']"
-            />
-          </div>
-        </q-card-section>
-        <q-card-actions>
-          <q-space></q-space>
-          <q-btn dense flat color="primary" @click="isReciteExamDialogOpen = false">إلغاء</q-btn>
-          <q-btn
-            dense
-            flat
-            color="primary"
-            @click="setReciteExamMarks"
-            :disable="disableReciteExamButton"
-          >حفظ</q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Personal Exam Dialog -->
-    <q-dialog v-model="isPersonalExamDialogOpen">
-      <q-card>
-        <q-card-section>
-          <div class="q-ma-2">
-            <q-input
-              filled
-              v-model="personalExamMarks"
-              label="درجة إختبار المهارات الشخصية"
-              type="number"
-              :rules="[val => val > 0 || 'الرجاء إدخال رقم أكبر من صفر']"
-            />
-          </div>
-        </q-card-section>
-        <q-card-actions>
-          <q-space></q-space>
-          <q-btn dense flat color="primary" @click="isPersonalExamDialogOpen = false">إلغاء</q-btn>
-          <q-btn
-            dense
-            flat
-            color="primary"
-            @click="setPersonalExamMarks"
-            :disable="disablePersonalExamButton"
-          >حفظ</q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Reading Exam Dialog -->
-    <q-dialog v-model="isReadingExamDialogOpen">
-      <q-card>
-        <q-card-section>
-          <div class="q-ma-2">
-            <q-input
-              filled
-              v-model="readingExamMarks"
-              label="درجة إختبار التلاوة"
-              type="number"
-              :rules="[val => val > 0 || 'الرجاء إدخال رقم أكبر من صفر']"
-            />
-          </div>
-        </q-card-section>
-        <q-card-actions>
-          <q-space></q-space>
-          <q-btn dense flat color="primary" @click="isReadingExamDialogOpen = false">إلغاء</q-btn>
-          <q-btn
-            dense
-            flat
-            color="primary"
-            @click="setReadingExamMarks"
-            :disable="disableReadingExamButton"
-          >حفظ</q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Common Knowledge Exam Dialog -->
-    <q-dialog v-model="isCommonKnowledgeExamDialogOpen">
-      <q-card>
-        <q-card-section>
-          <div class="q-ma-2">
-            <q-input
-              filled
-              v-model="commonKnowledgeExamMarks"
-              label="درجة إختبار الثقافة العامة"
-              type="number"
-              :rules="[val => val > 0 || 'الرجاء إدخال رقم أكبر من صفر']"
-            />
-          </div>
-        </q-card-section>
-        <q-card-actions>
-          <q-space></q-space>
-          <q-btn dense flat color="primary" @click="isCommonKnowledgeExamDialogOpen = false">إلغاء</q-btn>
-          <q-btn
-            dense
-            flat
-            color="primary"
-            @click="setCommonKnowledgeExamMarks"
-            :disable="disableCommonKnowledgeExamButton"
-          >حفظ</q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Add Question Dialog -->
-    <q-dialog v-model="isAddQuestionDialogOpen">
-      <q-card style="width: 400px">
-        <q-card-section>
-          <div class="text-h6">إضافة سؤال</div>
-          <div class="q-ma-2">
-            <q-input
-              class="q-mt-sm"
-              filled
-              v-model="question.text"
-              label="نص السؤال"
-              type="text"
-              :rules="[val => val.length > 0 || 'الرجاء إدخال نص السؤال']"
-            />
-            <q-input
-              class="q-mt-sm"
-              filled
-              v-model="question.marks"
-              label="درجة السؤال"
-              type="number"
-              :rules="[val => val > 0 || 'الرجاء إدخال رقم أكبر من صفر']"
-            />
-            <div class="row q-my-sm">
-              <q-list style="width: 100%">
-                <q-item>
-                  <q-item-section avatar>
-                    <q-btn dense round size="sm" color="primary" @click="addQuestionOption">
-                      <q-icon name="o_add" />
-                    </q-btn>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-input v-model="option.text" label="إضف خيار للسؤال" dense filled></q-input>
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-select
-                      v-model="option.isCorrect"
-                      :value="option.isCorrect"
-                      :options="questionOptions"
-                      dense
-                      filled
-                    ></q-select>
-                  </q-item-section>
-                </q-item>
-                <q-item v-for="(option, i) in question.options" :key="i">
-                  <q-item-section avatar>
-                    <q-btn dense round size="sm" color="primary" @click="removeQuestionOption(i)">
-                      <q-icon name="o_remove" />
-                    </q-btn>
-                  </q-item-section>
-                  <q-item-section>{{ option.text }}</q-item-section>
-                  <q-item-section
-                    class="text-center"
-                    style="width: 100%"
-                  >{{ option.isCorrect.label }}</q-item-section>
-                </q-item>
-              </q-list>
-            </div>
-          </div>
-        </q-card-section>
-        <q-card-actions>
-          <q-space></q-space>
-          <q-btn dense flat color="primary" @click="closeAddQuestionDialog">إلغاء</q-btn>
-          <q-btn dense flat color="primary" :loading="GET_LOADING" @click="addQuestion">حفظ</q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Delete Question Dialog -->
-    <q-dialog v-model="isDeleteQuestionDialogOpen">
-      <q-card>
-        <q-card-section>هل أنت متأكد من حذف السؤال؟</q-card-section>
-        <q-card-actions>
-          <q-space></q-space>
-          <q-btn dense flat color="primary" @click="closeDeleteQuestionDialog">إلغاء</q-btn>
-          <q-btn dense flat color="primary" :loading="GET_LOADING" @click="deleteQuestion">نعم</q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <!-- Exam Dialog -->
+    <ExamMarksDialog
+      :isExamDialogOpen="isExamDialogOpen"
+      :inputLabel="examMarksInputLabel"
+      :examMarks="examMarks"
+      :examType="examType"
+      :isButtonDisabled="isAddExamMarksDisabled"
+      :loading="GET_LOADING"
+      @setExamMarks="setExamMarks"
+      @closeExamDialog="closeExamDialog"
+    />
   </q-page>
 </template>
 
@@ -365,6 +162,8 @@ export default {
   name: "PagePrepareExams",
   data() {
     return {
+      isExamDialogOpen: false,
+
       isWrittenExamDialogOpen: false,
       isReciteExamDialogOpen: false,
       isPersonalExamDialogOpen: false,
@@ -372,6 +171,12 @@ export default {
       isCommonKnowledgeExamDialogOpen: false,
       isAddQuestionDialogOpen: false,
       isDeleteQuestionDialogOpen: false,
+
+      examMarks: "",
+      examMarksInputLabel: "",
+      examType: "",
+      isAddExamMarksDisabled: false,
+
       writtenExamMarks: "",
       reciteExamMarks: "",
       personalExamMarks: "",
@@ -425,60 +230,25 @@ export default {
     };
   },
   created() {
-    this.FETCH_YEAR_INFO();
+    this.FETCH_EXAM_TOTAL_MARKS();
     this.FETCH_QUESTIONS();
   },
   computed: {
     ...mapGetters({
-      GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
+      GET_EXAM_MARKS: GETTERS.SETTINGS.GET_EXAM_MARKS,
       GET_QUESTIONS: GETTERS.SETTINGS.GET_QUESTIONS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS
     }),
-    getWrittenExamMarks() {
-      let marks =
-        typeof this.GET_YEAR_INFO.writtenExamMarks !== "undefined"
-          ? this.GET_YEAR_INFO.writtenExamMarks
-          : 0;
-      return marks;
-    },
-    getReciteExamMarks() {
-      let marks =
-        typeof this.GET_YEAR_INFO.reciteExamMarks !== "undefined"
-          ? this.GET_YEAR_INFO.reciteExamMarks
-          : 0;
-      return marks;
-    },
-    getPersonalExamMarks() {
-      let marks =
-        typeof this.GET_YEAR_INFO.personalExamMarks !== "undefined"
-          ? this.GET_YEAR_INFO.personalExamMarks
-          : 0;
-      return marks;
-    },
-    getReadingExamMarks() {
-      let marks =
-        typeof this.GET_YEAR_INFO.readingExamMarks !== "undefined"
-          ? this.GET_YEAR_INFO.readingExamMarks
-          : 0;
-      return marks;
-    },
-    getCommonKnowledgeExamMarks() {
-      let marks =
-        typeof this.GET_YEAR_INFO.commonKnowledgeExamMarks !== "undefined"
-          ? this.GET_YEAR_INFO.commonKnowledgeExamMarks
-          : 0;
-      return marks;
-    },
-    getTotalMarks() {
-      return (
-        this.getWrittenExamMarks +
-        this.getReciteExamMarks +
-        this.getPersonalExamMarks +
-        this.getReadingExamMarks +
-        this.getCommonKnowledgeExamMarks
-      );
+    getExamTotalMarks() {
+      let total = 0;
+
+      this.GET_EXAM_MARKS.forEach(exam => {
+        total = total + exam.marks;
+      });
+
+      return total;
     },
     disableWrittenExamButton() {
       if (
@@ -533,67 +303,15 @@ export default {
   },
   methods: {
     ...mapActions({
-      FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
+      FETCH_EXAM_TOTAL_MARKS: ACTIONS.SETTINGS.FETCH_EXAM_TOTAL_MARKS,
       FETCH_QUESTIONS: ACTIONS.SETTINGS.FETCH_QUESTIONS,
       SET_EXAM_TOTAL_MARKS: ACTIONS.SETTINGS.SET_EXAM_TOTAL_MARKS,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
       SET_QUESTION: ACTIONS.SETTINGS.SET_QUESTION,
       DELETE_QUESTION: ACTIONS.SETTINGS.DELETE_QUESTION
     }),
-    onWrittenExamDialoqOpened() {
-      this.writtenExamMarks = this.getWrittenExamMarks;
-      this.isWrittenExamDialogOpen = true;
-    },
-    onReciteExamDialoqOpened() {
-      this.reciteExamMarks = this.getReciteExamMarks;
-      this.isReciteExamDialogOpen = true;
-    },
-    onPersonalExamDialoqOpened() {
-      this.personalExamMarks = this.getPersonalExamMarks;
-      this.isPersonalExamDialogOpen = true;
-    },
-    onReadingExamDialoqOpened() {
-      this.readingExamMarks = this.getReadingExamMarks;
-      this.isReadingExamDialogOpen = true;
-    },
-    onCommonKnowledgeExamDialoqOpened() {
-      this.commonKnowledgeExamMarks = this.getCommonKnowledgeExamMarks;
-      this.isCommonKnowledgeExamDialogOpen = true;
-    },
-    setWrittenExamMarks() {
-      this.SET_EXAM_TOTAL_MARKS({
-        examType: EXAM_TYPE.WRITTEN,
-        writtenExamMarks: Number.parseInt(this.writtenExamMarks)
-      });
-      this.isWrittenExamDialogOpen = false;
-    },
-    setReciteExamMarks() {
-      this.SET_EXAM_TOTAL_MARKS({
-        examType: EXAM_TYPE.RECITE,
-        reciteExamMarks: Number.parseInt(this.reciteExamMarks)
-      });
-      this.isReciteExamDialogOpen = false;
-    },
-    setPersonalExamMarks() {
-      this.SET_EXAM_TOTAL_MARKS({
-        examType: EXAM_TYPE.PERSONAL,
-        personalExamMarks: Number.parseInt(this.personalExamMarks)
-      });
-      this.isPersonalExamDialogOpen = false;
-    },
-    setReadingExamMarks() {
-      this.SET_EXAM_TOTAL_MARKS({
-        examType: EXAM_TYPE.READING,
-        readingExamMarks: Number.parseInt(this.readingExamMarks)
-      });
-      this.isReadingExamDialogOpen = false;
-    },
-    setCommonKnowledgeExamMarks() {
-      this.SET_EXAM_TOTAL_MARKS({
-        examType: EXAM_TYPE.COMMON_KNOWLEDGE,
-        commonKnowledgeExamMarks: Number.parseInt(this.commonKnowledgeExamMarks)
-      });
-      this.isCommonKnowledgeExamDialogOpen = false;
+    getExam(examType) {
+      return this.GET_EXAM_MARKS.find(mark => mark.id === examType);
     },
     closeAddQuestionDialog() {
       this.question = {
@@ -645,6 +363,55 @@ export default {
     deleteQuestion() {
       let questionId = this.question.id;
       this.DELETE_QUESTION(questionId);
+    },
+    onExamDialogOpened(inputLabel, examType) {
+      this.isExamDialogOpen = true;
+      this.examMarksInputLabel = inputLabel;
+      this.examType = examType;
+    },
+    setExamMarks(exam) {
+      switch (exam.examType) {
+        case EXAM_TYPE.WRITTEN:
+          this.SET_EXAM_TOTAL_MARKS({
+            examType: EXAM_TYPE.WRITTEN,
+            marks: Number.parseInt(exam.examMarks),
+            marksDistribution: []
+          });
+          break;
+        case EXAM_TYPE.RECITE:
+          this.SET_EXAM_TOTAL_MARKS({
+            examType: EXAM_TYPE.RECITE,
+            marks: Number.parseInt(exam.examMarks),
+            marksDistribution: []
+          });
+          break;
+        case EXAM_TYPE.READING:
+          this.SET_EXAM_TOTAL_MARKS({
+            examType: EXAM_TYPE.READING,
+            marks: Number.parseInt(exam.examMarks),
+            marksDistribution: []
+          });
+          break;
+        case EXAM_TYPE.COMMON_KNOWLEDGE:
+          this.SET_EXAM_TOTAL_MARKS({
+            examType: EXAM_TYPE.COMMON_KNOWLEDGE,
+            marks: Number.parseInt(exam.examMarks),
+            marksDistribution: []
+          });
+          break;
+        case EXAM_TYPE.PERSONAL:
+          this.SET_EXAM_TOTAL_MARKS({
+            examType: EXAM_TYPE.PERSONAL,
+            marks: Number.parseInt(exam.examMarks),
+            marksDistribution: []
+          });
+          break;
+      }
+    },
+    closeExamDialog(value) {
+      this.examMarksInputLabel = "";
+      this.examType = "";
+      this.isExamDialogOpen = value;
     }
   },
   watch: {
@@ -657,7 +424,10 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
 
           // Get Updated Exam Marks
-          this.FETCH_YEAR_INFO();
+          this.FETCH_EXAM_TOTAL_MARKS();
+
+          // Dismiss Dialog
+          this.isExamDialogOpen = false;
 
           // Display Success Message
           this.$q.dialog({
@@ -753,6 +523,9 @@ export default {
         }
       }
     }
+  },
+  components: {
+    ExamMarksDialog: () => import("components/ExamMarksDialog.vue")
   }
 };
 </script>
