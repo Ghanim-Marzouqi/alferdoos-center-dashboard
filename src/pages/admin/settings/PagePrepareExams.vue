@@ -134,16 +134,27 @@
       </div>
     </div>
 
-    <!-- Exam Dialog -->
+    <!-- Exam Marks Dialog -->
     <ExamMarksDialog
       :isExamDialogOpen="isExamDialogOpen"
-      :inputLabel="examMarksInputLabel"
-      :examMarks="examMarks"
+      :examTitle="examTitle"
       :examType="examType"
-      :isButtonDisabled="isAddExamMarksDisabled"
-      :loading="GET_LOADING"
-      @setExamMarks="setExamMarks"
-      @closeExamDialog="closeExamDialog"
+      :examOptions="[...examOptions]"
+      @closeExamMarksDialog="closeExamMarksDialog"
+    />
+
+    <!-- Add Question Dialog -->
+    <AddQuestionDialog
+      :isAddQuestionDialogOpen="isAddQuestionDialogOpen"
+      @closeAddQuestionDialog="closeAddQuestionDialog"
+    />
+
+    <!-- Delete Question Dialog -->
+    <DeleteQuestionDialog
+      :isAlertDialogOpen="isDeleteQuestionDialogOpen"
+      alertTitle="هل أنت متأكد من حذف السؤال؟"
+      @alertAction="deleteQuestion"
+      @closeAlertDialog="closeDeleteQuestionDialog"
     />
   </q-page>
 </template>
@@ -163,25 +174,12 @@ export default {
   data() {
     return {
       isExamDialogOpen: false,
-
-      isWrittenExamDialogOpen: false,
-      isReciteExamDialogOpen: false,
-      isPersonalExamDialogOpen: false,
-      isReadingExamDialogOpen: false,
-      isCommonKnowledgeExamDialogOpen: false,
       isAddQuestionDialogOpen: false,
       isDeleteQuestionDialogOpen: false,
-
       examMarks: "",
-      examMarksInputLabel: "",
+      examTitle: "",
       examType: "",
-      isAddExamMarksDisabled: false,
-
-      writtenExamMarks: "",
-      reciteExamMarks: "",
-      personalExamMarks: "",
-      readingExamMarks: "",
-      commonKnowledgeExamMarks: "",
+      examOptions: [],
       question: {
         text: "",
         marks: "",
@@ -249,56 +247,6 @@ export default {
       });
 
       return total;
-    },
-    disableWrittenExamButton() {
-      if (
-        Number.parseInt(this.writtenExamMarks) <= 0 ||
-        this.writtenExamMarks === ""
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    disableReciteExamButton() {
-      if (
-        Number.parseInt(this.reciteExamMarks) <= 0 ||
-        this.reciteExamMarks === ""
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    disablePersonalExamButton() {
-      if (
-        Number.parseInt(this.personalExamMarks) <= 0 ||
-        this.personalExamMarks === ""
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    disableReadingExamButton() {
-      if (
-        Number.parseInt(this.readingExamMarks) <= 0 ||
-        this.readingExamMarks === ""
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    disableCommonKnowledgeExamButton() {
-      if (
-        Number.parseInt(this.commonKnowledgeExamMarks) <= 0 ||
-        this.commonKnowledgeExamMarks === ""
-      ) {
-        return true;
-      } else {
-        return false;
-      }
     }
   },
   methods: {
@@ -311,15 +259,9 @@ export default {
       DELETE_QUESTION: ACTIONS.SETTINGS.DELETE_QUESTION
     }),
     getExam(examType) {
-      return this.GET_EXAM_MARKS.find(mark => mark.id === examType);
+      return this.GET_EXAM_MARKS.find(exam => exam.id === examType);
     },
     closeAddQuestionDialog() {
-      this.question = {
-        text: "",
-        marks: "",
-        answers: []
-      };
-
       this.isAddQuestionDialogOpen = false;
     },
     addQuestionOption() {
@@ -351,66 +293,33 @@ export default {
       this.question = question;
       this.isDeleteQuestionDialogOpen = true;
     },
-    closeDeleteQuestionDialog() {
+    closeDeleteQuestionDialog(value) {
       this.question = {
         text: "",
         marks: "",
         options: []
       };
 
-      this.isDeleteQuestionDialogOpen = false;
+      this.isDeleteQuestionDialogOpen = value;
     },
     deleteQuestion() {
       let questionId = this.question.id;
       this.DELETE_QUESTION(questionId);
     },
-    onExamDialogOpened(inputLabel, examType) {
-      this.isExamDialogOpen = true;
-      this.examMarksInputLabel = inputLabel;
+    onExamDialogOpened(examTitle, examType) {
+      this.examTitle = examTitle;
       this.examType = examType;
+      let exam = this.GET_EXAM_MARKS.find(exam => exam.id === examType);
+      this.examOptions =
+        typeof exam.marksDistribution !== "undefined"
+          ? exam.marksDistribution
+          : [];
+      this.isExamDialogOpen = true;
     },
-    setExamMarks(exam) {
-      switch (exam.examType) {
-        case EXAM_TYPE.WRITTEN:
-          this.SET_EXAM_TOTAL_MARKS({
-            examType: EXAM_TYPE.WRITTEN,
-            marks: Number.parseInt(exam.examMarks),
-            marksDistribution: []
-          });
-          break;
-        case EXAM_TYPE.RECITE:
-          this.SET_EXAM_TOTAL_MARKS({
-            examType: EXAM_TYPE.RECITE,
-            marks: Number.parseInt(exam.examMarks),
-            marksDistribution: []
-          });
-          break;
-        case EXAM_TYPE.READING:
-          this.SET_EXAM_TOTAL_MARKS({
-            examType: EXAM_TYPE.READING,
-            marks: Number.parseInt(exam.examMarks),
-            marksDistribution: []
-          });
-          break;
-        case EXAM_TYPE.COMMON_KNOWLEDGE:
-          this.SET_EXAM_TOTAL_MARKS({
-            examType: EXAM_TYPE.COMMON_KNOWLEDGE,
-            marks: Number.parseInt(exam.examMarks),
-            marksDistribution: []
-          });
-          break;
-        case EXAM_TYPE.PERSONAL:
-          this.SET_EXAM_TOTAL_MARKS({
-            examType: EXAM_TYPE.PERSONAL,
-            marks: Number.parseInt(exam.examMarks),
-            marksDistribution: []
-          });
-          break;
-      }
-    },
-    closeExamDialog(value) {
-      this.examMarksInputLabel = "";
+    closeExamMarksDialog(value) {
+      this.examTitle = "";
       this.examType = "";
+      this.examOptions = [];
       this.isExamDialogOpen = value;
     }
   },
@@ -525,7 +434,9 @@ export default {
     }
   },
   components: {
-    ExamMarksDialog: () => import("components/ExamMarksDialog.vue")
+    ExamMarksDialog: () => import("components/ExamMarksDialog.vue"),
+    AddQuestionDialog: () => import("components/AddQuestionDialog.vue"),
+    DeleteQuestionDialog: () => import("components/AlertDialog.vue")
   }
 };
 </script>
