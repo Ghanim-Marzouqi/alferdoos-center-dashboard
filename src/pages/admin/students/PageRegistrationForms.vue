@@ -11,7 +11,13 @@
         :loading="GET_LOADING"
       >
         <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
+          <q-input
+            borderless
+            dense
+            debounce="300"
+            v-model="filter"
+            placeholder="بحث"
+          >
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -22,14 +28,10 @@
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
             <q-td key="createdAt" :props="props">
-              {{
-              props.row.createdAt | formatDate
-              }}
+              {{ props.row.createdAt | formatDate }}
             </q-td>
             <q-td key="status" :props="props">
-              {{
-              props.row.status | getStatus
-              }}
+              {{ props.row.status | getStatus }}
             </q-td>
             <q-td key="show" :props="props">
               <q-btn dense flat @click.stop="showStudentDialog(props.row)">
@@ -37,12 +39,20 @@
               </q-btn>
             </q-td>
             <q-td key="edit" :props="props">
-              <q-btn dense flat @click.stop="showApplicationStatusDialog(props.row)">
+              <q-btn
+                dense
+                flat
+                @click.stop="showApplicationStatusDialog(props.row)"
+              >
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
             <q-td key="delete" :props="props">
-              <q-btn dense flat @click.stop="deleteStudentRegistrationForm(props.row.id)">
+              <q-btn
+                dense
+                flat
+                @click.stop="deleteStudentRegistrationForm(props.row.id)"
+              >
                 <q-icon color="red" name="o_delete" />
               </q-btn>
             </q-td>
@@ -51,228 +61,21 @@
       </q-table>
     </div>
 
-    <!-- Registered Student Dialog -->
-    <q-dialog v-model="isStudentDialogOpen" full-width persistent @hide="resetStudntData">
-      <q-card>
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">{{ registeredStudent.name }}</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
+    <!-- Student Registration Info Dialog -->
+    <StudentRegistrationInfoDialog
+      :isStudentDialogOpen="isStudentDialogOpen"
+      :student="registeredStudent"
+      @closeStudentRegistrationInfoDialog="isStudentDialogOpen = false"
+    />
 
-        <q-card-section class="q-pt-none">
-          <div class="q-pa-md">
-            <P class="text-weight-bold text-indigo">معلومات الطالب الأساسية:</P>
-            <div class="row q-ml-md">
-              <div class="col-xs-12 col-md-8">
-                <p class="text-weight-bold">
-                  انهى الصف:
-                  <span class="text-weight-bold text-blue">
-                    {{
-                    getStudentGrade
-                    }}
-                  </span>
-                </p>
-                <div class="row">
-                  <div class="col-xs-12 col-md-6">
-                    <p class="text-weight-bold">
-                      عدد المواد بتقدير (أ):
-                      <strong class="text-blue">
-                        {{
-                        registeredStudent.subjectANumber
-                        }}
-                      </strong>
-                    </p>
-                  </div>
-                  <div class="col-xs-12 col-md-6">
-                    <p class="text-weight-bold">
-                      عدد المواد بتقدير (ب):
-                      <strong class="text-blue">
-                        {{
-                        registeredStudent.subjectBNumber
-                        }}
-                      </strong>
-                    </p>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-xs-12 col-md-6">
-                    <strong>الأجزاء المحفوظة:</strong>
-                    <ul>
-                      <li
-                        v-for="(chapter, i) in registeredStudent.savedChapters"
-                        :key="i"
-                      >{{ chapter }}</li>
-                    </ul>
-                  </div>
-                  <div class="col-xs-12 col-md-6">
-                    <strong>السور المحفوظة:</strong>
-                    <ul>
-                      <li v-for="(surah, i) in registeredStudent.savedSurahs" :key="i">{{ surah }}</li>
-                    </ul>
-                  </div>
-                </div>
-                <strong>الشهادات:</strong>
-                <div>
-                  <q-chip
-                    v-for="(certificate, i) in registeredStudent.certificates"
-                    :key="i"
-                    clickable
-                    icon-right="o_get_app"
-                    @click="downloadFile(certificate)"
-                  >شهادة {{ i + 1 }}</q-chip>
-                </div>
-              </div>
-              <div class="col-xs-12 col-md-4 text-center">
-                <q-img
-                  :src="registeredStudent.imageURL"
-                  :ratio="1"
-                  style="height: 200px; width: 200px"
-                  class="q-ma-sm"
-                >
-                  <template v-slot:error>
-                    <div
-                      class="absolute-full flex flex-center bg-negative text-white"
-                    >لا يمكن تحميل الصورة</div>
-                  </template>
-                </q-img>
-              </div>
-            </div>
-            <div class="row q-ml-md">
-              <div class="col-xs-12 col-md-4">
-                <P class="text-weight-bold">معلومات الحالة الصحية للطالب:</P>
-                <p>
-                  هل يعاني الطالب أي مرض:
-                  <strong class="text-blue">
-                    {{
-                    registeredStudent.studentState === "healthy"
-                    ? "لا"
-                    : "نعم"
-                    }}
-                  </strong>
-                </p>
-                <p>
-                  الأعراض والأمراض التي يعاني منها الطالب:
-                  <span class="text-weight-bold">
-                    {{
-                    registeredStudent.diseases === ""
-                    ? "لا يوجد"
-                    : registeredStudent.diseases
-                    }}
-                  </span>
-                </p>
-              </div>
-              <div class="col-xs-12 col-md-4">
-                <P class="text-weight-bold">معلومات دراسية سابقة:</P>
-                <p>
-                  هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم:
-                  <strong class="text-blue">
-                    {{
-                    registeredStudent.isLearntInCenterBefore === "yes"
-                    ? "نعم"
-                    : "لا"
-                    }}
-                  </strong>
-                </p>
-                <p>
-                  المكان:
-                  <span class="text-weight-bold">
-                    {{
-                    registeredStudent.oldCenterName === ""
-                    ? "لم يسبق للطالب التعلم في مدرسة لتحفيظ القرآن"
-                    : registeredStudent.oldCenterName
-                    }}
-                  </span>
-                </p>
-              </div>
-              <div class="col-xs-12 col-md-4"></div>
-            </div>
-            <P class="text-weight-bold text-indigo q-mt-md">معلومات إضافية عن الطالب:</P>
-            <div class="row q-ma-md">
-              <div class="col-xs-12 col-md-4">
-                <P class="text-weight-bold">معلومات ولي الأمر:</P>
-                <p>
-                  أسم ولي الأمر:
-                  <span class="text-weight-bold text-blue">
-                    {{
-                    registeredStudent.parentName
-                    }}
-                  </span>
-                </p>
-                <p>
-                  ارقام الهواتف:
-                  <span class="text-weight-bold text-blue">
-                    {{
-                    registeredStudent.firstPhoneNumber
-                    }}
-                  </span>
-                  -
-                  <span class="text-weight-bold text-blue">
-                    {{
-                    registeredStudent.secondPhoneNumber === ""
-                    ? "لا يوجد"
-                    : registeredStudent.secondPhoneNumber
-                    }}
-                  </span>
-                </p>
-              </div>
-              <div class="col-xs-12 col-md-4">
-                <P class="text-weight-bold">معلومات عن المركز:</P>
-                <p>
-                  كيف عرفت عن المركز:
-                  <span class="text-weight-bold text-blue">
-                    {{
-                    registeredStudent.centerKnownBy
-                    }}
-                  </span>
-                </p>
-              </div>
-              <div class="col-xs-12 col-md-4"></div>
-            </div>
-          </div>
-        </q-card-section>
-
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="حسنا" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Edit Application Status -->
-    <q-dialog v-model="isEditApplicationDailogOpen" @hide="resetStudntData">
-      <q-card style="min-width: 300px">
-        <q-card-section>
-          <div class="text-h5">تعديل حالة الطلب</div>
-        </q-card-section>
-        <q-card-section style="margin-top: -20px">
-          <div>
-            <q-radio v-model="applicationStatus" val="exam" label="قبول لأداء الأختبار" />
-          </div>
-          <div>
-            <q-radio v-model="applicationStatus" val="reject" label="رفض الطالب" />
-            <q-input
-              class="textarea"
-              v-if="applicationStatus === 'reject'"
-              v-model="applicationStatusReasons"
-              filled
-              label="أسباب الرفض"
-              type="textarea"
-            />
-          </div>
-        </q-card-section>
-        <q-card-actions>
-          <q-space></q-space>
-          <q-btn flat label="إلغاء" color="primary" @click="hideApplicationStatusDialog" />
-          <q-btn
-            flat
-            label="حفظ"
-            color="primary"
-            :loading="GET_LOADING"
-            @click="editApplicationStatus"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <!-- Student Edit Application Status Dialog -->
+    <StudentEditApplicationStatusDialog
+      :isEditApplicationDailogOpen="isEditApplicationDailogOpen"
+      :student="registeredStudent"
+      :status="applicationStatus"
+      :reasons="applicationStatusReasons"
+      @closeApplicationStatusDialog="closeApplicationStatusDialog"
+    />
   </q-page>
 </template>
 
@@ -365,28 +168,7 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS
-    }),
-    getStudentGrade() {
-      if (Object.keys(this.registeredStudent).length > 0) {
-        if (
-          this.registeredStudent.finishedClass === STUDENT_GRADE.GRADE_SEVEN
-        ) {
-          return "السابع";
-        } else if (
-          this.registeredStudent.finishedClass === STUDENT_GRADE.GRADE_EIGHT
-        ) {
-          return "الثامن";
-        } else if (
-          this.registeredStudent.finishedClass === STUDENT_GRADE.GRADE_NINE
-        ) {
-          return "التاسع";
-        } else {
-          return "غير معروف";
-        }
-      } else {
-        return "غير معروف";
-      }
-    }
+    })
   },
   methods: {
     ...mapActions({
@@ -396,14 +178,6 @@ export default {
       SET_ERROR: ACTIONS.UI.SET_ERROR,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
     }),
-    editApplicationStatus() {
-      this.EDIT_STUDENT_STATUS({
-        id: this.registeredStudent.id,
-        status: this.applicationStatus,
-        reasons: this.applicationStatusReasons
-      });
-      this.isEditApplicationDailogOpen = false;
-    },
     deleteStudentRegistrationForm(id) {
       this.$q
         .dialog({
@@ -431,47 +205,11 @@ export default {
           : "";
       this.isEditApplicationDailogOpen = true;
     },
-    hideApplicationStatusDialog() {
+    closeApplicationStatusDialog() {
       this.registeredStudent = {};
       this.applicationStatus = "";
       this.applicationStatusReasons = "";
       this.isEditApplicationDailogOpen = false;
-    },
-    downloadFile(fileURL) {
-      try {
-        var xhr = new XMLHttpRequest();
-        xhr.responseType = "blob";
-        xhr.onload = function(event) {
-          var blob = xhr.response;
-          let link = document.createElement("a");
-          link.href = window.URL.createObjectURL(blob);
-          link.download = `certificate_${date.formatDate(
-            Date.now(),
-            "YYYY_MM_DD_HH_mm_ss_a"
-          )}`;
-          link.click();
-        };
-        xhr.open("GET", fileURL);
-        xhr.send();
-      } catch (error) {
-        switch (error.code) {
-          case ERRORS.STORAGE.OBJECT_NOT_FOUND:
-            this.SET_ERROR(ERRORS.STORAGE.OBJECT_NOT_FOUND);
-            break;
-          case ERRORS.STORAGE.UNAUTHORIZED:
-            this.SET_ERROR(ERRORS.STORAGE.UNAUTHORIZED);
-            break;
-          case ERRORS.STORAGE.CANCELED:
-            this.SET_ERROR(ERRORS.STORAGE.CANCELED);
-            break;
-          case ERRORS.STORAGE.UNKNOWN:
-            this.SET_ERROR(ERRORS.STORAGE.UNKNOWN);
-            break;
-        }
-      }
-    },
-    resetStudntData() {
-      this.registeredStudent = {};
     }
   },
   filters: {
@@ -571,6 +309,12 @@ export default {
         }
       }
     }
+  },
+  components: {
+    StudentRegistrationInfoDialog: () =>
+      import("components/StudentRegistrationInfoDialog.vue"),
+    StudentEditApplicationStatusDialog: () =>
+      import("components/StudentEditApplicationStatusDialog.vue")
   }
 };
 </script>

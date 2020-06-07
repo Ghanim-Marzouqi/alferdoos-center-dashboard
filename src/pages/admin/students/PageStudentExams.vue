@@ -11,7 +11,13 @@
         :loading="GET_LOADING"
       >
         <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
+          <q-input
+            borderless
+            dense
+            debounce="300"
+            v-model="filter"
+            placeholder="بحث"
+          >
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -21,7 +27,14 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="createdAt" :props="props">{{ props.row.createdAt | formatDate }}</q-td>
+            <q-td key="createdAt" :props="props">
+              {{ props.row.createdAt | formatDate }}
+            </q-td>
+            <q-td key="file" :props="props">
+              <q-btn dense flat @click.stop="showStudentDialog(props.row)">
+                <q-icon color="blue" name="o_visibility" />
+              </q-btn>
+            </q-td>
             <q-td key="write" :props="props">
               <q-btn dense flat>
                 <q-icon color="teal" name="o_edit" />
@@ -29,7 +42,7 @@
             </q-td>
             <q-td key="recite" :props="props">
               <q-btn dense flat>
-                <q-icon color="blue" name="o_hearing" />
+                <q-icon color="brown" name="o_hearing" />
               </q-btn>
             </q-td>
             <q-td key="read" :props="props">
@@ -44,13 +57,20 @@
             </q-td>
             <q-td key="personal" :props="props">
               <q-btn dense flat>
-                <q-icon color="blue" name="o_sentiment_satisfied_alt" />
+                <q-icon color="pink" name="o_sentiment_satisfied_alt" />
               </q-btn>
             </q-td>
           </q-tr>
         </template>
       </q-table>
     </div>
+
+    <!-- Student Registration Info Dialog -->
+    <StudentRegistrationInfoDialog
+      :isStudentDialogOpen="isStudentDialogOpen"
+      :student="registeredStudent"
+      @closeStudentRegistrationInfoDialog="isStudentDialogOpen = false"
+    />
   </q-page>
 </template>
 
@@ -66,6 +86,8 @@ export default {
       filter: "",
       examType: "",
       isErrorDialogOpen: false,
+      isStudentDialogOpen: false,
+      registeredStudent: {},
       columns: [
         {
           name: "name",
@@ -82,6 +104,12 @@ export default {
           align: "center",
           field: row => row.createdAt,
           format: val => `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`
+        },
+        {
+          name: "file",
+          align: "center",
+          label: "الملف الشخصي",
+          field: "file"
         },
         {
           name: "write",
@@ -134,12 +162,20 @@ export default {
       EDIT_STUDENT_STATUS: ACTIONS.STUDNETS.EDIT_STUDENT_STATUS,
       SET_ERROR: ACTIONS.UI.SET_ERROR,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
-    })
+    }),
+    showStudentDialog(student) {
+      this.registeredStudent = student;
+      this.isStudentDialogOpen = true;
+    }
   },
   filters: {
     formatDate(val) {
       return `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`;
     }
+  },
+  components: {
+    StudentRegistrationInfoDialog: () =>
+      import("components/StudentRegistrationInfoDialog.vue")
   }
 };
 </script>

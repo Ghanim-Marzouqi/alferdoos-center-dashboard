@@ -16,39 +16,55 @@
           <tbody>
             <tr>
               <td class="text-left">الإملاء</td>
-              <td class="text-center">{{ getExam('written').marks }} درجة</td>
+              <td class="text-center">{{ getExam("written").marks }} درجة</td>
               <td class="text-right">
-                <q-btn dense flat @click="onExamDialogOpened('درجة الإملاء', 'written')">
+                <q-btn
+                  dense
+                  flat
+                  @click="onExamDialogOpened('درجة الإملاء', 'written')"
+                >
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>
             <tr>
               <td class="text-left">التسميع</td>
-              <td class="text-center">{{ getExam('recite').marks }} درجة</td>
+              <td class="text-center">{{ getExam("recite").marks }} درجة</td>
               <td class="text-right">
-                <q-btn dense flat @click="onExamDialogOpened('درجة التسميع', 'recite')">
+                <q-btn
+                  dense
+                  flat
+                  @click="onExamDialogOpened('درجة التسميع', 'recite')"
+                >
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>
             <tr>
               <td class="text-left">التلاوة</td>
-              <td class="text-center">{{ getExam('reading').marks }} درجة</td>
+              <td class="text-center">{{ getExam("reading").marks }} درجة</td>
               <td class="text-right">
-                <q-btn dense flat @click="onExamDialogOpened('درجة التلاوة', 'reading')">
+                <q-btn
+                  dense
+                  flat
+                  @click="onExamDialogOpened('درجة التلاوة', 'reading')"
+                >
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>
             <tr>
               <td class="text-left">الثقافة العامة</td>
-              <td class="text-center">{{ getExam('commonKnowledge').marks }} درجة</td>
+              <td class="text-center">
+                {{ getExam("commonKnowledge").marks }} درجة
+              </td>
               <td class="text-right">
                 <q-btn
                   dense
                   flat
-                  @click="onExamDialogOpened('درجة الثقافة العامة', 'commonKnowledge')"
+                  @click="
+                    onExamDialogOpened('درجة الثقافة العامة', 'commonKnowledge')
+                  "
                 >
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
@@ -56,16 +72,24 @@
             </tr>
             <tr>
               <td class="text-left">المهارات الشخصية</td>
-              <td class="text-center">{{ getExam('personal').marks }} درجة</td>
+              <td class="text-center">{{ getExam("personal").marks }} درجة</td>
               <td class="text-right">
-                <q-btn dense flat @click="onExamDialogOpened('درجة المهارات الشخصية', 'personal')">
+                <q-btn
+                  dense
+                  flat
+                  @click="
+                    onExamDialogOpened('درجة المهارات الشخصية', 'personal')
+                  "
+                >
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
               </td>
             </tr>
             <tr>
               <td class="text-left text-weight-bold">المجموع الكلي للدرجات</td>
-              <td class="text-center text-weight-bold">{{ getExamTotalMarks }} درجة</td>
+              <td class="text-center text-weight-bold">
+                {{ getExamTotalMarks }} درجة
+              </td>
               <td class="text-right"></td>
             </tr>
           </tbody>
@@ -81,14 +105,17 @@
           class="q-mb-md"
           color="primary"
           @click="isAddQuestionDialogOpen = true"
-        >إضافة سؤال جديد</q-btn>
+          >إضافة سؤال جديد</q-btn
+        >
       </div>
       <div class="col-12">
         <q-table :columns="columns" :data="GET_QUESTIONS" row-key="text">
           <template v-slot:header="props">
             <q-tr :props="props">
               <q-th auto-width />
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">{{ col.label }}</q-th>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">{{
+                col.label
+              }}</q-th>
             </q-tr>
           </template>
 
@@ -109,7 +136,12 @@
               <q-td auto-width>{{ props.row.text }}</q-td>
               <q-td auto-width class="text-center">{{ props.row.marks }}</q-td>
               <q-td auto-width class="text-right">
-                <q-btn dense flat color="red" @click="onDeleteQuestion(props.row)">
+                <q-btn
+                  dense
+                  flat
+                  color="red"
+                  @click="onDeleteQuestion(props.row)"
+                >
                   <q-icon name="o_delete"></q-icon>
                 </q-btn>
               </q-td>
@@ -123,7 +155,8 @@
                         :style="
                           option.isCorrect.value ? 'color: green' : 'color: red'
                         "
-                      >{{ option.text }}</span>
+                        >{{ option.text }}</span
+                      >
                     </li>
                   </ol>
                 </div>
