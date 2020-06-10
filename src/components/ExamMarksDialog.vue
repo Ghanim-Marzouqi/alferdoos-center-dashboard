@@ -10,25 +10,50 @@
           <q-list style="width: 100%">
             <q-item>
               <q-item-section avatar>
-                <q-btn dense round size="sm" color="primary" @click="addExamMarksOption">
+                <q-btn
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click="addExamMarksOption"
+                >
                   <q-icon name="o_add" />
                 </q-btn>
               </q-item-section>
               <q-item-section>
-                <q-input v-model="option.text" label="تفاصيل" dense filled></q-input>
+                <q-input
+                  v-model="option.text"
+                  label="تفاصيل"
+                  dense
+                  filled
+                ></q-input>
               </q-item-section>
               <q-item-section side>
-                <q-input type="number" v-model="option.marks" label="الدرجة" dense filled></q-input>
+                <q-input
+                  type="number"
+                  v-model="option.marks"
+                  label="الدرجة"
+                  dense
+                  filled
+                ></q-input>
               </q-item-section>
             </q-item>
             <q-item v-for="(option, i) in options" :key="i">
               <q-item-section avatar>
-                <q-btn dense round size="sm" color="primary" @click="removeExamMarksOption(i)">
+                <q-btn
+                  dense
+                  round
+                  size="sm"
+                  color="red"
+                  @click="removeExamMarksOption(i)"
+                >
                   <q-icon name="o_remove" />
                 </q-btn>
               </q-item-section>
               <q-item-section>{{ option.text }}</q-item-section>
-              <q-item-section class="text-center" style="width: 100%">{{ option.marks }}</q-item-section>
+              <q-item-section class="text-center" style="width: 100%">{{
+                option.marks
+              }}</q-item-section>
             </q-item>
           </q-list>
         </div>
@@ -36,7 +61,9 @@
       <q-card-section></q-card-section>
       <q-card-actions>
         <q-space></q-space>
-        <q-btn dense flat color="primary" @click="closeExamMarksDialog">إلغاء</q-btn>
+        <q-btn dense flat color="primary" @click="closeExamMarksDialog"
+          >إلغاء</q-btn
+        >
         <q-btn
           dense
           flat
@@ -44,7 +71,8 @@
           :loading="GET_LOADING"
           @click="setExamMarks"
           :disable="disableSubmitButton"
-        >حفظ</q-btn>
+          >حفظ</q-btn
+        >
       </q-card-actions>
     </q-card>
   </q-dialog>

@@ -31,6 +31,14 @@ const routes = [
         component: () => import("pages/admin/students/PageStudentExams.vue")
       },
       {
+        path: "take-exam",
+        component: () => import("pages/admin/students/PageTakeExam.vue")
+      },
+      {
+        path: "exam-results",
+        component: () => import("pages/admin/students/PageExamResults.vue")
+      },
+      {
         path: "student-list",
         component: () => import("pages/admin/students/PageStudentList.vue")
       },
