@@ -36,27 +36,27 @@
               </q-btn>
             </q-td>
             <q-td key="write" :props="props">
-              <q-btn dense flat>
+              <q-btn dense flat @click.stop="showErrorDialog()">
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
             <q-td key="recite" :props="props">
-              <q-btn dense flat>
+              <q-btn dense flat @click.stop="showErrorDialog()">
                 <q-icon color="brown" name="o_hearing" />
               </q-btn>
             </q-td>
             <q-td key="read" :props="props">
-              <q-btn dense flat>
+              <q-btn dense flat @click.stop="showErrorDialog()">
                 <q-icon color="purple" name="o_record_voice_over" />
               </q-btn>
             </q-td>
             <q-td key="commoknowledge" :props="props">
-              <q-btn dense flat>
+              <q-btn dense flat @click.stop="showErrorDialog()">
                 <q-icon color="indigo" name="o_local_library" />
               </q-btn>
             </q-td>
             <q-td key="personal" :props="props">
-              <q-btn dense flat>
+              <q-btn dense flat @click.stop="showErrorDialog()">
                 <q-icon color="pink" name="o_sentiment_satisfied_alt" />
               </q-btn>
             </q-td>
@@ -70,6 +70,13 @@
       :isStudentDialogOpen="isStudentDialogOpen"
       :student="registeredStudent"
       @closeStudentRegistrationInfoDialog="isStudentDialogOpen = false"
+    />
+
+    <!-- Error Dialog -->
+    <ErrorDialog
+      :isErrorDialogOpen="isErrorDialogOpen"
+      errorTitle="حدث خطأ"
+      @closeErrorDialog="isErrorDialogOpen = false"
     />
   </q-page>
 </template>
@@ -166,6 +173,9 @@ export default {
     showStudentDialog(student) {
       this.registeredStudent = student;
       this.isStudentDialogOpen = true;
+    },
+    showErrorDialog() {
+      this.isErrorDialogOpen = true;
     }
   },
   filters: {
@@ -175,7 +185,8 @@ export default {
   },
   components: {
     StudentRegistrationInfoDialog: () =>
-      import("components/StudentRegistrationInfoDialog.vue")
+      import("components/StudentRegistrationInfoDialog.vue"),
+    ErrorDialog: () => import("components/ErrorDialog.vue")
   }
 };
 </script>
