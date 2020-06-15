@@ -34,7 +34,7 @@
 
 <script>
 export default {
-  name: "PageStudentExams",
+  name: "PageExamsDashboard",
   methods: {
     goToRoute(route) {
       this.$router.push(route);

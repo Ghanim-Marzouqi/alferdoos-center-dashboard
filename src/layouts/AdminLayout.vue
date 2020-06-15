@@ -58,7 +58,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item class="q-ma-xs" clickable exact to="/admin/student-exams">
+            <q-item class="q-ma-xs" clickable exact to="/admin/exams-dashboard">
               <q-item-section avatar>
                 <q-icon name="o_description" />
               </q-item-section>

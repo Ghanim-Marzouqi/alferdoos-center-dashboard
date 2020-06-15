@@ -22,28 +22,37 @@
           />
           <div class="row q-my-sm">
             <q-list style="width: 100%">
-              <q-item>
-                <q-item-section avatar>
-                  <q-btn dense round size="sm" color="primary" @click="addQuestionOption">
-                    <q-icon name="o_add" />
-                  </q-btn>
-                </q-item-section>
-                <q-item-section>
-                  <q-input v-model="option.text" label="إضف خيار للسؤال" dense filled></q-input>
-                </q-item-section>
-                <q-item-section side>
-                  <q-select
-                    v-model="option.isCorrect"
-                    :value="option.isCorrect"
-                    :options="questionOptions"
-                    dense
-                    filled
-                  ></q-select>
-                </q-item-section>
-              </q-item>
+              <q-form @submit.prevent="addQuestionOption" @reset="resetQuestionOptions">
+                <q-item>
+                  <q-item-section avatar>
+                    <q-btn dense round size="sm" color="primary" type="submit">
+                      <q-icon name="o_add" />
+                    </q-btn>
+                  </q-item-section>
+                  <q-item-section style="margin-top: 21px">
+                    <q-input
+                      v-model="option.text"
+                      label="إضف خيار للسؤال"
+                      dense
+                      filled
+                      lazy-rules
+                      :rules="[val => val && val.length > 0 || 'اضف خيار للسؤال']"
+                    ></q-input>
+                  </q-item-section>
+                  <q-item-section side>
+                    <q-select
+                      v-model="option.isCorrect"
+                      :value="option.isCorrect"
+                      :options="questionOptions"
+                      dense
+                      filled
+                    ></q-select>
+                  </q-item-section>
+                </q-item>
+              </q-form>
               <q-item v-for="(option, i) in question.options" :key="i">
                 <q-item-section avatar>
-                  <q-btn dense round size="sm" color="primary" @click="removeQuestionOption(i)">
+                  <q-btn dense round size="sm" color="red" @click="removeQuestionOption(i)">
                     <q-icon name="o_remove" />
                   </q-btn>
                 </q-item-section>
@@ -136,6 +145,16 @@ export default {
     },
     removeQuestionOption(index) {
       this.question.options.splice(index, 1);
+    },
+    resetQuestionOptions() {
+      // Reset Option
+      this.option = {
+        text: "",
+        isCorrect: {
+          label: "لا",
+          value: false
+        }
+      };
     },
     closeAddQuestionDialog() {
       this.question = {

@@ -1,7 +1,11 @@
 <template>
   <q-page padding>
-    <p class="text-h6 text-weight-bold">نتائج الإختبار</p>
-
+    <div class="fit row inline wrap items-center">
+      <q-btn flat color="primary" to="/admin/exams-dashboard">
+        <q-icon name="keyboard_arrow_right" size="md"></q-icon>
+      </q-btn>
+      <p class="text-h6 text-weight-bold q-ma-sm">نتائج الإختبار</p>
+    </div>
     <div class="q-pa-md">
       <q-table
         title="قائمة نتائج الطلاب المتقدمين لإداء الإختبار"
@@ -11,13 +15,7 @@
         :filter="filter"
       >
         <template v-slot:top-right>
-          <q-input
-            borderless
-            dense
-            debounce="300"
-            v-model="filter"
-            placeholder="بحث"
-          >
+          <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -27,9 +25,7 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="createdAt" :props="props">
-              {{ props.row.createdAt | formatDate }}
-            </q-td>
+            <q-td key="createdAt" :props="props">{{ props.row.createdAt | formatDate }}</q-td>
             <q-td key="file" :props="props">
               <q-btn dense flat @click.stop="showStudentDialog(props.row)">
                 <q-icon color="blue" name="o_visibility" />

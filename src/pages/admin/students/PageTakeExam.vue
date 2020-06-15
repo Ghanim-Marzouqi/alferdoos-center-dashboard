@@ -1,6 +1,11 @@
 <template>
   <q-page padding>
-    <p class="text-h6 text-weight-bold">تقديم الإختبار</p>
+    <div class="fit row inline wrap items-center">
+      <q-btn flat color="primary" to="/admin/exams-dashboard">
+        <q-icon name="keyboard_arrow_right" size="md"></q-icon>
+      </q-btn>
+      <p class="text-h6 text-weight-bold q-ma-sm">تقديم الإختبار</p>
+    </div>
     <div class="q-pa-md">
       <q-table
         title="قائمة الطلاب المؤهلين لأداء الإختبار"
@@ -11,13 +16,7 @@
         :loading="GET_LOADING"
       >
         <template v-slot:top-right>
-          <q-input
-            borderless
-            dense
-            debounce="300"
-            v-model="filter"
-            placeholder="بحث"
-          >
+          <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -28,7 +27,9 @@
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
             <q-td key="createdAt" :props="props">
-              {{ props.row.createdAt | formatDate }}
+              {{
+              props.row.createdAt | formatDate
+              }}
             </q-td>
             <q-td key="file" :props="props">
               <q-btn dense flat @click.stop="showStudentDialog(props.row)">
@@ -36,27 +37,31 @@
               </q-btn>
             </q-td>
             <q-td key="write" :props="props">
-              <q-btn dense flat @click.stop="showErrorDialog()">
+              <q-btn dense flat @click.stop="showMarkDialog('درجة إختبار الإملاء', 'written')">
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
             <q-td key="recite" :props="props">
-              <q-btn dense flat @click.stop="showErrorDialog()">
+              <q-btn dense flat @click.stop="showMarkDialog('درجة إختبار التسميع', 'recite')">
                 <q-icon color="brown" name="o_hearing" />
               </q-btn>
             </q-td>
             <q-td key="read" :props="props">
-              <q-btn dense flat @click.stop="showErrorDialog()">
+              <q-btn dense flat @click.stop="showMarkDialog('درجة إختبار التلاوة', 'reading')">
                 <q-icon color="purple" name="o_record_voice_over" />
               </q-btn>
             </q-td>
             <q-td key="commoknowledge" :props="props">
-              <q-btn dense flat @click.stop="showErrorDialog()">
+              <q-btn dense flat>
                 <q-icon color="indigo" name="o_local_library" />
               </q-btn>
             </q-td>
             <q-td key="personal" :props="props">
-              <q-btn dense flat @click.stop="showErrorDialog()">
+              <q-btn
+                dense
+                flat
+                @click.stop="showMarkDialog('درجة إختبار المهارات الشخصية', 'personal')"
+              >
                 <q-icon color="pink" name="o_sentiment_satisfied_alt" />
               </q-btn>
             </q-td>
@@ -72,11 +77,12 @@
       @closeStudentRegistrationInfoDialog="isStudentDialogOpen = false"
     />
 
-    <!-- Error Dialog -->
-    <ErrorDialog
-      :isErrorDialogOpen="isErrorDialogOpen"
-      errorTitle="حدث خطأ"
-      @closeErrorDialog="isErrorDialogOpen = false"
+    <!-- Add Student Mark Dialog -->
+    <AddStudentMarkDialog
+      :isDialogOpen="isAddStudentMarkDialogOpen"
+      :title="examTitle"
+      :exam="examDetails"
+      @closeDialog="closeAddStudentMarkDialog"
     />
   </q-page>
 </template>
@@ -84,7 +90,12 @@
 <script>
 import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
-import { GETTERS, ACTIONS, STUDENT_STATUS } from "../../../config/constants";
+import {
+  GETTERS,
+  ACTIONS,
+  STUDENT_STATUS,
+  EXAM_TYPE
+} from "../../../config/constants";
 
 export default {
   name: "PageStudentExams",
@@ -92,7 +103,9 @@ export default {
     return {
       filter: "",
       examType: "",
-      isErrorDialogOpen: false,
+      examTitle: "",
+      examDetails: {},
+      isAddStudentMarkDialogOpen: false,
       isStudentDialogOpen: false,
       registeredStudent: {},
       columns: [
@@ -153,10 +166,12 @@ export default {
   },
   created() {
     this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+    this.FETCH_EXAM_TOTAL_MARKS();
   },
   computed: {
     ...mapGetters({
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
+      GET_EXAM_MARKS: GETTERS.SETTINGS.GET_EXAM_MARKS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS
@@ -167,6 +182,7 @@ export default {
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
       DELETE_STUDENT: ACTIONS.STUDNETS.DELETE_STUDENT,
       EDIT_STUDENT_STATUS: ACTIONS.STUDNETS.EDIT_STUDENT_STATUS,
+      FETCH_EXAM_TOTAL_MARKS: ACTIONS.SETTINGS.FETCH_EXAM_TOTAL_MARKS,
       SET_ERROR: ACTIONS.UI.SET_ERROR,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
     }),
@@ -174,8 +190,15 @@ export default {
       this.registeredStudent = student;
       this.isStudentDialogOpen = true;
     },
-    showErrorDialog() {
-      this.isErrorDialogOpen = true;
+    showMarkDialog(examTitle, examType) {
+      this.isAddStudentMarkDialogOpen = true;
+      this.examTitle = examTitle;
+      this.examDetails = this.GET_EXAM_MARKS.find(exam => exam.id === examType);
+    },
+    closeAddStudentMarkDialog(value) {
+      this.examTitle = "";
+      this.examDetails = {};
+      this.isAddStudentMarkDialogOpen = value;
     }
   },
   filters: {
@@ -186,7 +209,7 @@ export default {
   components: {
     StudentRegistrationInfoDialog: () =>
       import("components/StudentRegistrationInfoDialog.vue"),
-    ErrorDialog: () => import("components/ErrorDialog.vue")
+    AddStudentMarkDialog: () => import("components/AddStudentMarkDialog.vue")
   }
 };
 </script>

@@ -7,63 +7,57 @@
           <span class="text-weight-bold">{{ getTotalMarks }}</span>
         </div>
         <div class="row q-my-sm">
-          <q-list style="width: 100%">
-            <q-item>
-              <q-item-section avatar>
-                <q-btn
-                  dense
-                  round
-                  size="sm"
-                  color="primary"
-                  @click="addExamMarksOption"
-                >
-                  <q-icon name="o_add" />
-                </q-btn>
-              </q-item-section>
-              <q-item-section>
-                <q-input
-                  v-model="option.text"
-                  label="تفاصيل"
-                  dense
-                  filled
-                ></q-input>
-              </q-item-section>
-              <q-item-section side>
-                <q-input
-                  type="number"
-                  v-model="option.marks"
-                  label="الدرجة"
-                  dense
-                  filled
-                ></q-input>
-              </q-item-section>
-            </q-item>
-            <q-item v-for="(option, i) in options" :key="i">
-              <q-item-section avatar>
-                <q-btn
-                  dense
-                  round
-                  size="sm"
-                  color="red"
-                  @click="removeExamMarksOption(i)"
-                >
-                  <q-icon name="o_remove" />
-                </q-btn>
-              </q-item-section>
-              <q-item-section>{{ option.text }}</q-item-section>
-              <q-item-section class="text-center" style="width: 100%">{{
-                option.marks
-              }}</q-item-section>
-            </q-item>
-          </q-list>
+          <q-form @submit.prevent="addExamMarksOption">
+            <q-list style="width: 100%">
+              <q-item>
+                <q-item-section class="justify-start" avatar>
+                  <q-btn dense round size="sm" color="primary" type="submit">
+                    <q-icon name="o_add" />
+                  </q-btn>
+                </q-item-section>
+                <q-item-section class="q-mt-lg">
+                  <q-input
+                    style="width: 200px"
+                    v-model="option.text"
+                    label="تفاصيل"
+                    dense
+                    filled
+                    :rules="[val => val && val.length > 0 || 'ادخل تفاصيل الدرجة']"
+                  ></q-input>
+                </q-item-section>
+                <q-item-section class="q-mt-lg" side>
+                  <q-input
+                    style="width: 100px"
+                    type="number"
+                    v-model="option.marks"
+                    label="الدرجة"
+                    dense
+                    filled
+                    :rules="[val => val && val > 0 || 'ادخل الدرجة']"
+                  ></q-input>
+                </q-item-section>
+              </q-item>
+              <q-item v-for="(option, i) in options" :key="i">
+                <q-item-section avatar>
+                  <q-btn dense round size="sm" color="red" @click="removeExamMarksOption(i)">
+                    <q-icon name="o_remove" />
+                  </q-btn>
+                </q-item-section>
+                <q-item-section>{{ option.text }}</q-item-section>
+                <q-item-section class="text-center" style="width: 100%">
+                  {{
+                  option.marks
+                  }}
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-form>
         </div>
       </q-card-section>
       <q-card-section></q-card-section>
       <q-card-actions>
         <q-space></q-space>
-        <q-btn dense flat color="primary" @click="closeExamMarksDialog"
-          >إلغاء</q-btn
-        >
+        <q-btn dense flat color="primary" @click="closeExamMarksDialog">إلغاء</q-btn>
         <q-btn
           dense
           flat
@@ -71,8 +65,7 @@
           :loading="GET_LOADING"
           @click="setExamMarks"
           :disable="disableSubmitButton"
-          >حفظ</q-btn
-        >
+        >حفظ</q-btn>
       </q-card-actions>
     </q-card>
   </q-dialog>

@@ -27,8 +27,8 @@ const routes = [
           import("pages/admin/students/PageRegistrationForms.vue")
       },
       {
-        path: "student-exams",
-        component: () => import("pages/admin/students/PageStudentExams.vue")
+        path: "exams-dashboard",
+        component: () => import("pages/admin/students/PageExamsDashboard.vue")
       },
       {
         path: "take-exam",
