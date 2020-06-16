@@ -6,17 +6,20 @@ import {
   MUTATIONS,
   STUDENT_STATUS,
   MESSAGES,
-  ERRORS
+  ERRORS,
+  EXAM_TYPE
 } from "../../config/constants";
 
 // State
 const state = {
-  students: []
+  students: [],
+  studentMarks: []
 };
 
 // Getters
 const getters = {
-  GET_STUDENTS: state => state.students
+  GET_STUDENTS: state => state.students,
+  GET_STUDENTS_MARKS: state => state.studentMarks
 };
 
 // Actions
@@ -73,14 +76,12 @@ const actions = {
 
       // Set Students
       commit(MUTATIONS.STUDNETS.SET_STUDENTS, students);
-
-      // Deactivate Loader
-      commit(MUTATIONS.UI.SET_LOADING, false);
     } catch (error) {
       // Display Error In Console
       console.log("FETCH_STUDENTS", error);
       // Set Error (Fetch Student Action)
       commit(MUTATIONS.UI.SET_ERROR, error);
+    } finally {
       // Deactivate Loader
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
@@ -140,14 +141,12 @@ const actions = {
 
       // Set Students
       commit(MUTATIONS.STUDNETS.SET_STUDENTS, students);
-
-      // Deactivate Loader
-      commit(MUTATIONS.UI.SET_LOADING, false);
     } catch (error) {
       // Display Error In Console
       console.log("FETCH_STUDENTS_BY_PARENT_ID", error);
       // Set Error (Fetch Student Action)
       commit(MUTATIONS.UI.SET_ERROR, error);
+    } finally {
       // Deactivate Loader
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
@@ -220,8 +219,6 @@ const actions = {
         .doc()
         .set(student);
 
-      // Deactivate Loading
-      commit(MUTATIONS.UI.SET_LOADING, false);
       // Set Message
       commit(MUTATIONS.UI.SET_MESSAGE, "تم تقديم الطلب بنجاح");
 
@@ -233,13 +230,14 @@ const actions = {
     } catch (error) {
       // Display Error In Console
       console.log("REGISTER_STUDENT", error);
-      // Deactivate Loading
-      commit(MUTATIONS.UI.SET_LOADING, false);
       // Display Error Message
       Dialog.create({
         title: "تنبيه",
         message: "حدث خطأ اثناء التسجيل"
       });
+    } finally {
+      // Deactivate Loading
+      commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
 
@@ -293,9 +291,6 @@ const actions = {
           code: ERRORS.DATABASE.STUDENT_NOT_FOUND
         });
       }
-
-      // Deactivate Loading
-      commit(MUTATIONS.UI.SET_LOADING, false);
     } catch (error) {
       // Display Error In Console
       console.log("EDIT_APPLICATION_STATUS ERROR", error);
@@ -303,15 +298,173 @@ const actions = {
       commit(MUTATIONS.UI.SET_ERROR, {
         code: ERRORS.DATABASE.EDIT_STUDENT_STATUS_ERROR
       });
+    } finally {
       // Deactivate Loading
       commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async EDIT_STUDENT_MARK({ commit }, payload) {
+    // Activate Loader
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let doc = await FirebaseDatabase.collection(
+        COLLECTIONS.STUDENT_EXAM_MARKS
+      )
+        .doc(payload.studentId)
+        .get();
+
+      if (!doc.exists) {
+        switch (payload.examType) {
+          case EXAM_TYPE.WRITTEN:
+            // Insert Student Mark
+            await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+              .doc(payload.studentId)
+              .set({
+                written: payload.studentMarks
+              });
+
+            // Set Success Message
+            commit(MUTATIONS.UI.SET_MESSAGE, {
+              code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
+            });
+            break;
+          case EXAM_TYPE.RECITE:
+            // Insert Student Mark
+            await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+              .doc(payload.studentId)
+              .set({
+                recite: payload.studentMarks
+              });
+
+            // Set Success Message
+            commit(MUTATIONS.UI.SET_MESSAGE, {
+              code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
+            });
+            break;
+          case EXAM_TYPE.READING:
+            // Insert Student Mark
+            await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+              .doc(payload.studentId)
+              .set({
+                reading: payload.studentMarks
+              });
+
+            // Set Success Message
+            commit(MUTATIONS.UI.SET_MESSAGE, {
+              code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
+            });
+            break;
+          case EXAM_TYPE.PERSONAL:
+            // Insert Student Mark
+            await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+              .doc(payload.studentId)
+              .set({
+                personal: payload.studentMarks
+              });
+
+            // Set Success Message
+            commit(MUTATIONS.UI.SET_MESSAGE, {
+              code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
+            });
+            break;
+        }
+      } else {
+        switch (payload.examType) {
+          case EXAM_TYPE.WRITTEN:
+            // Update Student Mark
+            await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+              .doc(payload.studentId)
+              .update({
+                written: payload.studentMarks
+              });
+
+            // Set Success Message
+            commit(MUTATIONS.UI.SET_MESSAGE, {
+              code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
+            });
+            break;
+          case EXAM_TYPE.RECITE:
+            // Update Student Mark
+            await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+              .doc(payload.studentId)
+              .update({
+                recite: payload.studentMarks
+              });
+
+            // Set Success Message
+            commit(MUTATIONS.UI.SET_MESSAGE, {
+              code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
+            });
+            break;
+          case EXAM_TYPE.READING:
+            // Update Student Mark
+            await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+              .doc(payload.studentId)
+              .update({
+                reading: payload.studentMarks
+              });
+
+            // Set Success Message
+            commit(MUTATIONS.UI.SET_MESSAGE, {
+              code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
+            });
+            break;
+          case EXAM_TYPE.PERSONAL:
+            // Update Student Mark
+            await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+              .doc(payload.studentId)
+              .update({
+                personal: payload.studentMarks
+              });
+
+            // Set Success Message
+            commit(MUTATIONS.UI.SET_MESSAGE, {
+              code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
+            });
+            break;
+        }
+      }
+    } catch (error) {
+      // Display Error In Console
+      console.log("EDIT_STUDENT_MARK ERROR", error);
+      // Set Error (Edit Application Status Error)
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.EDIT_STUDENT_MARK_ERROR
+      });
+    } finally {
+      // Deactivate Loading
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async FETCH_STUDENTS_MARKS({ commit }) {
+    let snapshot = await FirebaseDatabase.collection(
+      COLLECTIONS.STUDENT_EXAM_MARKS
+    ).get();
+    let docs = snapshot.docs;
+
+    if (docs.length > 0) {
+      let studentMarks = docs.map(doc => ({
+        studentId: doc.id,
+        written: doc.data().written,
+        recite: doc.data().recite,
+        reading: doc.data().reading,
+        commonKnowledge: doc.data().commonKnowledge,
+        personal: doc.data().personal
+      }));
+
+      commit(MUTATIONS.STUDNETS.SET_STUDENTS_MARKS, studentMarks);
     }
   }
 };
 
 // Mutations
 const mutations = {
-  SET_STUDENTS: (state, students) => (state.students = students)
+  SET_STUDENTS: (state, students) => (state.students = students),
+  SET_STUDENTS_MARKS: (state, studentMarks) =>
+    (state.studentMarks = studentMarks)
 };
 
 // Export

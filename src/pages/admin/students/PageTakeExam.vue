@@ -37,17 +37,29 @@
               </q-btn>
             </q-td>
             <q-td key="write" :props="props">
-              <q-btn dense flat @click.stop="showMarkDialog('درجة إختبار الإملاء', 'written')">
+              <q-btn
+                dense
+                flat
+                @click.stop="showMarkDialog('درجة إختبار الإملاء', 'written', props.row.id)"
+              >
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
             <q-td key="recite" :props="props">
-              <q-btn dense flat @click.stop="showMarkDialog('درجة إختبار التسميع', 'recite')">
+              <q-btn
+                dense
+                flat
+                @click.stop="showMarkDialog('درجة إختبار التسميع', 'recite', props.row.id)"
+              >
                 <q-icon color="brown" name="o_hearing" />
               </q-btn>
             </q-td>
             <q-td key="read" :props="props">
-              <q-btn dense flat @click.stop="showMarkDialog('درجة إختبار التلاوة', 'reading')">
+              <q-btn
+                dense
+                flat
+                @click.stop="showMarkDialog('درجة إختبار التلاوة', 'reading', props.row.id)"
+              >
                 <q-icon color="purple" name="o_record_voice_over" />
               </q-btn>
             </q-td>
@@ -60,7 +72,7 @@
               <q-btn
                 dense
                 flat
-                @click.stop="showMarkDialog('درجة إختبار المهارات الشخصية', 'personal')"
+                @click.stop="showMarkDialog('درجة إختبار المهارات الشخصية', 'personal', props.row.id)"
               >
                 <q-icon color="pink" name="o_sentiment_satisfied_alt" />
               </q-btn>
@@ -82,6 +94,8 @@
       :isDialogOpen="isAddStudentMarkDialogOpen"
       :title="examTitle"
       :exam="examDetails"
+      :studentId="studentId"
+      :marks="studentMarks"
       @closeDialog="closeAddStudentMarkDialog"
     />
   </q-page>
@@ -94,7 +108,9 @@ import {
   GETTERS,
   ACTIONS,
   STUDENT_STATUS,
-  EXAM_TYPE
+  EXAM_TYPE,
+  MESSAGES,
+  ERRORS
 } from "../../../config/constants";
 
 export default {
@@ -108,6 +124,8 @@ export default {
       isAddStudentMarkDialogOpen: false,
       isStudentDialogOpen: false,
       registeredStudent: {},
+      studentId: "",
+      studentMarks: {},
       columns: [
         {
           name: "name",
@@ -167,10 +185,12 @@ export default {
   created() {
     this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
     this.FETCH_EXAM_TOTAL_MARKS();
+    this.FETCH_STUDENTS_MARKS();
   },
   computed: {
     ...mapGetters({
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
+      GET_STUDENTS_MARKS: GETTERS.STUDNETS.GET_STUDENTS_MARKS,
       GET_EXAM_MARKS: GETTERS.SETTINGS.GET_EXAM_MARKS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
@@ -182,6 +202,7 @@ export default {
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
       DELETE_STUDENT: ACTIONS.STUDNETS.DELETE_STUDENT,
       EDIT_STUDENT_STATUS: ACTIONS.STUDNETS.EDIT_STUDENT_STATUS,
+      FETCH_STUDENTS_MARKS: ACTIONS.STUDNETS.FETCH_STUDENTS_MARKS,
       FETCH_EXAM_TOTAL_MARKS: ACTIONS.SETTINGS.FETCH_EXAM_TOTAL_MARKS,
       SET_ERROR: ACTIONS.UI.SET_ERROR,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
@@ -190,20 +211,61 @@ export default {
       this.registeredStudent = student;
       this.isStudentDialogOpen = true;
     },
-    showMarkDialog(examTitle, examType) {
-      this.isAddStudentMarkDialogOpen = true;
+    showMarkDialog(examTitle, examType, studentId) {
       this.examTitle = examTitle;
       this.examDetails = this.GET_EXAM_MARKS.find(exam => exam.id === examType);
+      this.studentId = studentId;
+      let studentMarks = this.GET_STUDENTS_MARKS.find(
+        marks => marks.studentId === studentId
+      );
+      if (studentMarks) this.studentMarks = studentMarks;
+      else this.studentMarks = {};
+      this.isAddStudentMarkDialogOpen = true;
     },
     closeAddStudentMarkDialog(value) {
       this.examTitle = "";
       this.examDetails = {};
+      this.registeredStudent = {};
+      this.studentId = "";
+      this.studentMarks = {};
       this.isAddStudentMarkDialogOpen = value;
     }
   },
   filters: {
     formatDate(val) {
       return `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`;
+    }
+  },
+  watch: {
+    GET_MESSAGES: function(newState, oldState) {
+      if (newState.length > 0) {
+        let messageCode = newState[0].code;
+
+        if (messageCode === MESSAGES.DATABASE.STUDENT_MARK_UPDATED) {
+          this.isAddStudentMarkDialogOpen = false;
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تحديث درجات الطالب بنجاح"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+          this.FETCH_STUDENTS_MARKS();
+        }
+      }
+    },
+    GET_ERRORS: function(newState, oldState) {
+      if (newState.length > 0) {
+        let errorCode = newState[0].code;
+
+        if (errorCode === ERRORS.DATABASE.EDIT_STUDENT_MARK_ERROR) {
+          this.isAddStudentMarkDialogOpen = false;
+          this.$q.dialog({
+            title: "فشلت العملية",
+            message: "حدث خطأ أثناء تحديث درجات الطالب"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+        }
+      }
     }
   },
   components: {

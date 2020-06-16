@@ -6,7 +6,8 @@ const COLLECTIONS = {
   STUDENTS: "students",
   YEARS: "years",
   QUESTIONS: "questions",
-  EXAM_MARKS: "examMarks"
+  EXAM_MARKS: "examMarks",
+  STUDENT_EXAM_MARKS: "studentExamMarks"
 };
 
 const STUDENT_GRADE = {
@@ -220,7 +221,8 @@ const GETTERS = {
     GET_EXAM_MARKS: "GET_EXAM_MARKS"
   },
   STUDNETS: {
-    GET_STUDENTS: "GET_STUDENTS"
+    GET_STUDENTS: "GET_STUDENTS",
+    GET_STUDENTS_MARKS: "GET_STUDENTS_MARKS"
   },
   UI: {
     GET_LOADING: "GET_LOADING",
@@ -256,7 +258,9 @@ const ACTIONS = {
     FETCH_STUDENTS_BY_PARENT_ID: "FETCH_STUDENTS_BY_PARENT_ID",
     REGISTER_STUDENT: "REGISTER_STUDENT",
     DELETE_STUDENT: "DELETE_STUDENT",
-    EDIT_STUDENT_STATUS: "EDIT_STUDENT_STATUS"
+    EDIT_STUDENT_STATUS: "EDIT_STUDENT_STATUS",
+    EDIT_STUDENT_MARK: "EDIT_STUDENT_MARK",
+    FETCH_STUDENTS_MARKS: "FETCH_STUDENTS_MARKS"
   },
   UI: {
     SET_MESSAGE: "SET_MESSAGE",
@@ -280,7 +284,8 @@ const MUTATIONS = {
     SET_EXAM_MARKS: "SET_EXAM_MARKS"
   },
   STUDNETS: {
-    SET_STUDENTS: "SET_STUDENTS"
+    SET_STUDENTS: "SET_STUDENTS",
+    SET_STUDENTS_MARKS: "SET_STUDENTS_MARKS"
   },
   UI: {
     SET_LOADING: "SET_LOADING",
@@ -315,7 +320,8 @@ const ERRORS = {
     SET_EXAM_MARKS_ERROR: "database/set_exam_marks_error",
     SET_QUESTION_ERROR: "database/set_question_error",
     DELETE_QUESTION_ERROR: "database/delete-question-error",
-    FETCH_EXAM_TOTAL_MARKS_ERROR: "database/fetch-exam-total-marks-error"
+    FETCH_EXAM_TOTAL_MARKS_ERROR: "database/fetch-exam-total-marks-error",
+    EDIT_STUDENT_MARK_ERROR: "database/edit-student-mark-error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
@@ -337,7 +343,8 @@ const MESSAGES = {
       "database/year-info-registration-period-updated",
     EXAM_MARKS_UPDATED: "database/exam_marks_updated",
     QUESTION_ADDED: "database/question-added",
-    QUESTION_DELETED: "database/question-deleted"
+    QUESTION_DELETED: "database/question-deleted",
+    STUDENT_MARK_UPDATED: "database/student-mark-updated"
   }
 };
 

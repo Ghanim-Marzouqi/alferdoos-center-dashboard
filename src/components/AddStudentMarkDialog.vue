@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="isDialogOpen">
+  <q-dialog persistent v-model="isDialogOpen" @before-show="intializeValues" @hide="onHideDialog">
     <q-card>
       <q-form @submit.prevent="saveStudentMarks()">
         <q-card-section class="text-weight-bold">{{ title }}</q-card-section>
@@ -7,16 +7,19 @@
           <div class="row q-my-sm">
             <q-list style="width: 100%">
               <q-item v-for="(distribution, i) in exam.marksDistribution" :key="i">
-                <q-item-section>{{ distribution.text }}</q-item-section>
-                <q-item-section>
+                <q-item-section style="max-width: 40%">{{ distribution.text }}</q-item-section>
+                <q-item-section style="max-width: 60%">
                   <div class="row items-center">
                     <q-input
                       v-model="input[i]"
-                      style="width: 100px; margin-top: 21px"
+                      style="width: 130px; margin-top: 21px"
                       dense
                       filled
-                      label="درجة الطالب"
-                      :rules="[val => val && val > 0 || 'حقل مطلوب']"
+                      label="الدرجة"
+                      :rules="[
+                        val => val && val >= 0 || 'حقل مطلوب',
+                        val => val <= distribution.marks || 'الدرجة غير صحيحة'
+                      ]"
                     ></q-input>
                     <strong class="q-ml-sm">/ {{ distribution.marks }}</strong>
                   </div>
@@ -37,7 +40,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { GETTERS } from "src/config/constants";
+import { GETTERS, ACTIONS, EXAM_TYPE } from "src/config/constants";
 
 export default {
   name: "AddStudentMarkDialog.vue",
@@ -53,6 +56,14 @@ export default {
     exam: {
       type: Object,
       required: true
+    },
+    studentId: {
+      type: String,
+      required: true
+    },
+    marks: {
+      type: Object,
+      default: {}
     }
   },
   data() {
@@ -67,18 +78,57 @@ export default {
     })
   },
   methods: {
+    ...mapActions({
+      EDIT_STUDENT_MARK: ACTIONS.STUDNETS.EDIT_STUDENT_MARK
+    }),
+    intializeValues() {
+      let oldMarks = [];
+      if (Object.keys(this.marks).length > 0) {
+        switch (this.exam.id) {
+          case EXAM_TYPE.WRITTEN:
+            if (this.marks.written && this.marks.written.length > 0) {
+              oldMarks = this.marks.written.map(mark => mark.marks);
+              this.input = [...oldMarks];
+            }
+            break;
+          case EXAM_TYPE.RECITE:
+            if (this.marks.recite && this.marks.recite.length > 0) {
+              oldMarks = this.marks.recite.map(mark => mark.marks);
+              this.input = [...oldMarks];
+            }
+            break;
+          case EXAM_TYPE.READING:
+            if (this.marks.reading && this.marks.reading.length > 0) {
+              oldMarks = this.marks.reading.map(mark => mark.marks);
+              this.input = [...oldMarks];
+            }
+            break;
+          case EXAM_TYPE.PERSONAL:
+            if (this.marks.personal && this.marks.personal.length > 0) {
+              oldMarks = this.marks.personal.map(mark => mark.marks);
+              this.input = [...oldMarks];
+            }
+            break;
+        }
+      }
+    },
     saveStudentMarks() {
       this.exam.marksDistribution.forEach((distribution, i) => {
         this.studentMarks.push({
-          key: distribution.text,
-          value: this.input[i]
+          text: distribution.text,
+          marks: this.input[i]
         });
       });
 
-      console.log("Student Marks", {
+      this.EDIT_STUDENT_MARK({
+        studentId: this.studentId,
         examType: this.exam.id,
-        marks: this.studentMarks
+        studentMarks: this.studentMarks
       });
+    },
+    onHideDialog() {
+      this.input = [];
+      this.studentMarks = [];
     }
   }
 };
