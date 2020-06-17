@@ -7,7 +7,8 @@ const COLLECTIONS = {
   YEARS: "years",
   QUESTIONS: "questions",
   EXAM_MARKS: "examMarks",
-  STUDENT_EXAM_MARKS: "studentExamMarks"
+  STUDENT_EXAM_MARKS: "studentExamMarks",
+  STUDENT_QUESTION_MARKS: "studentQuestionMarks"
 };
 
 const STUDENT_GRADE = {
@@ -260,7 +261,8 @@ const ACTIONS = {
     DELETE_STUDENT: "DELETE_STUDENT",
     EDIT_STUDENT_STATUS: "EDIT_STUDENT_STATUS",
     EDIT_STUDENT_MARK: "EDIT_STUDENT_MARK",
-    FETCH_STUDENTS_MARKS: "FETCH_STUDENTS_MARKS"
+    FETCH_STUDENTS_MARKS: "FETCH_STUDENTS_MARKS",
+    SET_STUDENT_ANSWERS: "SET_STUDENT_ANSWERS"
   },
   UI: {
     SET_MESSAGE: "SET_MESSAGE",
@@ -321,7 +323,9 @@ const ERRORS = {
     SET_QUESTION_ERROR: "database/set_question_error",
     DELETE_QUESTION_ERROR: "database/delete-question-error",
     FETCH_EXAM_TOTAL_MARKS_ERROR: "database/fetch-exam-total-marks-error",
-    EDIT_STUDENT_MARK_ERROR: "database/edit-student-mark-error"
+    EDIT_STUDENT_MARK_ERROR: "database/edit-student-mark-error",
+    STUDENT_ANSWERS_SUBMIT_ERROR: "database/student-answers-submit-error",
+    STUDENT_ALREADY_TAKEN_EXAM: "student-already-taken-exam"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
@@ -344,7 +348,8 @@ const MESSAGES = {
     EXAM_MARKS_UPDATED: "database/exam_marks_updated",
     QUESTION_ADDED: "database/question-added",
     QUESTION_DELETED: "database/question-deleted",
-    STUDENT_MARK_UPDATED: "database/student-mark-updated"
+    STUDENT_MARK_UPDATED: "database/student-mark-updated",
+    STUDENT_ANSWERS_SUBMITTED: "database/student-answers-submitted"
   }
 };
 

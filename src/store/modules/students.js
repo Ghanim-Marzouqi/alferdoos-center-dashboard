@@ -263,7 +263,6 @@ const actions = {
   },
 
   async EDIT_STUDENT_STATUS({ commit }, payload) {
-    // Activate Loader
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
@@ -292,20 +291,17 @@ const actions = {
         });
       }
     } catch (error) {
-      // Display Error In Console
       console.log("EDIT_APPLICATION_STATUS ERROR", error);
       // Set Error (Edit Application Status Error)
       commit(MUTATIONS.UI.SET_ERROR, {
         code: ERRORS.DATABASE.EDIT_STUDENT_STATUS_ERROR
       });
     } finally {
-      // Deactivate Loading
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
 
   async EDIT_STUDENT_MARK({ commit }, payload) {
-    // Activate Loader
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
@@ -427,14 +423,12 @@ const actions = {
         }
       }
     } catch (error) {
-      // Display Error In Console
       console.log("EDIT_STUDENT_MARK ERROR", error);
       // Set Error (Edit Application Status Error)
       commit(MUTATIONS.UI.SET_ERROR, {
         code: ERRORS.DATABASE.EDIT_STUDENT_MARK_ERROR
       });
     } finally {
-      // Deactivate Loading
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
@@ -456,6 +450,51 @@ const actions = {
       }));
 
       commit(MUTATIONS.STUDNETS.SET_STUDENTS_MARKS, studentMarks);
+    }
+  },
+
+  async SET_STUDENT_ANSWERS({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let doc = await FirebaseDatabase.collection(
+        COLLECTIONS.STUDENT_QUESTION_MARKS
+      )
+        .doc(payload.studentId)
+        .get();
+
+      if (!doc.exists) {
+        // Insert Student Answers
+        await FirebaseDatabase.collection(COLLECTIONS.STUDENT_QUESTION_MARKS)
+          .doc(payload.studentId)
+          .set({
+            studentId: payload.studentId,
+            marks: payload.totalMarks,
+            answers: payload.answers
+          });
+
+        // Insert Student Mark
+        await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+          .doc(payload.studentId)
+          .update({
+            commonKnowledge: payload.totalMarks
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.STUDENT_ANSWERS_SUBMITTED
+        });
+      } else {
+        commit(MUTATIONS.UI.SET_ERROR, {
+          code: ERRORS.DATABASE.STUDENT_ALREADY_TAKEN_EXAM
+        });
+      }
+    } catch (error) {
+      console.log("SET_STUDENT_ANSWERS ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.STUDENT_ANSWERS_SUBMIT_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
     }
   }
 };

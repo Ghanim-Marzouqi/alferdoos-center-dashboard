@@ -274,6 +274,17 @@ export default {
           this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
           this.FETCH_STUDENTS_MARKS();
         }
+
+        if (messageCode === MESSAGES.DATABASE.STUDENT_ANSWERS_SUBMITTED) {
+          this.isTakeExamDialogOpen = false;
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تسليم إجابات إختبار الثقافة العامة بنجاح"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+          this.FETCH_STUDENTS_MARKS();
+        }
       }
     },
     GET_ERRORS: function(newState, oldState) {
@@ -285,6 +296,24 @@ export default {
           this.$q.dialog({
             title: "فشلت العملية",
             message: "حدث خطأ أثناء تحديث درجات الطالب"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+        }
+
+        if (errorCode === ERRORS.DATABASE.STUDENT_ANSWERS_SUBMIT_ERROR) {
+          this.isTakeExamDialogOpen = false;
+          this.$q.dialog({
+            title: "فشلت العملية",
+            message: "حدث خطأ أثناء تسليم إجابات الثقافة العامة"
+          });
+          this.CLEAR_ERRORS_AND_MESSAGES();
+        }
+
+        if (errorCode === ERRORS.DATABASE.STUDENT_ALREADY_TAKEN_EXAM) {
+          this.isTakeExamDialogOpen = false;
+          this.$q.dialog({
+            title: "فشلت العملية",
+            message: "لا يمكن للطالب عمل الإختبار مرة أخرى"
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
