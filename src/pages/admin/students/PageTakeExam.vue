@@ -136,9 +136,11 @@ export default {
       isAddStudentMarkDialogOpen: false,
       isStudentDialogOpen: false,
       isTakeExamDialogOpen: false,
+      isErrorDialogOpen: false,
       registeredStudent: {},
       studentId: "",
       studentMarks: {},
+      errorTitle: "",
       columns: [
         {
           name: "name",
@@ -313,7 +315,7 @@ export default {
           this.isTakeExamDialogOpen = false;
           this.$q.dialog({
             title: "فشلت العملية",
-            message: "لا يمكن للطالب عمل الإختبار مرة أخرى"
+            message: "لا يمكن للطالب تقديم الإختبار مرة أخرى"
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }

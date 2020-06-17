@@ -16,7 +16,13 @@
             <q-tooltip content-class="bg-white text-primary">إغلاق</q-tooltip>
           </q-btn>
         </q-bar>
-        <q-card-section class="text-weight-bold text-h6">{{ title }}</q-card-section>
+        <q-card-section class="text-weight-bold text-h6">
+          {{ title }}
+          <span
+            class="text-red text-weight-bold"
+            v-if="isStudentTakenExam"
+          >(لا يمكن للطالب تقديم الإختبار مرة أخرى)</span>
+        </q-card-section>
         <q-card-section>
           <q-card v-for="(question, i) in questions" :key="i" class="bg-white text-black q-ma-lg">
             <q-card-section>
@@ -32,6 +38,7 @@
                   v-model="question.answer"
                   :val="option.text"
                   :label="option.text"
+                  :disable="isStudentTakenExam"
                   @input="(value, e) => storeAnswers(value, question.id, option.isCorrect.value, question.marks)"
                 />
               </div>
@@ -40,6 +47,7 @@
           <q-btn
             class="q-ml-lg text-weight-bold"
             color="blue text-white"
+            :disable="isStudentTakenExam"
             @click="isSubmitAnswersDialogOpen = true"
           >تسليم الإختبار</q-btn>
           <q-btn class="q-ml-md text-weight-bold" color="red text-white" @click="closeDialog">إغلاق</q-btn>
@@ -59,7 +67,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { GETTERS, ACTIONS } from "../config/constants";
+import { GETTERS, ACTIONS, EXAM_TYPE } from "../config/constants";
 
 export default {
   name: "TakeExamDialog",
@@ -86,15 +94,27 @@ export default {
   },
   created() {
     this.FETCH_QUESTIONS();
+    this.FETCH_STUDENTS_MARKS();
   },
   computed: {
     ...mapGetters({
-      GET_QUESTIONS: GETTERS.SETTINGS.GET_QUESTIONS
-    })
+      GET_QUESTIONS: GETTERS.SETTINGS.GET_QUESTIONS,
+      GET_STUDENTS_MARKS: GETTERS.STUDNETS.GET_STUDENTS_MARKS
+    }),
+    isStudentTakenExam() {
+      let studentMarks = this.GET_STUDENTS_MARKS.find(
+        mark => mark.studentId === this.studentId
+      );
+
+      if (studentMarks && typeof studentMarks.commonKnowledge !== "undefined")
+        return true;
+      else return false;
+    }
   },
   methods: {
     ...mapActions({
       FETCH_QUESTIONS: ACTIONS.SETTINGS.FETCH_QUESTIONS,
+      FETCH_STUDENTS_MARKS: ACTIONS.STUDNETS.FETCH_STUDENTS_MARKS,
       SET_STUDENT_ANSWERS: ACTIONS.STUDNETS.SET_STUDENT_ANSWERS
     }),
     closeDialog() {
