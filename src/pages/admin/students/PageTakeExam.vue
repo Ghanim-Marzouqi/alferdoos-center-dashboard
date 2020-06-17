@@ -64,7 +64,11 @@
               </q-btn>
             </q-td>
             <q-td key="commoknowledge" :props="props">
-              <q-btn dense flat>
+              <q-btn
+                dense
+                flat
+                @click.stop="showTakeExamDialog('إختبار الثقافة العامة', 'commonKnowledge', props.row.id)"
+              >
                 <q-icon color="indigo" name="o_local_library" />
               </q-btn>
             </q-td>
@@ -98,6 +102,14 @@
       :marks="studentMarks"
       @closeDialog="closeAddStudentMarkDialog"
     />
+
+    <!-- Take Exam Dialog -->
+    <TakeExamDialog
+      :isDialogOpen="isTakeExamDialogOpen"
+      :title="examTitle"
+      :studentId="studentId"
+      @closeDialog="closeTakeExamDialog"
+    />
   </q-page>
 </template>
 
@@ -123,6 +135,7 @@ export default {
       examDetails: {},
       isAddStudentMarkDialogOpen: false,
       isStudentDialogOpen: false,
+      isTakeExamDialogOpen: false,
       registeredStudent: {},
       studentId: "",
       studentMarks: {},
@@ -222,6 +235,11 @@ export default {
       else this.studentMarks = {};
       this.isAddStudentMarkDialogOpen = true;
     },
+    showTakeExamDialog(examTitle, examType, studentId) {
+      this.examTitle = examTitle;
+      this.studentId = studentId;
+      this.isTakeExamDialogOpen = true;
+    },
     closeAddStudentMarkDialog(value) {
       this.examTitle = "";
       this.examDetails = {};
@@ -229,6 +247,11 @@ export default {
       this.studentId = "";
       this.studentMarks = {};
       this.isAddStudentMarkDialogOpen = value;
+    },
+    closeTakeExamDialog(value) {
+      this.examTitle = "";
+      this.studentId = "";
+      this.isTakeExamDialogOpen = value;
     }
   },
   filters: {
@@ -271,7 +294,8 @@ export default {
   components: {
     StudentRegistrationInfoDialog: () =>
       import("components/StudentRegistrationInfoDialog.vue"),
-    AddStudentMarkDialog: () => import("components/AddStudentMarkDialog.vue")
+    AddStudentMarkDialog: () => import("components/AddStudentMarkDialog.vue"),
+    TakeExamDialog: () => import("components/TakeExamDialog.vue")
   }
 };
 </script>
