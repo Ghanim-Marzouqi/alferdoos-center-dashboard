@@ -13,13 +13,15 @@ import {
 // State
 const state = {
   students: [],
-  studentMarks: []
+  studentMarks: [],
+  studentAnswers: {}
 };
 
 // Getters
 const getters = {
   GET_STUDENTS: state => state.students,
-  GET_STUDENTS_MARKS: state => state.studentMarks
+  GET_STUDENTS_MARKS: state => state.studentMarks,
+  GET_STUDENT_ANSWERS: state => state.studentAnswers
 };
 
 // Actions
@@ -496,6 +498,31 @@ const actions = {
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
+  },
+
+  async FETCH_STUDENT_ANSWERS_BY_ID({ commit }, payload) {
+    try {
+      let doc = await FirebaseDatabase.collection(
+        COLLECTIONS.STUDENT_QUESTION_MARKS
+      )
+        .doc(payload.studentId)
+        .get();
+
+      if (doc.exists) {
+        let studentAnswers = {
+          studentId: doc.data().studentId,
+          marks: doc.data().marks,
+          answers: doc.data().answers
+        };
+
+        commit(MUTATIONS.STUDNETS.SET_STUDENT_ANSWERS, studentAnswers);
+      }
+    } catch (error) {
+      console.log("FETCH_STUDENT_ANSWERS_BY_ID Error", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.FETCH_STUDENT_ANSWERS_BY_ID_ERROR
+      });
+    }
   }
 };
 
@@ -503,7 +530,8 @@ const actions = {
 const mutations = {
   SET_STUDENTS: (state, students) => (state.students = students),
   SET_STUDENTS_MARKS: (state, studentMarks) =>
-    (state.studentMarks = studentMarks)
+    (state.studentMarks = studentMarks),
+  SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers)
 };
 
 // Export

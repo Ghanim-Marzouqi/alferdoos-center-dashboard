@@ -99,37 +99,74 @@ export default {
   computed: {
     ...mapGetters({
       GET_QUESTIONS: GETTERS.SETTINGS.GET_QUESTIONS,
-      GET_STUDENTS_MARKS: GETTERS.STUDNETS.GET_STUDENTS_MARKS
+      GET_STUDENTS_MARKS: GETTERS.STUDNETS.GET_STUDENTS_MARKS,
+      GET_STUDENT_ANSWERS: GETTERS.STUDNETS.GET_STUDENT_ANSWERS
     }),
     isStudentTakenExam() {
       let studentMarks = this.GET_STUDENTS_MARKS.find(
         mark => mark.studentId === this.studentId
       );
 
-      if (studentMarks && typeof studentMarks.commonKnowledge !== "undefined")
+      if (studentMarks && typeof studentMarks.commonKnowledge !== "undefined") {
         return true;
-      else return false;
+      } else {
+        return false;
+      }
     }
   },
   methods: {
     ...mapActions({
       FETCH_QUESTIONS: ACTIONS.SETTINGS.FETCH_QUESTIONS,
       FETCH_STUDENTS_MARKS: ACTIONS.STUDNETS.FETCH_STUDENTS_MARKS,
-      SET_STUDENT_ANSWERS: ACTIONS.STUDNETS.SET_STUDENT_ANSWERS
+      SET_STUDENT_ANSWERS: ACTIONS.STUDNETS.SET_STUDENT_ANSWERS,
+      FETCH_STUDENT_ANSWERS_BY_ID: ACTIONS.STUDNETS.FETCH_STUDENT_ANSWERS_BY_ID
     }),
     closeDialog() {
       this.$emit("closeDialog", false);
     },
-    prepareQuestions() {
-      let shuffledArr = this.shuffle(this.GET_QUESTIONS);
-      this.questions = shuffledArr.map(item => ({
-        id: item.id,
-        createdAt: item.createdAt,
-        marks: item.marks,
-        options: item.options,
-        text: item.text,
-        answer: ""
-      }));
+    async prepareQuestions() {
+      if (this.isStudentTakenExam) {
+        await this.FETCH_STUDENT_ANSWERS_BY_ID({ studentId: this.studentId });
+        if (
+          this.GET_STUDENT_ANSWERS &&
+          typeof this.GET_STUDENT_ANSWERS.answers !== "undefined"
+        ) {
+          this.GET_QUESTIONS.forEach(question => {
+            let studentAnswer = this.GET_STUDENT_ANSWERS.answers.find(
+              a => a.questionId === question.id
+            );
+            if (studentAnswer) {
+              this.questions.push({
+                id: question.id,
+                createdAt: question.createdAt,
+                marks: question.marks,
+                options: question.options,
+                text: question.text,
+                answer: studentAnswer.answer
+              });
+            } else {
+              this.questions.push({
+                id: question.id,
+                createdAt: question.createdAt,
+                marks: question.marks,
+                options: question.options,
+                text: question.text,
+                answer: ""
+              });
+            }
+          });
+        }
+      } else {
+        let shuffledArr = this.shuffle(this.GET_QUESTIONS);
+        this.questions = shuffledArr.map(item => ({
+          id: item.id,
+          createdAt: item.createdAt,
+          marks: item.marks,
+          options: item.options,
+          text: item.text,
+          answer: ""
+        }));
+      }
     },
     shuffle(array) {
       let tmp,
