@@ -116,7 +116,7 @@ export default {
       this.exam.marksDistribution.forEach((distribution, i) => {
         this.studentMarks.push({
           text: distribution.text,
-          marks: this.input[i]
+          marks: Number.parseInt(this.input[i])
         });
       });
 

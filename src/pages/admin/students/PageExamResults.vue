@@ -25,35 +25,24 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="createdAt" :props="props">{{ props.row.createdAt | formatDate }}</q-td>
             <q-td key="file" :props="props">
               <q-btn dense flat @click.stop="showStudentDialog(props.row)">
                 <q-icon color="blue" name="o_visibility" />
               </q-btn>
             </q-td>
-            <q-td key="write" :props="props">
-              <q-btn dense flat>
-                <q-icon color="teal" name="o_edit" />
-              </q-btn>
-            </q-td>
-            <q-td key="recite" :props="props">
-              <q-btn dense flat>
-                <q-icon color="brown" name="o_hearing" />
-              </q-btn>
-            </q-td>
-            <q-td key="read" :props="props">
-              <q-btn dense flat>
-                <q-icon color="purple" name="o_record_voice_over" />
-              </q-btn>
-            </q-td>
-            <q-td key="commoknowledge" :props="props">
-              <q-btn dense flat>
-                <q-icon color="indigo" name="o_local_library" />
-              </q-btn>
-            </q-td>
-            <q-td key="personal" :props="props">
-              <q-btn dense flat>
-                <q-icon color="pink" name="o_sentiment_satisfied_alt" />
+            <q-td key="write" :props="props">{{ props.row.write }}</q-td>
+            <q-td key="recite" :props="props">{{ props.row.recite }}</q-td>
+            <q-td key="read" :props="props">{{ props.row.read }}</q-td>
+            <q-td key="commoknowledge" :props="props">{{ props.row.commoknowledge }}</q-td>
+            <q-td key="personal" :props="props">{{ props.row.personal }}</q-td>
+            <q-td
+              key="total"
+              class="text-weight-bold"
+              :props="props"
+            >{{ (props.row.write + props.row.recite + props.row.read + props.row.commoknowledge + props.row.personal) }}</q-td>
+            <q-td key="status" :props="props">
+              <q-btn dense flat @click.stop="editStudentStatus(props.row)">
+                <q-icon color="primary" name="o_edit" />
               </q-btn>
             </q-td>
           </q-tr>
@@ -64,6 +53,9 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+import { GETTERS, ACTIONS, STUDENT_STATUS } from "../../../config/constants";
+
 export default {
   name: "PageExamResults",
   data() {
@@ -78,14 +70,6 @@ export default {
           align: "left",
           field: row => row.name,
           format: val => `${val}`
-        },
-        {
-          name: "createdAt",
-          required: true,
-          label: "وقت وتاريخ تقديم الطلب",
-          align: "center",
-          field: row => row.createdAt,
-          format: val => `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`
         },
         {
           name: "file",
@@ -122,9 +106,93 @@ export default {
           align: "center",
           label: "المهارات الشخصية",
           field: "personal"
+        },
+        {
+          name: "total",
+          align: "center",
+          label: "المجموع"
+        },
+        {
+          name: "status",
+          align: "center",
+          label: "حالة القبول",
+          field: "status"
         }
       ]
     };
+  },
+  created() {
+    this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+    this.FETCH_STUDENTS_MARKS();
+  },
+  mounted() {
+    if (
+      this.GET_STUDENTS &&
+      this.GET_STUDENTS.length > 0 &&
+      this.GET_STUDENTS_MARKS &&
+      this.GET_STUDENTS_MARKS.length > 0
+    ) {
+      this.GET_STUDENTS.forEach(student => {
+        let studentMarks = this.GET_STUDENTS_MARKS.find(
+          s => s.studentId === student.id
+        );
+
+        if (studentMarks) {
+          this.tableData.push({
+            studentId: student.id,
+            name: student.name,
+            file: student,
+            write: this.sum(
+              "marks",
+              studentMarks.written &&
+                typeof studentMarks.written !== "undefined"
+                ? studentMarks.written
+                : []
+            ),
+            recite: this.sum(
+              "marks",
+              studentMarks.recite && typeof studentMarks.recite !== "undefined"
+                ? studentMarks.recite
+                : []
+            ),
+            read: this.sum(
+              "marks",
+              studentMarks.reading &&
+                typeof studentMarks.reading !== "undefined"
+                ? studentMarks.reading
+                : []
+            ),
+            personal: this.sum(
+              "marks",
+              studentMarks.personal &&
+                typeof studentMarks.personal !== "undefined"
+                ? studentMarks.personal
+                : []
+            ),
+            commoknowledge: studentMarks.commonKnowledge
+              ? studentMarks.commonKnowledge
+              : 0
+          });
+        }
+      });
+    }
+  },
+  computed: {
+    ...mapGetters({
+      GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
+      GET_STUDENTS_MARKS: GETTERS.STUDNETS.GET_STUDENTS_MARKS
+    })
+  },
+  methods: {
+    ...mapActions({
+      FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
+      FETCH_STUDENTS_MARKS: ACTIONS.STUDNETS.FETCH_STUDENTS_MARKS
+    }),
+    sum(key, array) {
+      return array.reduce((a, b) => a + (b[key] || 0), 0);
+    },
+    showStudentDialog(student) {},
+    editStudentStatus(student) {}
   }
 };
 </script>
