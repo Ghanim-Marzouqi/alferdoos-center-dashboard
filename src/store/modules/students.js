@@ -320,7 +320,8 @@ const actions = {
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .set({
-                written: payload.studentMarks
+                written: payload.studentMarks,
+                writtenNotes: payload.examNotes
               });
 
             // Set Success Message
@@ -333,7 +334,8 @@ const actions = {
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .set({
-                recite: payload.studentMarks
+                recite: payload.studentMarks,
+                reciteNotes: payload.examNotes
               });
 
             // Set Success Message
@@ -346,7 +348,8 @@ const actions = {
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .set({
-                reading: payload.studentMarks
+                reading: payload.studentMarks,
+                readingNotes: payload.examNotes
               });
 
             // Set Success Message
@@ -359,7 +362,8 @@ const actions = {
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .set({
-                personal: payload.studentMarks
+                personal: payload.studentMarks,
+                personalNotes: payload.examNotes
               });
 
             // Set Success Message
@@ -375,7 +379,8 @@ const actions = {
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .update({
-                written: payload.studentMarks
+                written: payload.studentMarks,
+                writtenNotes: payload.examNotes
               });
 
             // Set Success Message
@@ -388,7 +393,8 @@ const actions = {
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .update({
-                recite: payload.studentMarks
+                recite: payload.studentMarks,
+                reciteNotes: payload.examNotes
               });
 
             // Set Success Message
@@ -401,7 +407,8 @@ const actions = {
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .update({
-                reading: payload.studentMarks
+                reading: payload.studentMarks,
+                readingNotes: payload.examNotes
               });
 
             // Set Success Message
@@ -414,7 +421,8 @@ const actions = {
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .update({
-                personal: payload.studentMarks
+                personal: payload.studentMarks,
+                personalNotes: payload.examNotes
               });
 
             // Set Success Message
@@ -445,10 +453,14 @@ const actions = {
       let studentMarks = docs.map(doc => ({
         studentId: doc.id,
         written: doc.data().written,
+        writtenNotes: doc.data().writtenNotes,
         recite: doc.data().recite,
+        reciteNotes: doc.data().reciteNotes,
         reading: doc.data().reading,
-        commonKnowledge: doc.data().commonKnowledge,
-        personal: doc.data().personal
+        readingNotes: doc.data().readingNotes,
+        personal: doc.data().personal,
+        personalNotes: doc.data().personalNotes,
+        commonKnowledge: doc.data().commonKnowledge
       }));
 
       commit(MUTATIONS.STUDNETS.SET_STUDENTS_MARKS, studentMarks);
@@ -475,12 +487,28 @@ const actions = {
             answers: payload.answers
           });
 
-        // Insert Student Mark
-        await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+        // Check For Student Marks
+        let studentMarks = await FirebaseDatabase.collection(
+          COLLECTIONS.STUDENT_EXAM_MARKS
+        )
           .doc(payload.studentId)
-          .update({
-            commonKnowledge: payload.totalMarks
-          });
+          .get();
+
+        if (!studentMarks.exists) {
+          // Insert Student Mark
+          await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+            .doc(payload.studentId)
+            .set({
+              commonKnowledge: payload.totalMarks
+            });
+        } else {
+          // Update Student Mark
+          await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
+            .doc(payload.studentId)
+            .update({
+              commonKnowledge: payload.totalMarks
+            });
+        }
 
         commit(MUTATIONS.UI.SET_MESSAGE, {
           code: MESSAGES.DATABASE.STUDENT_ANSWERS_SUBMITTED

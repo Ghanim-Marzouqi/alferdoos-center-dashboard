@@ -11,7 +11,8 @@
                 <q-item-section style="max-width: 60%">
                   <div class="row items-center">
                     <q-input
-                      v-model="input[i]"
+                      id="text-area"
+                      v-model="mark[i]"
                       style="width: 130px; margin-top: 21px"
                       dense
                       filled
@@ -20,12 +21,17 @@
                         val => val && val >= 0 || 'حقل مطلوب',
                         val => val <= distribution.marks || 'الدرجة غير صحيحة'
                       ]"
-                    ></q-input>
+                    />
                     <strong class="q-ml-sm">/ {{ distribution.marks }}</strong>
                   </div>
                 </q-item-section>
               </q-item>
             </q-list>
+          </div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          <div>
+            <q-input v-model="notes" filled type="textarea" label="الملاحظات" />
           </div>
         </q-card-section>
         <q-card-actions>
@@ -43,7 +49,7 @@ import { mapGetters, mapActions } from "vuex";
 import { GETTERS, ACTIONS, EXAM_TYPE } from "src/config/constants";
 
 export default {
-  name: "AddStudentMarkDialog.vue",
+  name: "AddStudentMarkDialog",
   props: {
     isDialogOpen: {
       type: Boolean,
@@ -68,7 +74,8 @@ export default {
   },
   data() {
     return {
-      input: [],
+      mark: [],
+      notes: "",
       studentMarks: []
     };
   },
@@ -82,31 +89,36 @@ export default {
       EDIT_STUDENT_MARK: ACTIONS.STUDNETS.EDIT_STUDENT_MARK
     }),
     intializeValues() {
+      console.log(this.marks);
       let oldMarks = [];
       if (Object.keys(this.marks).length > 0) {
         switch (this.exam.id) {
           case EXAM_TYPE.WRITTEN:
             if (this.marks.written && this.marks.written.length > 0) {
               oldMarks = this.marks.written.map(mark => mark.marks);
-              this.input = [...oldMarks];
+              this.mark = [...oldMarks];
+              this.notes = this.marks.writtenNotes;
             }
             break;
           case EXAM_TYPE.RECITE:
             if (this.marks.recite && this.marks.recite.length > 0) {
               oldMarks = this.marks.recite.map(mark => mark.marks);
-              this.input = [...oldMarks];
+              this.mark = [...oldMarks];
+              this.notes = this.marks.reciteNotes;
             }
             break;
           case EXAM_TYPE.READING:
             if (this.marks.reading && this.marks.reading.length > 0) {
               oldMarks = this.marks.reading.map(mark => mark.marks);
-              this.input = [...oldMarks];
+              this.mark = [...oldMarks];
+              this.notes = this.marks.readingNotes;
             }
             break;
           case EXAM_TYPE.PERSONAL:
             if (this.marks.personal && this.marks.personal.length > 0) {
               oldMarks = this.marks.personal.map(mark => mark.marks);
-              this.input = [...oldMarks];
+              this.mark = [...oldMarks];
+              this.notes = this.marks.personalNotes;
             }
             break;
         }
@@ -116,18 +128,20 @@ export default {
       this.exam.marksDistribution.forEach((distribution, i) => {
         this.studentMarks.push({
           text: distribution.text,
-          marks: Number.parseInt(this.input[i])
+          marks: Number.parseInt(this.mark[i])
         });
       });
 
       this.EDIT_STUDENT_MARK({
         studentId: this.studentId,
         examType: this.exam.id,
-        studentMarks: this.studentMarks
+        studentMarks: this.studentMarks,
+        examNotes: this.notes
       });
     },
     onHideDialog() {
-      this.input = [];
+      this.mark = [];
+      this.notes = "";
       this.studentMarks = [];
     }
   }
@@ -137,5 +151,8 @@ export default {
 <style lang="scss" scoped>
 .q-card {
   width: 400px;
+}
+textarea {
+  resize: none !important;
 }
 </style>
