@@ -57,14 +57,14 @@
               </td>
             </tr>
             <tr>
-              <td class="text-left">المهارات الشخصية</td>
+              <td class="text-left">اللجنة الرئيسية</td>
               <td class="text-center">{{ getExam("personal").marks }} درجة</td>
               <td class="text-right">
                 <q-btn
                   dense
                   flat
                   @click="
-                    onExamDialogOpened('درجة المهارات الشخصية', 'personal')
+                    onExamDialogOpened('درجة اللجنة الرئيسية', 'personal')
                   "
                 >
                   <q-icon name="o_edit" color="teal" />

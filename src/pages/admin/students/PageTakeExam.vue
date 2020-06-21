@@ -9,7 +9,7 @@
     <div class="q-pa-md">
       <q-table
         title="قائمة الطلاب المؤهلين لأداء الإختبار"
-        :data="GET_STUDENTS"
+        :data="GET_STUDENTS_AND_MARKS"
         :columns="columns"
         row-key="id"
         :filter="filter"
@@ -26,59 +26,94 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="createdAt" :props="props">
-              {{
-              props.row.createdAt | formatDate
-              }}
-            </q-td>
+            <q-td key="createdAt" :props="props">{{ props.row.createdAt | formatDate }}</q-td>
             <q-td key="file" :props="props">
-              <q-btn dense flat @click.stop="showStudentDialog(props.row)">
-                <q-icon color="blue" name="o_visibility" />
-              </q-btn>
+              <q-btn
+                dense
+                flat
+                color="blue"
+                icon="o_visibility"
+                @click.stop="showStudentDialog(props.row)"
+              />
             </q-td>
             <q-td key="write" :props="props">
               <q-btn
                 dense
                 flat
+                color="teal"
+                icon="o_edit"
                 @click.stop="showMarkDialog('درجة إختبار الإملاء', 'written', props.row.id)"
               >
-                <q-icon color="teal" name="o_edit" />
+                <q-badge
+                  v-if="props.row.written && props.row.written.length > 0"
+                  color="green"
+                  floating
+                  transparent
+                >✔</q-badge>
               </q-btn>
             </q-td>
             <q-td key="recite" :props="props">
               <q-btn
                 dense
                 flat
+                color="brown"
+                icon="o_hearing"
                 @click.stop="showMarkDialog('درجة إختبار التسميع', 'recite', props.row.id)"
               >
-                <q-icon color="brown" name="o_hearing" />
+                <q-badge
+                  v-if="props.row.recite && props.row.recite.length > 0"
+                  color="green"
+                  floating
+                  transparent
+                >✔</q-badge>
               </q-btn>
             </q-td>
             <q-td key="read" :props="props">
               <q-btn
                 dense
                 flat
+                color="purple"
+                icon="o_record_voice_over"
                 @click.stop="showMarkDialog('درجة إختبار التلاوة', 'reading', props.row.id)"
               >
-                <q-icon color="purple" name="o_record_voice_over" />
+                <q-badge
+                  v-if="props.row.reading && props.row.reading.length > 0"
+                  color="green"
+                  floating
+                  transparent
+                >✔</q-badge>
               </q-btn>
             </q-td>
             <q-td key="commoknowledge" :props="props">
               <q-btn
                 dense
                 flat
+                color="indigo"
+                icon="o_local_library"
                 @click.stop="showTakeExamDialog('إختبار الثقافة العامة', 'commonKnowledge', props.row.id)"
               >
-                <q-icon color="indigo" name="o_local_library" />
+                <q-badge
+                  v-if="typeof props.row.commonKnowledge !== 'undefined'"
+                  color="green"
+                  floating
+                  transparent
+                >✔</q-badge>
               </q-btn>
             </q-td>
             <q-td key="personal" :props="props">
               <q-btn
                 dense
                 flat
-                @click.stop="showMarkDialog('درجة إختبار المهارات الشخصية', 'personal', props.row.id)"
+                color="pink"
+                icon="o_sentiment_satisfied_alt"
+                @click.stop="showMarkDialog('درجة اللجنة الرئيسية', 'personal', props.row.id)"
               >
-                <q-icon color="pink" name="o_sentiment_satisfied_alt" />
+                <q-badge
+                  v-if="props.row.personal && props.row.personal.length > 0"
+                  color="green"
+                  floating
+                  transparent
+                >✔</q-badge>
               </q-btn>
             </q-td>
           </q-tr>
@@ -137,6 +172,7 @@ export default {
       isStudentDialogOpen: false,
       isTakeExamDialogOpen: false,
       isErrorDialogOpen: false,
+      students: [],
       registeredStudent: {},
       studentId: "",
       studentMarks: {},
@@ -191,22 +227,24 @@ export default {
         {
           name: "personal",
           align: "center",
-          label: "المهارات الشخصية",
+          label: "اللجنة الرئيسية",
           field: "personal"
         }
       ]
     };
   },
-  created() {
-    this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
-    this.FETCH_EXAM_TOTAL_MARKS();
-    this.FETCH_STUDENTS_MARKS();
+  async created() {
+    await this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+    await this.FETCH_EXAM_TOTAL_MARKS();
+    await this.FETCH_STUDENTS_MARKS();
+    await this.getUpdatedStudentRecords();
   },
   computed: {
     ...mapGetters({
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
       GET_STUDENTS_MARKS: GETTERS.STUDNETS.GET_STUDENTS_MARKS,
       GET_EXAM_MARKS: GETTERS.SETTINGS.GET_EXAM_MARKS,
+      GET_STUDENTS_AND_MARKS: GETTERS.STUDNETS.GET_STUDENTS_AND_MARKS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS
@@ -218,6 +256,7 @@ export default {
       DELETE_STUDENT: ACTIONS.STUDNETS.DELETE_STUDENT,
       EDIT_STUDENT_STATUS: ACTIONS.STUDNETS.EDIT_STUDENT_STATUS,
       FETCH_STUDENTS_MARKS: ACTIONS.STUDNETS.FETCH_STUDENTS_MARKS,
+      SET_STUDENTS_AND_MARKS: ACTIONS.STUDNETS.SET_STUDENTS_AND_MARKS,
       FETCH_EXAM_TOTAL_MARKS: ACTIONS.SETTINGS.FETCH_EXAM_TOTAL_MARKS,
       SET_ERROR: ACTIONS.UI.SET_ERROR,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
@@ -254,6 +293,21 @@ export default {
       this.examTitle = "";
       this.studentId = "";
       this.isTakeExamDialogOpen = value;
+    },
+    getUpdatedStudentRecords() {
+      let students = [];
+      for (let i = 0; i < this.GET_STUDENTS.length; i++) {
+        let student = this.GET_STUDENTS[i];
+        let studentMark = this.GET_STUDENTS_MARKS.find(
+          mark => mark.studentId === student.id
+        );
+        students.push({
+          ...student,
+          ...studentMark
+        });
+      }
+
+      this.SET_STUDENTS_AND_MARKS({ updatedStudents: students });
     }
   },
   filters: {
@@ -262,30 +316,34 @@ export default {
     }
   },
   watch: {
-    GET_MESSAGES: function(newState, oldState) {
+    GET_MESSAGES: async function(newState, oldState) {
       if (newState.length > 0) {
         let messageCode = newState[0].code;
 
         if (messageCode === MESSAGES.DATABASE.STUDENT_MARK_UPDATED) {
           this.isAddStudentMarkDialogOpen = false;
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          await this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+          await this.FETCH_STUDENTS_MARKS();
+          this.getUpdatedStudentRecords();
+
           this.$q.dialog({
             title: "تمت العملية بنجاح",
             message: "تم تحديث درجات الطالب بنجاح"
           });
-          this.CLEAR_ERRORS_AND_MESSAGES();
-          this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
-          this.FETCH_STUDENTS_MARKS();
         }
 
         if (messageCode === MESSAGES.DATABASE.STUDENT_ANSWERS_SUBMITTED) {
           this.isTakeExamDialogOpen = false;
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          await this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+          await this.FETCH_STUDENTS_MARKS();
+          this.getUpdatedStudentRecords();
+
           this.$q.dialog({
             title: "تمت العملية بنجاح",
             message: "تم تسليم إجابات إختبار الثقافة العامة بنجاح"
           });
-          this.CLEAR_ERRORS_AND_MESSAGES();
-          this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
-          this.FETCH_STUDENTS_MARKS();
         }
       }
     },

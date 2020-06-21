@@ -26,7 +26,7 @@
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
             <q-td key="file" :props="props">
-              <q-btn dense flat @click.stop="showStudentDialog(props.row)">
+              <q-btn dense flat @click.stop="showStudentDialog(props.row.file)">
                 <q-icon color="blue" name="o_visibility" />
               </q-btn>
             </q-td>
@@ -35,11 +35,7 @@
             <q-td key="read" :props="props">{{ props.row.read }}</q-td>
             <q-td key="commoknowledge" :props="props">{{ props.row.commoknowledge }}</q-td>
             <q-td key="personal" :props="props">{{ props.row.personal }}</q-td>
-            <q-td
-              key="total"
-              class="text-weight-bold"
-              :props="props"
-            >{{ (props.row.write + props.row.recite + props.row.read + props.row.commoknowledge + props.row.personal) }}</q-td>
+            <q-td key="total" class="text-weight-bold" :props="props">{{ props.row.total }}</q-td>
             <q-td key="status" :props="props">
               <q-btn dense flat @click.stop="editStudentStatus(props.row)">
                 <q-icon color="primary" name="o_edit" />
@@ -49,6 +45,13 @@
         </template>
       </q-table>
     </div>
+
+    <!-- Student Registration Info Dialog -->
+    <StudentRegistrationInfoDialog
+      :isStudentDialogOpen="isStudentDialogOpen"
+      :student="registeredStudent"
+      @closeStudentRegistrationInfoDialog="isStudentDialogOpen = false"
+    />
   </q-page>
 </template>
 
@@ -60,6 +63,8 @@ export default {
   name: "PageExamResults",
   data() {
     return {
+      isStudentDialogOpen: false,
+      registeredStudent: {},
       filter: "",
       tableData: [],
       columns: [
@@ -81,41 +86,48 @@ export default {
           name: "write",
           align: "center",
           label: "الإملاء",
-          field: "write"
+          field: "write",
+          sortable: true
         },
         {
           name: "recite",
           align: "center",
           label: "التسميع",
-          field: "recite"
+          field: "recite",
+          sortable: true
         },
         {
           name: "read",
           align: "center",
           label: "التلاوة",
-          field: "read"
+          field: "read",
+          sortable: true
         },
         {
           name: "commoknowledge",
           align: "center",
           label: "الثقافة العامة",
-          field: "commoknowledge"
+          field: "commoknowledge",
+          sortable: true
         },
         {
           name: "personal",
           align: "center",
-          label: "المهارات الشخصية",
-          field: "personal"
+          label: "اللجنة الرئيسية",
+          field: "personal",
+          sortable: true
         },
         {
           name: "total",
           align: "center",
-          label: "المجموع"
+          label: "المجموع",
+          field: "total",
+          sortable: true
         },
         {
           name: "status",
           align: "center",
-          label: "حالة القبول",
+          label: "تعدبل الحالة",
           field: "status"
         }
       ]
@@ -173,6 +185,29 @@ export default {
               ? studentMarks.commonKnowledge
               : 0
           });
+
+          // Calculate Total Marks
+          this.tableData = this.tableData.map(item => ({
+            studentId: item.studentId,
+            name: item.name,
+            file: item.file,
+            write: item.write,
+            recite: item.recite,
+            read: item.read,
+            personal: item.personal,
+            commoknowledge: item.commoknowledge,
+            total:
+              item.write +
+              item.recite +
+              item.read +
+              item.personal +
+              item.commoknowledge
+          }));
+
+          // Sort Marks Based On Total
+          this.tableData = this.tableData.sort(
+            (a, b) => parseInt(b["total"]) - parseInt(a["total"])
+          );
         }
       });
     }
@@ -191,8 +226,15 @@ export default {
     sum(key, array) {
       return array.reduce((a, b) => a + (b[key] || 0), 0);
     },
-    showStudentDialog(student) {},
+    showStudentDialog(student) {
+      this.registeredStudent = student;
+      this.isStudentDialogOpen = true;
+    },
     editStudentStatus(student) {}
+  },
+  components: {
+    StudentRegistrationInfoDialog: () =>
+      import("components/StudentRegistrationInfoDialog.vue")
   }
 };
 </script>

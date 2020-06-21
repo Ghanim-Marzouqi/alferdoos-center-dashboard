@@ -158,14 +158,31 @@ export default {
         }
       } else {
         let shuffledArr = this.shuffle(this.GET_QUESTIONS);
-        this.questions = shuffledArr.map(item => ({
-          id: item.id,
-          createdAt: item.createdAt,
-          marks: item.marks,
-          options: item.options,
-          text: item.text,
-          answer: ""
-        }));
+
+        if (shuffledArr.length >= 10) {
+          for (let i = 0; i < 10; i++) {
+            let item = shuffledArr[i];
+            this.questions.push({
+              id: item.id,
+              createdAt: item.createdAt,
+              marks: item.marks,
+              options: item.options,
+              text: item.text,
+              answer: ""
+            });
+          }
+        } else {
+          shuffledArr.forEach(item => {
+            this.questions.push({
+              id: item.id,
+              createdAt: item.createdAt,
+              marks: item.marks,
+              options: item.options,
+              text: item.text,
+              answer: ""
+            });
+          });
+        }
       }
     },
     shuffle(array) {

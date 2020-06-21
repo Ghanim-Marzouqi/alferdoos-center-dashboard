@@ -89,7 +89,6 @@ export default {
       EDIT_STUDENT_MARK: ACTIONS.STUDNETS.EDIT_STUDENT_MARK
     }),
     intializeValues() {
-      console.log(this.marks);
       let oldMarks = [];
       if (Object.keys(this.marks).length > 0) {
         switch (this.exam.id) {

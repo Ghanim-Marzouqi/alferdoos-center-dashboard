@@ -3,7 +3,7 @@
     <p class="text-h6 text-weight-bold">طلبات التسجيل</p>
     <div class="q-pa-md">
       <q-table
-        title="قائمة الطلاب المتقدمين للمركز"
+        title="قائمة طلبات التقدم للمركز"
         :data="GET_STUDENTS"
         :columns="columns"
         row-key="id"
@@ -11,13 +11,7 @@
         :loading="GET_LOADING"
       >
         <template v-slot:top-right>
-          <q-input
-            borderless
-            dense
-            debounce="300"
-            v-model="filter"
-            placeholder="بحث"
-          >
+          <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -27,32 +21,20 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="createdAt" :props="props">
-              {{ props.row.createdAt | formatDate }}
-            </q-td>
-            <q-td key="status" :props="props">
-              {{ props.row.status | getStatus }}
-            </q-td>
+            <q-td key="createdAt" :props="props">{{ props.row.createdAt | formatDate }}</q-td>
+            <q-td key="status" :props="props">{{ props.row.status | getStatus }}</q-td>
             <q-td key="show" :props="props">
               <q-btn dense flat @click.stop="showStudentDialog(props.row)">
                 <q-icon color="blue" name="o_visibility" />
               </q-btn>
             </q-td>
             <q-td key="edit" :props="props">
-              <q-btn
-                dense
-                flat
-                @click.stop="showApplicationStatusDialog(props.row)"
-              >
+              <q-btn dense flat @click.stop="showApplicationStatusDialog(props.row)">
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
             <q-td key="delete" :props="props">
-              <q-btn
-                dense
-                flat
-                @click.stop="deleteStudentRegistrationForm(props.row.id)"
-              >
+              <q-btn dense flat @click.stop="deleteStudentRegistrationForm(props.row)">
                 <q-icon color="red" name="o_delete" />
               </q-btn>
             </q-td>
@@ -178,17 +160,24 @@ export default {
       SET_ERROR: ACTIONS.UI.SET_ERROR,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
     }),
-    deleteStudentRegistrationForm(id) {
-      this.$q
-        .dialog({
+    deleteStudentRegistrationForm(student) {
+      if (student.status === STUDENT_STATUS.REVIEW) {
+        this.$q
+          .dialog({
+            title: "تنبيه",
+            message: "هل أنت واثق من أنك تريد حذف هذا الطلب؟",
+            cancel: true,
+            persistent: true
+          })
+          .onOk(() => {
+            this.DELETE_STUDENT(student.id);
+          });
+      } else {
+        this.$q.dialog({
           title: "تنبيه",
-          message: "هل أنت واثق من أنك تريد حذف هذا الطلب؟",
-          cancel: true,
-          persistent: true
-        })
-        .onOk(() => {
-          this.DELETE_STUDENT(id);
+          message: "لا يمكن حذف طالب حالته ليست قيد المراجعة"
         });
+      }
     },
     showStudentDialog(student) {
       this.registeredStudent = student;

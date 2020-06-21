@@ -14,14 +14,16 @@ import {
 const state = {
   students: [],
   studentMarks: [],
-  studentAnswers: {}
+  studentAnswers: {},
+  studentsAndMarks: []
 };
 
 // Getters
 const getters = {
   GET_STUDENTS: state => state.students,
   GET_STUDENTS_MARKS: state => state.studentMarks,
-  GET_STUDENT_ANSWERS: state => state.studentAnswers
+  GET_STUDENT_ANSWERS: state => state.studentAnswers,
+  GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks
 };
 
 // Actions
@@ -551,6 +553,10 @@ const actions = {
         code: ERRORS.DATABASE.FETCH_STUDENT_ANSWERS_BY_ID_ERROR
       });
     }
+  },
+
+  SET_STUDENTS_AND_MARKS({ commit }, payload) {
+    commit(MUTATIONS.STUDNETS.SET_STUDENTS_AND_MARKS, payload.updatedStudents);
   }
 };
 
@@ -559,7 +565,9 @@ const mutations = {
   SET_STUDENTS: (state, students) => (state.students = students),
   SET_STUDENTS_MARKS: (state, studentMarks) =>
     (state.studentMarks = studentMarks),
-  SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers)
+  SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers),
+  SET_STUDENTS_AND_MARKS: (state, updatedStudents) =>
+    (state.studentsAndMarks = updatedStudents)
 };
 
 // Export
