@@ -29,7 +29,7 @@
               </q-btn>
             </q-td>
             <q-td key="edit" :props="props">
-              <q-btn dense flat @click.stop="showApplicationStatusDialog(props.row)">
+              <q-btn dense flat @click.stop="showEditStudentStatusDialog(props.row)">
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
@@ -50,13 +50,15 @@
       @closeStudentRegistrationInfoDialog="isStudentDialogOpen = false"
     />
 
-    <!-- Student Edit Application Status Dialog -->
-    <StudentEditApplicationStatusDialog
-      :isEditApplicationDailogOpen="isEditApplicationDailogOpen"
+    <!-- Edit Student Status Dialog -->
+    <EditStudentStatusDialog
+      :isDailogOpen="isEditStudentStatusDialogOpen"
       :student="registeredStudent"
-      :status="applicationStatus"
-      :reasons="applicationStatusReasons"
-      @closeApplicationStatusDialog="closeApplicationStatusDialog"
+      :status="studentStatus"
+      :reasons="rejectionReasons"
+      statusLabel="قبول لأداء الإختبار"
+      statusVal="exam"
+      @closeDialog="closeEditStudentStatusDialog"
     />
   </q-page>
 </template>
@@ -81,10 +83,10 @@ export default {
       filter: "",
       loading: false,
       isStudentDialogOpen: false,
-      isEditApplicationDailogOpen: false,
+      isEditStudentStatusDialogOpen: false,
       registeredStudent: {},
-      applicationStatus: "",
-      applicationStatusReasons: "",
+      studentStatus: "",
+      rejectionReasons: "",
       columns: [
         {
           name: "name",
@@ -119,7 +121,7 @@ export default {
         {
           name: "edit",
           align: "center",
-          label: "تعديل",
+          label: "تعديل الحالة",
           field: "edit"
         },
         {
@@ -183,22 +185,21 @@ export default {
       this.registeredStudent = student;
       this.isStudentDialogOpen = true;
     },
-    showApplicationStatusDialog(student) {
-      console.log("Student", student);
+    showEditStudentStatusDialog(student) {
       this.registeredStudent = student;
-      this.applicationStatus = student.status;
-      this.applicationStatusReasons =
+      this.studentStatus = student.status;
+      this.rejectionReasons =
         typeof student.rejectionReasons !== "undefined" &&
         student.rejectionReasons !== ""
           ? student.rejectionReasons
           : "";
-      this.isEditApplicationDailogOpen = true;
+      this.isEditStudentStatusDialogOpen = true;
     },
-    closeApplicationStatusDialog() {
+    closeEditStudentStatusDialog(value) {
       this.registeredStudent = {};
-      this.applicationStatus = "";
-      this.applicationStatusReasons = "";
-      this.isEditApplicationDailogOpen = false;
+      this.studentStatus = "";
+      this.rejectionReasons = "";
+      this.isEditStudentStatusDialogOpen = value;
     }
   },
   filters: {
@@ -302,8 +303,8 @@ export default {
   components: {
     StudentRegistrationInfoDialog: () =>
       import("components/StudentRegistrationInfoDialog.vue"),
-    StudentEditApplicationStatusDialog: () =>
-      import("components/StudentEditApplicationStatusDialog.vue")
+    EditStudentStatusDialog: () =>
+      import("components/EditStudentStatusDialog.vue")
   }
 };
 </script>

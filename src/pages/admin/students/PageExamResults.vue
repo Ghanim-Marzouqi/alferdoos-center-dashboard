@@ -37,8 +37,8 @@
             <q-td key="personal" :props="props">{{ props.row.personal }}</q-td>
             <q-td key="total" class="text-weight-bold" :props="props">{{ props.row.total }}</q-td>
             <q-td key="status" :props="props">
-              <q-btn dense flat @click.stop="editStudentStatus(props.row)">
-                <q-icon color="primary" name="o_edit" />
+              <q-btn dense flat @click.stop="showEditStudentStatusDialog(props.row)">
+                <q-icon color="teal" name="o_edit" />
               </q-btn>
             </q-td>
           </q-tr>
@@ -52,6 +52,17 @@
       :student="registeredStudent"
       @closeStudentRegistrationInfoDialog="isStudentDialogOpen = false"
     />
+
+    <!-- Edit Student Status Dialog -->
+    <EditStudentStatusDialog
+      :isDailogOpen="isEditStudentStatusDialogOpen"
+      :student="registeredStudent"
+      :status="studentStatus"
+      :reasons="rejectionReasons"
+      statusLabel="قبول للدراسة في المركز"
+      statusVal="study"
+      @closeDialog="closeEditStudentStatusDialog"
+    />
   </q-page>
 </template>
 
@@ -64,7 +75,10 @@ export default {
   data() {
     return {
       isStudentDialogOpen: false,
+      isEditStudentStatusDialogOpen: false,
       registeredStudent: {},
+      studentStatus: "",
+      rejectionReasons: "",
       filter: "",
       tableData: [],
       columns: [
@@ -230,11 +244,28 @@ export default {
       this.registeredStudent = student;
       this.isStudentDialogOpen = true;
     },
-    editStudentStatus(student) {}
+    showEditStudentStatusDialog(student) {
+      this.registeredStudent = student;
+      this.studentStatus = student.status;
+      this.rejectionReasons =
+        typeof student.rejectionReasons !== "undefined" &&
+        student.rejectionReasons !== ""
+          ? student.rejectionReasons
+          : "";
+      this.isEditStudentStatusDialogOpen = true;
+    },
+    closeEditStudentStatusDialog(value) {
+      this.registeredStudent = {};
+      this.studentStatus = "";
+      this.rejectionReasons = "";
+      this.isEditStudentStatusDialogOpen = value;
+    }
   },
   components: {
     StudentRegistrationInfoDialog: () =>
-      import("components/StudentRegistrationInfoDialog.vue")
+      import("components/StudentRegistrationInfoDialog.vue"),
+    EditStudentStatusDialog: () =>
+      import("components/EditStudentStatusDialog.vue")
   }
 };
 </script>
