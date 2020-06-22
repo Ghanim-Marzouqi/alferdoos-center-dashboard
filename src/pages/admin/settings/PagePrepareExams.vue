@@ -109,9 +109,7 @@
                   round
                   dense
                   @click="props.expand = !props.expand"
-                  :icon="
-                    props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                  "
+                  :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
                 />
               </q-td>
               <q-td auto-width>{{ props.row.text }}</q-td>

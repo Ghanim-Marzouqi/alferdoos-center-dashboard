@@ -211,7 +211,7 @@ export default {
       else if (val === STUDENT_STATUS.EXAM) return "مقبول لأداء الإختبار";
       else if (val === STUDENT_STATUS.STUDY) return "مقبول للدراسة في المركز";
       else if (val === STUDENT_STATUS.REJECT) return "تم الرفض";
-      else return "حالة الطلب غير معروفة";
+      else return "حالة الطالب غير معروفة";
     }
   },
   watch: {
@@ -231,7 +231,7 @@ export default {
         if (messageCode === MESSAGES.DATABASE.STUDENT_STATUS_UPDATED) {
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم تعديل حالة الطلب بنجاح"
+            message: "تم تعديل حالة الطالب بنجاح"
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.FETCH_STUDENTS({ status: "" });
@@ -293,7 +293,7 @@ export default {
         if (errorCode === ERRORS.DATABASE.EDIT_STUDENT_STATUS_ERROR) {
           this.$q.dialog({
             title: "حدث خطأ",
-            message: "حدث خطأ أثناء تعديل حالة الطلب"
+            message: "حدث خطأ أثناء تعديل حالة الطالب"
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }

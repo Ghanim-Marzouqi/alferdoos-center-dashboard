@@ -64,7 +64,6 @@ export default {
   },
   data() {
     return {
-      registeredStudent: {},
       studentStatus: "",
       rejectionReasons: ""
     };
@@ -79,28 +78,21 @@ export default {
       EDIT_STUDENT_STATUS: ACTIONS.STUDNETS.EDIT_STUDENT_STATUS
     }),
     setStudentData() {
-      if (Object.keys(this.student).length > 0) {
-        this.registeredStudent = this.student;
-        this.studentStatus = this.status;
-        this.rejectionReasons = this.reasons;
-      }
+      this.studentStatus = this.status;
+      this.rejectionReasons = this.reasons;
     },
     editStudentStatus() {
       this.EDIT_STUDENT_STATUS({
-        id: this.registeredStudent.id,
+        id: this.student.id,
         status: this.studentStatus,
         reasons: this.rejectionReasons
       });
-
-      this.closeDialog();
     },
     resetStudntData() {
-      this.registeredStudent = {};
-    },
-    closeDialog() {
-      this.registeredStudent = {};
       this.studentStatus = "";
       this.rejectionReasons = "";
+    },
+    closeDialog() {
       this.$emit("closeDialog", false);
     }
   }

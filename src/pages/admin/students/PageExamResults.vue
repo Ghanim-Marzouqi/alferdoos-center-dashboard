@@ -11,8 +11,9 @@
         title="قائمة نتائج الطلاب المتقدمين لإداء الإختبار"
         :data="tableData"
         :columns="columns"
-        row-key="id"
+        row-key="name"
         :filter="filter"
+        :loading="GET_LOADING"
       >
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filter" placeholder="بحث">
@@ -24,6 +25,17 @@
 
         <template v-slot:body="props">
           <q-tr :props="props">
+            <q-td auto-width>
+              <q-btn
+                key="expand"
+                size="sm"
+                color="primary"
+                round
+                dense
+                @click="props.expand = !props.expand"
+                :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+              />
+            </q-td>
             <q-td key="name" :props="props">{{ props.row.name }}</q-td>
             <q-td key="file" :props="props">
               <q-btn dense flat @click.stop="showStudentDialog(props.row.file)">
@@ -40,6 +52,33 @@
               <q-btn dense flat @click.stop="showEditStudentStatusDialog(props.row)">
                 <q-icon color="teal" name="o_edit" />
               </q-btn>
+            </q-td>
+          </q-tr>
+          <q-tr v-show="props.expand" :props="props">
+            <q-td colspan="100%">
+              <q-markup-table separator="vertical" flat bordered>
+                <thead>
+                  <tr class="bg-primary text-white">
+                    <th colspan="4" class="text-center">
+                      <strong>الملاحظات</strong>
+                    </th>
+                  </tr>
+                  <tr class="bg-primary text-white">
+                    <th style="width: 25%" class="text-center">الإملاء</th>
+                    <th style="width: 25%" class="text-center">التسميع</th>
+                    <th style="width: 25%" class="text-center">التلاوة</th>
+                    <th style="width: 25%" class="text-center">اللجنة الرئيسية</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="width: 25%" class="text-center">{{ props.row.writtenNotes }}</td>
+                    <td style="width: 25%" class="text-center">{{ props.row.reciteNotes }}</td>
+                    <td style="width: 25%" class="text-center">{{ props.row.readingNotes }}</td>
+                    <td style="width: 25%" class="text-center">{{ props.row.personalNotes }}</td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
             </q-td>
           </q-tr>
         </template>
@@ -68,7 +107,13 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { GETTERS, ACTIONS, STUDENT_STATUS } from "../../../config/constants";
+import {
+  GETTERS,
+  ACTIONS,
+  STUDENT_STATUS,
+  MESSAGES,
+  ERRORS
+} from "../../../config/constants";
 
 export default {
   name: "PageExamResults",
@@ -82,6 +127,11 @@ export default {
       filter: "",
       tableData: [],
       columns: [
+        {
+          name: "expand",
+          required: true,
+          align: "center"
+        },
         {
           name: "name",
           required: true,
@@ -147,96 +197,110 @@ export default {
       ]
     };
   },
-  created() {
-    this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
-    this.FETCH_STUDENTS_MARKS();
-  },
-  mounted() {
-    if (
-      this.GET_STUDENTS &&
-      this.GET_STUDENTS.length > 0 &&
-      this.GET_STUDENTS_MARKS &&
-      this.GET_STUDENTS_MARKS.length > 0
-    ) {
-      this.GET_STUDENTS.forEach(student => {
-        let studentMarks = this.GET_STUDENTS_MARKS.find(
-          s => s.studentId === student.id
-        );
-
-        if (studentMarks) {
-          this.tableData.push({
-            studentId: student.id,
-            name: student.name,
-            file: student,
-            write: this.sum(
-              "marks",
-              studentMarks.written &&
-                typeof studentMarks.written !== "undefined"
-                ? studentMarks.written
-                : []
-            ),
-            recite: this.sum(
-              "marks",
-              studentMarks.recite && typeof studentMarks.recite !== "undefined"
-                ? studentMarks.recite
-                : []
-            ),
-            read: this.sum(
-              "marks",
-              studentMarks.reading &&
-                typeof studentMarks.reading !== "undefined"
-                ? studentMarks.reading
-                : []
-            ),
-            personal: this.sum(
-              "marks",
-              studentMarks.personal &&
-                typeof studentMarks.personal !== "undefined"
-                ? studentMarks.personal
-                : []
-            ),
-            commoknowledge: studentMarks.commonKnowledge
-              ? studentMarks.commonKnowledge
-              : 0
-          });
-
-          // Calculate Total Marks
-          this.tableData = this.tableData.map(item => ({
-            studentId: item.studentId,
-            name: item.name,
-            file: item.file,
-            write: item.write,
-            recite: item.recite,
-            read: item.read,
-            personal: item.personal,
-            commoknowledge: item.commoknowledge,
-            total:
-              item.write +
-              item.recite +
-              item.read +
-              item.personal +
-              item.commoknowledge
-          }));
-
-          // Sort Marks Based On Total
-          this.tableData = this.tableData.sort(
-            (a, b) => parseInt(b["total"]) - parseInt(a["total"])
-          );
-        }
-      });
-    }
+  async created() {
+    await this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+    await this.FETCH_STUDENTS_MARKS();
+    await this.updateStudentTableData();
   },
   computed: {
     ...mapGetters({
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
-      GET_STUDENTS_MARKS: GETTERS.STUDNETS.GET_STUDENTS_MARKS
+      GET_STUDENTS_MARKS: GETTERS.STUDNETS.GET_STUDENTS_MARKS,
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+      GET_ERRORS: GETTERS.UI.GET_ERRORS,
+      GET_LOADING: GETTERS.UI.GET_LOADING
     })
   },
   methods: {
     ...mapActions({
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
-      FETCH_STUDENTS_MARKS: ACTIONS.STUDNETS.FETCH_STUDENTS_MARKS
+      FETCH_STUDENTS_MARKS: ACTIONS.STUDNETS.FETCH_STUDENTS_MARKS,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
     }),
+    updateStudentTableData() {
+      if (
+        this.GET_STUDENTS &&
+        this.GET_STUDENTS.length > 0 &&
+        this.GET_STUDENTS_MARKS &&
+        this.GET_STUDENTS_MARKS.length > 0
+      ) {
+        this.GET_STUDENTS.forEach(student => {
+          let studentMarks = this.GET_STUDENTS_MARKS.find(
+            s => s.studentId === student.id
+          );
+
+          if (studentMarks) {
+            this.tableData.push({
+              id: student.id,
+              name: student.name,
+              file: student,
+              write: this.sum(
+                "marks",
+                studentMarks.written &&
+                  typeof studentMarks.written !== "undefined"
+                  ? studentMarks.written
+                  : []
+              ),
+              writtenNotes: studentMarks.writtenNotes,
+              recite: this.sum(
+                "marks",
+                studentMarks.recite &&
+                  typeof studentMarks.recite !== "undefined"
+                  ? studentMarks.recite
+                  : []
+              ),
+              reciteNotes: studentMarks.reciteNotes,
+              read: this.sum(
+                "marks",
+                studentMarks.reading &&
+                  typeof studentMarks.reading !== "undefined"
+                  ? studentMarks.reading
+                  : []
+              ),
+              readingNotes: studentMarks.readingNotes,
+              personal: this.sum(
+                "marks",
+                studentMarks.personal &&
+                  typeof studentMarks.personal !== "undefined"
+                  ? studentMarks.personal
+                  : []
+              ),
+              personalNotes: studentMarks.personalNotes,
+              commoknowledge: studentMarks.commonKnowledge
+                ? studentMarks.commonKnowledge
+                : 0
+            });
+
+            // Calculate Total Marks
+            this.tableData = this.tableData.map(item => ({
+              id: item.id,
+              name: item.name,
+              file: item.file,
+              write: item.write,
+              writtenNotes: item.writtenNotes,
+              recite: item.recite,
+              reciteNotes: item.reciteNotes,
+              read: item.read,
+              readingNotes: item.readingNotes,
+              personal: item.personal,
+              personalNotes: item.personalNotes,
+              commoknowledge: item.commoknowledge,
+              total:
+                item.write +
+                item.recite +
+                item.read +
+                item.personal +
+                item.commoknowledge
+            }));
+
+            // Sort Marks Based On Total
+            this.tableData = this.tableData.sort(
+              (a, b) => parseInt(b["total"]) - parseInt(a["total"])
+            );
+          }
+        });
+      }
+    },
     sum(key, array) {
       return array.reduce((a, b) => a + (b[key] || 0), 0);
     },
@@ -259,6 +323,39 @@ export default {
       this.studentStatus = "";
       this.rejectionReasons = "";
       this.isEditStudentStatusDialogOpen = value;
+    }
+  },
+  watch: {
+    GET_MESSAGES: async function(newState, oldState) {
+      if (newState.length > 0) {
+        let messageCode = newState[0].code;
+
+        if (messageCode === MESSAGES.DATABASE.STUDENT_STATUS_UPDATED) {
+          this.tableData = [];
+          this.isEditStudentStatusDialogOpen = false;
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          await this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+          await this.FETCH_STUDENTS_MARKS();
+          await this.updateStudentTableData();
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تعديل حالة الطالب بنجاح"
+          });
+        }
+      }
+    },
+    GET_ERRORS: function(newState, oldState) {
+      if (newState.length > 0) {
+        let errorCode = newState[0].code;
+
+        if (errorCode === ERRORS.DATABASE.EDIT_STUDENT_STATUS_ERROR) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.$q.dialog({
+            title: "حدث خطأ",
+            message: "حدث خطأ أثناء تعديل حالة الطالب"
+          });
+        }
+      }
     }
   },
   components: {
