@@ -102,6 +102,13 @@
       statusVal="study"
       @closeDialog="closeEditStudentStatusDialog"
     />
+
+    <!-- Alert Dialog -->
+    <AlertDialog
+      :isErrorDialogOpen="isAlertDialogOpen"
+      errorTitle="تم قبول الطالب للدراسة في المركز. لا يمكن تعديل حالة الطالب"
+      @closeErrorDialog="isAlertDialogOpen = false"
+    />
   </q-page>
 </template>
 
@@ -121,6 +128,7 @@ export default {
     return {
       isStudentDialogOpen: false,
       isEditStudentStatusDialogOpen: false,
+      isAlertDialogOpen: false,
       registeredStudent: {},
       studentStatus: "",
       rejectionReasons: "",
@@ -198,7 +206,7 @@ export default {
     };
   },
   async created() {
-    await this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+    await this.FETCH_STUDENTS({ status: "" });
     await this.FETCH_STUDENTS_MARKS();
     await this.updateStudentTableData();
   },
@@ -225,78 +233,82 @@ export default {
         this.GET_STUDENTS_MARKS.length > 0
       ) {
         this.GET_STUDENTS.forEach(student => {
-          let studentMarks = this.GET_STUDENTS_MARKS.find(
-            s => s.studentId === student.id
-          );
-
-          if (studentMarks) {
-            this.tableData.push({
-              id: student.id,
-              name: student.name,
-              file: student,
-              write: this.sum(
-                "marks",
-                studentMarks.written &&
-                  typeof studentMarks.written !== "undefined"
-                  ? studentMarks.written
-                  : []
-              ),
-              writtenNotes: studentMarks.writtenNotes,
-              recite: this.sum(
-                "marks",
-                studentMarks.recite &&
-                  typeof studentMarks.recite !== "undefined"
-                  ? studentMarks.recite
-                  : []
-              ),
-              reciteNotes: studentMarks.reciteNotes,
-              read: this.sum(
-                "marks",
-                studentMarks.reading &&
-                  typeof studentMarks.reading !== "undefined"
-                  ? studentMarks.reading
-                  : []
-              ),
-              readingNotes: studentMarks.readingNotes,
-              personal: this.sum(
-                "marks",
-                studentMarks.personal &&
-                  typeof studentMarks.personal !== "undefined"
-                  ? studentMarks.personal
-                  : []
-              ),
-              personalNotes: studentMarks.personalNotes,
-              commoknowledge: studentMarks.commonKnowledge
-                ? studentMarks.commonKnowledge
-                : 0
-            });
-
-            // Calculate Total Marks
-            this.tableData = this.tableData.map(item => ({
-              id: item.id,
-              name: item.name,
-              file: item.file,
-              write: item.write,
-              writtenNotes: item.writtenNotes,
-              recite: item.recite,
-              reciteNotes: item.reciteNotes,
-              read: item.read,
-              readingNotes: item.readingNotes,
-              personal: item.personal,
-              personalNotes: item.personalNotes,
-              commoknowledge: item.commoknowledge,
-              total:
-                item.write +
-                item.recite +
-                item.read +
-                item.personal +
-                item.commoknowledge
-            }));
-
-            // Sort Marks Based On Total
-            this.tableData = this.tableData.sort(
-              (a, b) => parseInt(b["total"]) - parseInt(a["total"])
+          if (student.status !== STUDENT_STATUS.REVIEW) {
+            let studentMarks = this.GET_STUDENTS_MARKS.find(
+              s => s.studentId === student.id
             );
+
+            if (studentMarks) {
+              this.tableData.push({
+                id: student.id,
+                name: student.name,
+                file: student,
+                status: student.status,
+                write: this.sum(
+                  "marks",
+                  studentMarks.written &&
+                    typeof studentMarks.written !== "undefined"
+                    ? studentMarks.written
+                    : []
+                ),
+                writtenNotes: studentMarks.writtenNotes,
+                recite: this.sum(
+                  "marks",
+                  studentMarks.recite &&
+                    typeof studentMarks.recite !== "undefined"
+                    ? studentMarks.recite
+                    : []
+                ),
+                reciteNotes: studentMarks.reciteNotes,
+                read: this.sum(
+                  "marks",
+                  studentMarks.reading &&
+                    typeof studentMarks.reading !== "undefined"
+                    ? studentMarks.reading
+                    : []
+                ),
+                readingNotes: studentMarks.readingNotes,
+                personal: this.sum(
+                  "marks",
+                  studentMarks.personal &&
+                    typeof studentMarks.personal !== "undefined"
+                    ? studentMarks.personal
+                    : []
+                ),
+                personalNotes: studentMarks.personalNotes,
+                commoknowledge: studentMarks.commonKnowledge
+                  ? studentMarks.commonKnowledge
+                  : 0
+              });
+
+              // Calculate Total Marks
+              this.tableData = this.tableData.map(item => ({
+                id: item.id,
+                name: item.name,
+                file: item.file,
+                status: item.status,
+                write: item.write,
+                writtenNotes: item.writtenNotes,
+                recite: item.recite,
+                reciteNotes: item.reciteNotes,
+                read: item.read,
+                readingNotes: item.readingNotes,
+                personal: item.personal,
+                personalNotes: item.personalNotes,
+                commoknowledge: item.commoknowledge,
+                total:
+                  item.write +
+                  item.recite +
+                  item.read +
+                  item.personal +
+                  item.commoknowledge
+              }));
+
+              // Sort Marks Based On Total
+              this.tableData = this.tableData.sort(
+                (a, b) => parseInt(b["total"]) - parseInt(a["total"])
+              );
+            }
           }
         });
       }
@@ -309,14 +321,18 @@ export default {
       this.isStudentDialogOpen = true;
     },
     showEditStudentStatusDialog(student) {
-      this.registeredStudent = student;
-      this.studentStatus = student.status;
-      this.rejectionReasons =
-        typeof student.rejectionReasons !== "undefined" &&
-        student.rejectionReasons !== ""
-          ? student.rejectionReasons
-          : "";
-      this.isEditStudentStatusDialogOpen = true;
+      if (student.status !== STUDENT_STATUS.STUDY) {
+        this.registeredStudent = student;
+        this.studentStatus = student.status;
+        this.rejectionReasons =
+          typeof student.rejectionReasons !== "undefined" &&
+          student.rejectionReasons !== ""
+            ? student.rejectionReasons
+            : "";
+        this.isEditStudentStatusDialogOpen = true;
+      } else {
+        this.isAlertDialogOpen = true;
+      }
     },
     closeEditStudentStatusDialog(value) {
       this.registeredStudent = {};
@@ -362,7 +378,8 @@ export default {
     StudentRegistrationInfoDialog: () =>
       import("components/StudentRegistrationInfoDialog.vue"),
     EditStudentStatusDialog: () =>
-      import("components/EditStudentStatusDialog.vue")
+      import("components/EditStudentStatusDialog.vue"),
+    AlertDialog: () => import("components/ErrorDialog.vue")
   }
 };
 </script>

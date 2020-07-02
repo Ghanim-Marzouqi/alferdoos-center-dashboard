@@ -98,7 +98,7 @@
                 <q-item-label>إعداد الإختبارات</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item class="q-ma-xs" clickable exact>
+            <q-item class="q-ma-xs" clickable exact to="/admin/settings-edit-groups">
               <q-item-section avatar>
                 <q-icon name="o_bubble_chart" />
               </q-item-section>

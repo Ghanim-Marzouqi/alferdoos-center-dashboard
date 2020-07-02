@@ -234,7 +234,7 @@ export default {
     };
   },
   async created() {
-    await this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
+    await this.FETCH_STUDENTS({ status: "" });
     await this.FETCH_EXAM_TOTAL_MARKS();
     await this.FETCH_STUDENTS_MARKS();
     await this.getUpdatedStudentRecords();
@@ -298,13 +298,16 @@ export default {
       let students = [];
       for (let i = 0; i < this.GET_STUDENTS.length; i++) {
         let student = this.GET_STUDENTS[i];
-        let studentMark = this.GET_STUDENTS_MARKS.find(
-          mark => mark.studentId === student.id
-        );
-        students.push({
-          ...student,
-          ...studentMark
-        });
+
+        if (student.status !== STUDENT_STATUS.REVIEW) {
+          let studentMark = this.GET_STUDENTS_MARKS.find(
+            mark => mark.studentId === student.id
+          );
+          students.push({
+            ...student,
+            ...studentMark
+          });
+        }
       }
 
       this.SET_STUDENTS_AND_MARKS({ updatedStudents: students });

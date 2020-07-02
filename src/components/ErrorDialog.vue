@@ -4,13 +4,7 @@
       <q-card-section>{{ errorTitle }}</q-card-section>
       <q-card-actions>
         <q-space></q-space>
-        <q-btn
-          dense
-          flat
-          color="primary"
-          @click="$emit('closeErrorDialog', false)"
-          >حسنا</q-btn
-        >
+        <q-btn dense flat color="primary" @click="$emit('closeErrorDialog', false)">حسنا</q-btn>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -18,7 +12,7 @@
 
 <script>
 export default {
-  name: "AlertDialog",
+  name: "ErrorDialog",
   props: {
     isErrorDialogOpen: {
       type: Boolean,

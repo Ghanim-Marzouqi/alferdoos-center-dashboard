@@ -29,14 +29,11 @@ const getters = {
 // Actions
 const actions = {
   async FETCH_STUDENTS({ commit }, payload) {
-    // Activate Loading
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
-      // Create Students Snapshot Instance
       let snapshot = null;
 
-      // Check Student Status And Fetch Student Based On Status
       if (payload.status !== "") {
         snapshot = await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
           .where("status", "==", payload.status)
@@ -48,10 +45,8 @@ const actions = {
           .get();
       }
 
-      // Get Students Records
       let docs = snapshot.docs;
 
-      // Create A New Array From Students Records
       let students = docs.map(doc => ({
         id: doc.id,
         name: doc.data().name,
@@ -75,31 +70,25 @@ const actions = {
         studentState: doc.data().studentState,
         subjectANumber: doc.data().subjectANumber,
         subjectBNumber: doc.data().subjectBNumber,
-        village: doc.data().village
+        village: doc.data().village,
+        groupId: doc.data().groupId
       }));
 
-      // Set Students
       commit(MUTATIONS.STUDNETS.SET_STUDENTS, students);
     } catch (error) {
-      // Display Error In Console
       console.log("FETCH_STUDENTS", error);
-      // Set Error (Fetch Student Action)
       commit(MUTATIONS.UI.SET_ERROR, error);
     } finally {
-      // Deactivate Loader
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
 
   async FETCH_STUDENTS_BY_PARENT_ID({ commit }, payload) {
-    // Activate Loading
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
-      // Create Students Snapshot Instance
       let snapshot = null;
 
-      // Check Student Status And Fetch Student Based On Status
       if (payload.status) {
         snapshot = await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
           .where("status", "==", payload.status)
@@ -113,10 +102,8 @@ const actions = {
           .get();
       }
 
-      // Get Students Records
       let docs = snapshot.docs;
 
-      // Create A New Array From Students Records
       let students = docs.map(doc => ({
         id: doc.id,
         name: doc.data().name,
@@ -143,29 +130,22 @@ const actions = {
         village: doc.data().village
       }));
 
-      // Set Students
       commit(MUTATIONS.STUDNETS.SET_STUDENTS, students);
     } catch (error) {
-      // Display Error In Console
       console.log("FETCH_STUDENTS_BY_PARENT_ID", error);
-      // Set Error (Fetch Student Action)
       commit(MUTATIONS.UI.SET_ERROR, error);
     } finally {
-      // Deactivate Loader
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
 
   async REGISTER_STUDENT({ commit }, payload) {
-    // Activate Loading
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
-      // Create Firebase Storage Reference
       let FirebaseStorageRef = FirebaseStorage.ref();
       payload.certificateURLs = [];
 
-      // Upload Student Personal Image
       if (payload.image) {
         let imageRef = FirebaseStorageRef.child(
           `Students/Personal/${payload.image.name}_${Date.now()}`
@@ -174,26 +154,20 @@ const actions = {
         payload.imageURL = await snapshot.ref.getDownloadURL();
       }
 
-      // Upload Student Certificates
       if (payload.certificates.length > 0) {
         let cerArr = await payload.certificates.map(async certificate => {
-          // Create File Reference
           let certificateRef = FirebaseStorageRef.child(
             `Students/Certificates/${certificate.name}_${Date.now()}`
           );
 
-          // Get File Snapshot
           let snapshot = await certificateRef.put(certificate);
 
-          // Get File Download URL
           return await snapshot.ref.getDownloadURL();
         });
 
-        // push results
         payload.certificateURLs = await Promise.all(cerArr);
       }
 
-      // Create Student Object
       const student = {
         name: `${payload.firstName} بن ${payload.secondName} بن ${payload.thirdName} ${payload.familyName}`,
         finishedClass: payload.finishedClass,
@@ -218,48 +192,38 @@ const actions = {
         status: STUDENT_STATUS.REVIEW
       };
 
-      // Insert Student Data Inside Firebase Firestore
       await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
         .doc()
         .set(student);
 
-      // Set Message
       commit(MUTATIONS.UI.SET_MESSAGE, "تم تقديم الطلب بنجاح");
 
-      // Display Dialog Message
       Dialog.create({
         title: "تنبيه",
         message: "تم تقديم الطلب بنجاح"
       });
     } catch (error) {
-      // Display Error In Console
       console.log("REGISTER_STUDENT", error);
-      // Display Error Message
       Dialog.create({
         title: "تنبيه",
         message: "حدث خطأ اثناء التسجيل"
       });
     } finally {
-      // Deactivate Loading
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
 
   async DELETE_STUDENT({ commit }, payload) {
     try {
-      // Delete Registered Student
       await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
         .doc(payload)
         .delete();
 
-      // Commit Success Message
       commit(MUTATIONS.UI.SET_MESSAGE, {
         code: MESSAGES.DATABASE.STUDENT_FORM_RECORD_DELETED
       });
     } catch (error) {
-      // Display Error In Console
       console.log("DELETE_STUDENT", error);
-      // Commit Error Message
       commit(MUTATIONS.UI.SET_ERROR, {
         code: ERRORS.DATABASE.STUDENT_FORM_RECORD_NOT_DELETED
       });
@@ -270,12 +234,10 @@ const actions = {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
-      // Get Registered Student Data
       let doc = await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
         .doc(payload.id)
         .get();
 
-      // Check If Student Data Exists
       if (doc.exists) {
         await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
           .doc(payload.id)
@@ -284,19 +246,16 @@ const actions = {
             rejectionReasons: payload.reasons
           });
 
-        // Set Message
         commit(MUTATIONS.UI.SET_MESSAGE, {
           code: MESSAGES.DATABASE.STUDENT_STATUS_UPDATED
         });
       } else {
-        // Set Error (Student Not Found)
         commit(MUTATIONS.UI.SET_ERROR, {
           code: ERRORS.DATABASE.STUDENT_NOT_FOUND
         });
       }
     } catch (error) {
       console.log("EDIT_APPLICATION_STATUS ERROR", error);
-      // Set Error (Edit Application Status Error)
       commit(MUTATIONS.UI.SET_ERROR, {
         code: ERRORS.DATABASE.EDIT_STUDENT_STATUS_ERROR
       });
@@ -318,29 +277,23 @@ const actions = {
       if (!doc.exists) {
         switch (payload.examType) {
           case EXAM_TYPE.WRITTEN:
-            // Insert Student Mark
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .set({
                 written: payload.studentMarks,
                 writtenNotes: payload.examNotes
               });
-
-            // Set Success Message
             commit(MUTATIONS.UI.SET_MESSAGE, {
               code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
             });
             break;
           case EXAM_TYPE.RECITE:
-            // Insert Student Mark
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .set({
                 recite: payload.studentMarks,
                 reciteNotes: payload.examNotes
               });
-
-            // Set Success Message
             commit(MUTATIONS.UI.SET_MESSAGE, {
               code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
             });
@@ -353,22 +306,17 @@ const actions = {
                 reading: payload.studentMarks,
                 readingNotes: payload.examNotes
               });
-
-            // Set Success Message
             commit(MUTATIONS.UI.SET_MESSAGE, {
               code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
             });
             break;
           case EXAM_TYPE.PERSONAL:
-            // Insert Student Mark
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .set({
                 personal: payload.studentMarks,
                 personalNotes: payload.examNotes
               });
-
-            // Set Success Message
             commit(MUTATIONS.UI.SET_MESSAGE, {
               code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
             });
@@ -377,57 +325,45 @@ const actions = {
       } else {
         switch (payload.examType) {
           case EXAM_TYPE.WRITTEN:
-            // Update Student Mark
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .update({
                 written: payload.studentMarks,
                 writtenNotes: payload.examNotes
               });
-
-            // Set Success Message
             commit(MUTATIONS.UI.SET_MESSAGE, {
               code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
             });
             break;
           case EXAM_TYPE.RECITE:
-            // Update Student Mark
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .update({
                 recite: payload.studentMarks,
                 reciteNotes: payload.examNotes
               });
-
-            // Set Success Message
             commit(MUTATIONS.UI.SET_MESSAGE, {
               code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
             });
             break;
           case EXAM_TYPE.READING:
-            // Update Student Mark
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .update({
                 reading: payload.studentMarks,
                 readingNotes: payload.examNotes
               });
-
-            // Set Success Message
             commit(MUTATIONS.UI.SET_MESSAGE, {
               code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
             });
             break;
           case EXAM_TYPE.PERSONAL:
-            // Update Student Mark
             await FirebaseDatabase.collection(COLLECTIONS.STUDENT_EXAM_MARKS)
               .doc(payload.studentId)
               .update({
                 personal: payload.studentMarks,
                 personalNotes: payload.examNotes
               });
-
-            // Set Success Message
             commit(MUTATIONS.UI.SET_MESSAGE, {
               code: MESSAGES.DATABASE.STUDENT_MARK_UPDATED
             });
@@ -436,7 +372,6 @@ const actions = {
       }
     } catch (error) {
       console.log("EDIT_STUDENT_MARK ERROR", error);
-      // Set Error (Edit Application Status Error)
       commit(MUTATIONS.UI.SET_ERROR, {
         code: ERRORS.DATABASE.EDIT_STUDENT_MARK_ERROR
       });
@@ -557,6 +492,35 @@ const actions = {
 
   SET_STUDENTS_AND_MARKS({ commit }, payload) {
     commit(MUTATIONS.STUDNETS.SET_STUDENTS_AND_MARKS, payload.updatedStudents);
+  },
+
+  async JOIN_STUDENT_TO_GROUP({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
+        .doc(payload.studentId)
+        .get();
+
+      if (doc.exists) {
+        await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
+          .doc(payload.studentId)
+          .update({
+            groupId: payload.groupId
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.STUDENT_GROUP_JOINED
+        });
+      }
+    } catch (error) {
+      console.log("JOIN_STUDENT_TO_GROUP ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.JOIN_STUDENT_TO_GROUP_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
   }
 };
 

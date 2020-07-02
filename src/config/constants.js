@@ -8,7 +8,8 @@ const COLLECTIONS = {
   QUESTIONS: "questions",
   EXAM_MARKS: "examMarks",
   STUDENT_EXAM_MARKS: "studentExamMarks",
-  STUDENT_QUESTION_MARKS: "studentQuestionMarks"
+  STUDENT_QUESTION_MARKS: "studentQuestionMarks",
+  GROUPS: "groups"
 };
 
 const STUDENT_GRADE = {
@@ -219,7 +220,8 @@ const GETTERS = {
     GET_YEAR_INFO: "GET_YEAR_INFO",
     GET_REGISTRATION_PERIOD: "GET_REGISTRATION_PERIOD",
     GET_QUESTIONS: "GET_QUESTIONS",
-    GET_EXAM_MARKS: "GET_EXAM_MARKS"
+    GET_EXAM_MARKS: "GET_EXAM_MARKS",
+    GET_GROUPS: "GET_GROUPS"
   },
   STUDNETS: {
     GET_STUDENTS: "GET_STUDENTS",
@@ -254,7 +256,11 @@ const ACTIONS = {
     SET_QUESTION: "SET_QUESTION",
     FETCH_QUESTIONS: "FETCH_QUESTIONS",
     DELETE_QUESTION: "DELETE_QUESTION",
-    FETCH_EXAM_TOTAL_MARKS: "FETCH_EXAM_TOTAL_MARKS"
+    FETCH_EXAM_TOTAL_MARKS: "FETCH_EXAM_TOTAL_MARKS",
+    ADD_GROUP: "ADD_GROUP",
+    EDIT_GROUP: "EDIT_GROUP",
+    FETCH_GROUPS: "FETCH_GROUPS",
+    DELETE_GROUP: "DELETE_GROUP"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -266,7 +272,8 @@ const ACTIONS = {
     FETCH_STUDENTS_MARKS: "FETCH_STUDENTS_MARKS",
     SET_STUDENT_ANSWERS: "SET_STUDENT_ANSWERS",
     FETCH_STUDENT_ANSWERS_BY_ID: "FETCH_STUDENT_ANSWERS_BY_ID",
-    SET_STUDENTS_AND_MARKS: "SET_STUDENTS_AND_MARKS"
+    SET_STUDENTS_AND_MARKS: "SET_STUDENTS_AND_MARKS",
+    JOIN_STUDENT_TO_GROUP: "JOIN_STUDENT_TO_GROUP"
   },
   UI: {
     SET_MESSAGE: "SET_MESSAGE",
@@ -287,7 +294,8 @@ const MUTATIONS = {
     SET_YEAR_INFO: "SET_YEAR_INFO",
     SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
     SET_QUESTIONS: "SET_QUESTIONS",
-    SET_EXAM_MARKS: "SET_EXAM_MARKS"
+    SET_EXAM_MARKS: "SET_EXAM_MARKS",
+    SET_GROUPS: "SET_GROUPS"
   },
   STUDNETS: {
     SET_STUDENTS: "SET_STUDENTS",
@@ -333,7 +341,11 @@ const ERRORS = {
     STUDENT_ANSWERS_SUBMIT_ERROR: "database/student-answers-submit-error",
     STUDENT_ALREADY_TAKEN_EXAM: "student-already-taken-exam",
     FETCH_STUDENT_ANSWERS_BY_ID_ERROR:
-      "database/fetch-student-answers-by-id-error"
+      "database/fetch-student-answers-by-id-error",
+    ADD_GROUP_ERROR: "database/add-group-error",
+    EDIT_GROUP_ERROR: "database/edit-group-error",
+    DELETE_GROUP_ERROR: "database/delete-group-error",
+    JOIN_STUDENT_TO_GROUP_ERROR: "database/join-student-to-group-error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
@@ -357,7 +369,11 @@ const MESSAGES = {
     QUESTION_ADDED: "database/question-added",
     QUESTION_DELETED: "database/question-deleted",
     STUDENT_MARK_UPDATED: "database/student-mark-updated",
-    STUDENT_ANSWERS_SUBMITTED: "database/student-answers-submitted"
+    STUDENT_ANSWERS_SUBMITTED: "database/student-answers-submitted",
+    GROUP_ADDED: "database/group-added",
+    GROUP_UPDATED: "database/group-updated",
+    GROUP_DELETED: "database/group-deleted",
+    STUDENT_GROUP_JOINED: "database/student-group-joined"
   }
 };
 
