@@ -57,6 +57,11 @@ const routes = [
       {
         path: "settings-edit-groups",
         component: () => import("pages/admin/settings/PageEditGroups.vue")
+      },
+      {
+        path: "settings-edit-memorizations",
+        component: () =>
+          import("pages/admin/settings/PageEditMemorizations.vue")
       }
     ]
   },

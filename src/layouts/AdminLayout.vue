@@ -106,6 +106,14 @@
                 <q-item-label>إعداد المجموعات</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/settings-edit-memorizations">
+              <q-item-section avatar>
+                <q-icon name="o_menu_book" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>إعداد المحفوظات</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-expansion-item>
           <q-separator />
           <q-item clickable @click="logout">
