@@ -9,7 +9,8 @@ const COLLECTIONS = {
   EXAM_MARKS: "examMarks",
   STUDENT_EXAM_MARKS: "studentExamMarks",
   STUDENT_QUESTION_MARKS: "studentQuestionMarks",
-  GROUPS: "groups"
+  GROUPS: "groups",
+  MEMORIZATIONS: "memorizations"
 };
 
 const STUDENT_GRADE = {
@@ -221,7 +222,8 @@ const GETTERS = {
     GET_REGISTRATION_PERIOD: "GET_REGISTRATION_PERIOD",
     GET_QUESTIONS: "GET_QUESTIONS",
     GET_EXAM_MARKS: "GET_EXAM_MARKS",
-    GET_GROUPS: "GET_GROUPS"
+    GET_GROUPS: "GET_GROUPS",
+    GET_MEMORIZATIONS: "GET_MEMORIZATIONS"
   },
   STUDNETS: {
     GET_STUDENTS: "GET_STUDENTS",
@@ -260,7 +262,10 @@ const ACTIONS = {
     ADD_GROUP: "ADD_GROUP",
     EDIT_GROUP: "EDIT_GROUP",
     FETCH_GROUPS: "FETCH_GROUPS",
-    DELETE_GROUP: "DELETE_GROUP"
+    DELETE_GROUP: "DELETE_GROUP",
+    ADD_MEMORIZATION: "ADD_MEMORIZATION",
+    EDIT_MEMORIZATION: "EDIT_MEMORIZATION",
+    FETCH_MEMORIZATIONS: "FETCH_MEMORIZATIONS"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -295,7 +300,8 @@ const MUTATIONS = {
     SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
     SET_QUESTIONS: "SET_QUESTIONS",
     SET_EXAM_MARKS: "SET_EXAM_MARKS",
-    SET_GROUPS: "SET_GROUPS"
+    SET_GROUPS: "SET_GROUPS",
+    SET_MEMORIZATIONS: "SET_MEMORIZATIONS"
   },
   STUDNETS: {
     SET_STUDENTS: "SET_STUDENTS",
@@ -345,7 +351,8 @@ const ERRORS = {
     ADD_GROUP_ERROR: "database/add-group-error",
     EDIT_GROUP_ERROR: "database/edit-group-error",
     DELETE_GROUP_ERROR: "database/delete-group-error",
-    JOIN_STUDENT_TO_GROUP_ERROR: "database/join-student-to-group-error"
+    JOIN_STUDENT_TO_GROUP_ERROR: "database/join-student-to-group-error",
+    ADD_MEMORIZATION_ERROR: "database/add-memorization-error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
@@ -373,7 +380,8 @@ const MESSAGES = {
     GROUP_ADDED: "database/group-added",
     GROUP_UPDATED: "database/group-updated",
     GROUP_DELETED: "database/group-deleted",
-    STUDENT_GROUP_JOINED: "database/student-group-joined"
+    STUDENT_GROUP_JOINED: "database/student-group-joined",
+    MEMORIZATION_ADDED: "database/memorization-added"
   }
 };
 
