@@ -404,13 +404,7 @@ const actions = {
       await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
         .doc()
         .set({
-          name: payload.name,
-          pageNumber: payload.pageNumber,
-          pageMark: payload.pageMark,
-          mistakeMark: payload.mistakeMark,
-          cautionMark: payload.cautionMark,
-          repeatNumber: payload.repeatNumber,
-          failMark: payload.failMark
+          name: payload.name
         });
 
       commit(MUTATIONS.UI.SET_MESSAGE, {
@@ -428,7 +422,27 @@ const actions = {
 
   async EDIT_MEMORIZATION({ commit }, payload) {},
 
-  async FETCH_MEMORIZATIONS({ commit }) {}
+  async FETCH_MEMORIZATIONS({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(
+        COLLECTIONS.MEMORIZATIONS
+      ).get();
+      let docs = snapshot.docs;
+
+      if (docs.length > 0) {
+        let memorizations = docs.map(doc => ({
+          id: doc.id,
+          name: doc.data().name
+        }));
+
+        commit(MUTATIONS.SETTINGS.SET_MEMORIZATIONS, memorizations);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_MEMORIZATIONS, []);
+      }
+    } catch (error) {
+      console.log("FETCH_MEMORIZATIONS ERROR", error);
+    }
+  }
 };
 
 // Mutations
