@@ -401,10 +401,13 @@ const actions = {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
+      let date = Date.now();
+
       await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
         .doc()
         .set({
-          name: payload.name
+          name: payload.name,
+          createdAt: date
         });
 
       commit(MUTATIONS.UI.SET_MESSAGE, {
@@ -420,13 +423,57 @@ const actions = {
     }
   },
 
-  async EDIT_MEMORIZATION({ commit }, payload) {},
+  async EDIT_MEMORIZATION({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
+        .doc(payload.id)
+        .update({
+          name: payload.name
+        });
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.MEMORIZATION_UPDATED
+      });
+    } catch (error) {
+      console.log("EDIT_MEMORIZATION ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.EDIT_MEMORIZATION_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async DELETE_MEMORIZATION({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
+        .doc(payload)
+        .delete();
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.MEMORIZATION_DELETED
+      });
+    } catch (error) {
+      console.log("DELETE_MEMORIZATION ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.DELETE_MEMORIZATION_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
 
   async FETCH_MEMORIZATIONS({ commit }) {
     try {
       let snapshot = await FirebaseDatabase.collection(
         COLLECTIONS.MEMORIZATIONS
-      ).get();
+      )
+        .orderBy("createdAt", "asc")
+        .get();
       let docs = snapshot.docs;
 
       if (docs.length > 0) {

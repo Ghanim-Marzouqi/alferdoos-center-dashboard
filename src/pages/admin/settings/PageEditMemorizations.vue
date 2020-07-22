@@ -105,7 +105,16 @@
     <!-- Add Memorization Dialog  -->
     <AddMemorizationDialog
       :isDialogOpen="isAddMemorizationDialogOpen"
+      :memorization="memorization"
       @closeDialog="closeAddMemorizationDialog"
+    />
+
+    <!-- Delete Memorization Dialog -->
+    <DeleteMemorizationDialog
+      :isAlertDialogOpen="isDeleteMemorizationDialogOpen"
+      alertTitle="هل أنت متأكد من حذف المحفوظ"
+      @closeAlertDialog="closeDeleteMemorizationDialog"
+      @alertAction="deleteMemorization"
     />
   </q-page>
 </template>
@@ -119,36 +128,38 @@ export default {
   data() {
     return {
       isAddMemorizationDialogOpen: false,
+      isDeleteMemorizationDialogOpen: false,
+      memorization: {},
       columns: [
         {
           name: "name",
           required: true,
           label: "اسم المحفوظ",
-          field: row => row.name,
-          align: "left"
+          field: (row) => row.name,
+          align: "left",
         },
         {
           name: "edit",
           required: true,
           label: "تعديل",
           field: "edit",
-          align: "right"
+          align: "right",
         },
         {
           name: "delete",
           required: true,
           label: "حذف",
           field: "delete",
-          align: "right"
+          align: "right",
         },
         {
           name: "add",
           required: true,
           label: "إضافة",
           field: "add",
-          align: "right"
-        }
-      ]
+          align: "right",
+        },
+      ],
     };
   },
   created() {
@@ -159,37 +170,75 @@ export default {
       GET_MEMORIZATIONS: GETTERS.SETTINGS.GET_MEMORIZATIONS,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
-      GET_LOADING: GETTERS.UI.GET_LOADING
-    })
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+    }),
   },
   methods: {
     ...mapActions({
       FETCH_MEMORIZATIONS: ACTIONS.SETTINGS.FETCH_MEMORIZATIONS,
-      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+      DELETE_MEMORIZATION: ACTIONS.SETTINGS.DELETE_MEMORIZATION,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
-    onEditMemorization(memorization) {},
-    onDeleteMemorization(memorization) {},
+    onEditMemorization(memorization) {
+      this.memorization = memorization;
+      this.isAddMemorizationDialogOpen = true;
+    },
+    onDeleteMemorization(memorization) {
+      this.memorization = memorization;
+      this.isDeleteMemorizationDialogOpen = true;
+    },
+    deleteMemorization() {
+      if (Object.keys(this.memorization).length > 0) {
+        this.DELETE_MEMORIZATION(this.memorization.id);
+      }
+    },
     onAddMemorizationDetails(memorizationId) {},
     closeAddMemorizationDialog(value) {
       this.isAddMemorizationDialogOpen = value;
-    }
+    },
+    closeDeleteMemorizationDialog(value) {
+      this.isDeleteMemorizationDialogOpen = value;
+    },
   },
   watch: {
-    GET_MESSAGES: function(newState, oldState) {
+    GET_MESSAGES: function (newState, oldState) {
       if (newState.length > 0) {
         let messageCode = newState[0].code;
 
         if (messageCode === MESSAGES.DATABASE.MEMORIZATION_ADDED) {
+          this.FETCH_MEMORIZATIONS();
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.isAddMemorizationDialogOpen = false;
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم إضافة محفوظ جديد بنجاح"
+            message: "تم إضافة محفوظ جديد بنجاح",
+          });
+        }
+
+        if (messageCode === MESSAGES.DATABASE.MEMORIZATION_UPDATED) {
+          this.FETCH_MEMORIZATIONS();
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.memorization = {};
+          this.isAddMemorizationDialogOpen = false;
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تحديث المحفوظ بنجاح",
+          });
+        }
+
+        if (messageCode === MESSAGES.DATABASE.MEMORIZATION_DELETED) {
+          this.FETCH_MEMORIZATIONS();
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.memorization = {};
+          this.isDeleteMemorizationDialogOpen = false;
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم حذف المحفوظ بنجاح",
           });
         }
       }
     },
-    GET_ERRORS: function(newState, oldState) {
+    GET_ERRORS: function (newState, oldState) {
       if (newState.length > 0) {
         let errorCode = newState[0].code;
 
@@ -197,15 +246,32 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.$q.dialog({
             title: "خطأ",
-            message: "حدث خطأ أثناء إضافة محفوظ جديد"
+            message: "حدث خطأ أثناء إضافة محفوظ جديد",
+          });
+        }
+
+        if (errorCode === ERRORS.DATABASE.EDIT_MEMORIZATION_ERROR) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ أثناء تحديث المحفوظ",
+          });
+        }
+
+        if (errorCode === ERRORS.DATABASE.DELETE_MEMORIZATION_ERROR) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ أثناء حذف المحفوظ",
           });
         }
       }
-    }
+    },
   },
   components: {
-    AddMemorizationDialog: () => import("components/AddMemorizationDialog.vue")
-  }
+    AddMemorizationDialog: () => import("components/AddMemorizationDialog.vue"),
+    DeleteMemorizationDialog: () => import("components/AlertDialog.vue"),
+  },
 };
 </script>
 

@@ -52,14 +52,10 @@
         </q-list>
       </q-scroll-area>
 
-      <q-img
-        class="absolute-top"
-        src="statics/images/bg.png"
-        style="height: 150px"
-      >
+      <q-img class="absolute-top" :src="backgroundImage" style="height: 150px">
         <div style="width: 100%" class="text-center bg-transparent">
           <q-avatar size="80px" class="q-mb-sm">
-            <img src="statics/images/avatar.jpg" />
+            <img :src="avatarImage" />
           </q-avatar>
           <div class="text-weight-bold">{{ GET_USER.name }}</div>
         </div>
@@ -81,13 +77,15 @@ export default {
   data() {
     return {
       rightDrawerOpen: false,
+      backgroundImage: "./images/bg.png",
+      avatarImage: "./images/avatar.jpg",
       links: [
         {
           title: "الرئيسية",
           icon: "o_home",
-          link: "/teacher/home"
-        }
-      ]
+          link: "/teacher/home",
+        },
+      ],
     };
   },
   created() {
@@ -100,18 +98,18 @@ export default {
     ...mapActions({ LOGOUT: ACTIONS.AUTH.LOGOUT }),
     logout() {
       this.LOGOUT();
-    }
+    },
   },
   watch: {
-    GET_USER: function(newState, oldState) {
+    GET_USER: function (newState, oldState) {
       if (Object.keys(newState).length === 0) {
         this.$router.replace("/teacher-login");
       }
-    }
+    },
   },
   components: {
-    DrawerLink: () => import("components/DrawerLink")
-  }
+    DrawerLink: () => import("components/DrawerLink"),
+  },
 };
 </script>
 

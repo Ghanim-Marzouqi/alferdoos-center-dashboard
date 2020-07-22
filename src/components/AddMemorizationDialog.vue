@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="isDialogOpen">
+  <q-dialog v-model="isDialogOpen" @before-show="onDialogShow" @hide="resetMemorization">
     <q-card style="width: 400px">
       <q-form @submit.prevent="addMemorization" @reset="resetMemorization">
         <q-card-section>
@@ -38,34 +38,54 @@ export default {
   props: {
     isDialogOpen: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
+    memorization: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
-      name: ""
+      id: "",
+      name: "",
     };
   },
   computed: {
     ...mapGetters({
-      GET_LOADING: GETTERS.UI.GET_LOADING
-    })
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+    }),
   },
   methods: {
     ...mapActions({
-      ADD_MEMORIZATION: ACTIONS.SETTINGS.ADD_MEMORIZATION
+      ADD_MEMORIZATION: ACTIONS.SETTINGS.ADD_MEMORIZATION,
+      EDIT_MEMORIZATION: ACTIONS.SETTINGS.EDIT_MEMORIZATION,
     }),
     closeDialog() {
       this.$emit("closeDialog", false);
     },
     addMemorization() {
-      this.ADD_MEMORIZATION({
-        name: this.name
-      });
+      if (Object.keys(this.memorization).length > 0) {
+        this.EDIT_MEMORIZATION({
+          id: this.id,
+          name: this.name,
+        });
+      } else {
+        this.ADD_MEMORIZATION({
+          name: this.name,
+        });
+      }
+    },
+    onDialogShow() {
+      if (Object.keys(this.memorization).length > 0) {
+        this.id = this.memorization.id;
+        this.name = this.memorization.name;
+      }
     },
     resetMemorization() {
+      this.id = "";
       this.name = "";
-    }
-  }
+    },
+  },
 };
 </script>
