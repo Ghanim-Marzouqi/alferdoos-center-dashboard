@@ -47,6 +47,19 @@ const routes = [
         component: () => import("pages/admin/students/PageStudentDashboard.vue")
       },
       {
+        path: "subject-schedule",
+        component: () => import("pages/admin/students/PageSubjectSchedule.vue")
+      },
+      {
+        path: "teachers",
+        component: () =>
+          import("pages/admin/teachers/PageRegisteredTeachers.vue")
+      },
+      {
+        path: "groups",
+        component: () => import("pages/admin/groups/PageRegisteredGroups.vue")
+      },
+      {
         path: "settings-year-info",
         component: () => import("pages/admin/settings/PageYearInfoSettings.vue")
       },
@@ -62,6 +75,10 @@ const routes = [
         path: "settings-edit-memorizations",
         component: () =>
           import("pages/admin/settings/PageEditMemorizations.vue")
+      },
+      {
+        path: "settings-edit-subjects",
+        component: () => import("pages/admin/settings/PageEditSubjects.vue")
       }
     ]
   },

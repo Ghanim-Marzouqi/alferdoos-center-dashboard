@@ -38,7 +38,7 @@
               <q-item-label>الرئيسية</q-item-label>
             </q-item-section>
           </q-item>
-          <q-expansion-item class="q-ma-xs" expand-separator icon="o_school" label="بيانات الطلاب">
+          <q-expansion-item class="q-ma-xs" expand-separator icon="o_school" label="الطلاب">
             <q-item class="q-ma-xs" clickable exact to="/admin/student-registration-forms">
               <q-item-section avatar>
                 <q-icon name="o_assignment" />
@@ -65,19 +65,43 @@
                 <q-item-label>الطلاب المسجلين</q-item-label>
               </q-item-section>
             </q-item>
+
+            <q-item class="q-ma-xs" clickable exact to="/admin/subject-schedule">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>جدول الحصص الدراسية</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-expansion-item>
           <q-expansion-item
             class="q-ma-xs"
             expand-separator
             icon="o_supervisor_account"
-            label="بيانات المعلمين"
+            label="المعلمين"
           >
-            <q-item class="q-ma-xs" clickable exact>
+            <q-item class="q-ma-xs" clickable exact to="/admin/teachers">
               <q-item-section avatar>
                 <q-icon name="o_person" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>المعلمين المسجلين</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-expansion-item>
+          <q-expansion-item
+            class="q-ma-xs"
+            expand-separator
+            icon="o_bubble_chart"
+            label="المجموعات"
+          >
+            <q-item class="q-ma-xs" clickable exact to="/admin/groups">
+              <q-item-section avatar>
+                <q-icon name="o_view_quilt" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>المجموعات المسجلة</q-item-label>
               </q-item-section>
             </q-item>
           </q-expansion-item>
@@ -100,7 +124,7 @@
             </q-item>
             <q-item class="q-ma-xs" clickable exact to="/admin/settings-edit-groups">
               <q-item-section avatar>
-                <q-icon name="o_bubble_chart" />
+                <q-icon name="o_group_work" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>إعداد المجموعات</q-item-label>
@@ -112,6 +136,14 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>إعداد المحفوظات</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/settings-edit-subjects">
+              <q-item-section avatar>
+                <q-icon name="o_book" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>إعداد المواد الدراسية</q-item-label>
               </q-item-section>
             </q-item>
           </q-expansion-item>
