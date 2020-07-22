@@ -2,7 +2,7 @@
   <q-page padding>
     <p class="text-h6">إعدادات المحفوظات</p>
 
-    <!-- Written Exam Questions Table -->
+    <!-- Memorization Table -->
     <div class="row q-pa-md">
       <div class="fit row wrap justify-between items-center content-start">
         <p class="text-body1 text-weight-bold">المحفوظات</p>
@@ -54,10 +54,19 @@
         </q-table>
       </div>
     </div>
+
+    <!-- Add Memorization Dialog  -->
+    <AddMemorizationDialog
+      :isDialogOpen="isAddMemorizationDialogOpen"
+      @closeDialog="closeAddMemorizationDialog"
+    />
   </q-page>
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+import { MESSAGES, ERRORS, GETTERS, ACTIONS } from "../../../config/constants";
+
 export default {
   name: "PageEditMemorizations",
   data() {
@@ -89,9 +98,53 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapGetters({
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+      GET_ERRORS: GETTERS.UI.GET_ERRORS
+    })
+  },
   methods: {
+    ...mapActions({
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+    }),
     onEditMemorization(memorization) {},
-    onDeleteMemorization(memorization) {}
+    onDeleteMemorization(memorization) {},
+    closeAddMemorizationDialog(value) {
+      this.isAddMemorizationDialogOpen = value;
+    }
+  },
+  watch: {
+    GET_MESSAGES: function(newState, oldState) {
+      if (newState.length > 0) {
+        let messageCode = newState[0].code;
+
+        if (messageCode === MESSAGES.DATABASE.MEMORIZATION_ADDED) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.isAddMemorizationDialogOpen = false;
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم إضافة محفوظ جديد بنجاح"
+          });
+        }
+      }
+    },
+    GET_ERRORS: function(newState, oldState) {
+      if (newState.length > 0) {
+        let errorCode = newState[0].code;
+
+        if (errorCode === ERRORS.DATABASE.ADD_MEMORIZATION_ERROR) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ أثناء إضافة محفوظ جديد"
+          });
+        }
+      }
+    }
+  },
+  components: {
+    AddMemorizationDialog: () => import("components/AddMemorizationDialog.vue")
   }
 };
 </script>

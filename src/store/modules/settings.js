@@ -14,7 +14,8 @@ const state = {
   registrationPeriod: {},
   questions: [],
   examMarks: [],
-  groups: []
+  groups: [],
+  memorizations: []
 };
 
 // Getters
@@ -23,7 +24,8 @@ const getters = {
   GET_REGISTRATION_PERIOD: state => state.registrationPeriod,
   GET_QUESTIONS: state => state.questions,
   GET_EXAM_MARKS: state => state.examMarks,
-  GET_GROUPS: state => state.groups
+  GET_GROUPS: state => state.groups,
+  GET_MEMORIZATIONS: state => state.memorizations
 };
 
 // Actions
@@ -393,7 +395,40 @@ const actions = {
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
-  }
+  },
+
+  async ADD_MEMORIZATION({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
+        .doc()
+        .set({
+          name: payload.name,
+          pageNumber: payload.pageNumber,
+          pageMark: payload.pageMark,
+          mistakeMark: payload.mistakeMark,
+          cautionMark: payload.cautionMark,
+          repeatNumber: payload.repeatNumber,
+          failMark: payload.failMark
+        });
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.MEMORIZATION_ADDED
+      });
+    } catch (error) {
+      console.log("ADD_MEMORIZATION ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ADD_MEMORIZATION_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async EDIT_MEMORIZATION({ commit }, payload) {},
+
+  async FETCH_MEMORIZATIONS({ commit }) {}
 };
 
 // Mutations
@@ -403,7 +438,9 @@ const mutations = {
     (state.registrationPeriod = period),
   SET_QUESTIONS: (state, questions) => (state.questions = questions),
   SET_EXAM_MARKS: (state, marks) => (state.examMarks = marks),
-  SET_GROUPS: (state, groups) => (state.groups = groups)
+  SET_GROUPS: (state, groups) => (state.groups = groups),
+  SET_MEMORIZATIONS: (state, memorizations) =>
+    (state.memorizations = memorizations)
 };
 
 // Export
