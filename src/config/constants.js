@@ -265,7 +265,8 @@ const ACTIONS = {
     DELETE_GROUP: "DELETE_GROUP",
     ADD_MEMORIZATION: "ADD_MEMORIZATION",
     EDIT_MEMORIZATION: "EDIT_MEMORIZATION",
-    FETCH_MEMORIZATIONS: "FETCH_MEMORIZATIONS"
+    FETCH_MEMORIZATIONS: "FETCH_MEMORIZATIONS",
+    DELETE_MEMORIZATION: "DELETE_MEMORIZATION"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -318,6 +319,31 @@ const MUTATIONS = {
   SHARED: {}
 };
 
+// Message Codes
+const MESSAGES = {
+  AUTH: {},
+  DATABASE: {
+    STUDENT_FORM_RECORD_DELETED: "database/student-form-record-deleted",
+    STUDENT_STATUS_UPDATED: "database/student-status-updated",
+    YEAR_INFO_CREATED: "database/year-info-created",
+    YEAR_INFO_UPDATED: "database/year-info-updated",
+    YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
+      "database/year-info-registration-period-updated",
+    EXAM_MARKS_UPDATED: "database/exam_marks_updated",
+    QUESTION_ADDED: "database/question-added",
+    QUESTION_DELETED: "database/question-deleted",
+    STUDENT_MARK_UPDATED: "database/student-mark-updated",
+    STUDENT_ANSWERS_SUBMITTED: "database/student-answers-submitted",
+    GROUP_ADDED: "database/group-added",
+    GROUP_UPDATED: "database/group-updated",
+    GROUP_DELETED: "database/group-deleted",
+    STUDENT_GROUP_JOINED: "database/student-group-joined",
+    MEMORIZATION_ADDED: "database/memorization-added",
+    MEMORIZATION_UPDATED: "database/memorization-updated",
+    MEMORIZATION_DELETED: "database/memorization-deleted"
+  }
+};
+
 // Error Codes
 const ERRORS = {
   AUTH: {
@@ -352,36 +378,15 @@ const ERRORS = {
     EDIT_GROUP_ERROR: "database/edit-group-error",
     DELETE_GROUP_ERROR: "database/delete-group-error",
     JOIN_STUDENT_TO_GROUP_ERROR: "database/join-student-to-group-error",
-    ADD_MEMORIZATION_ERROR: "database/add-memorization-error"
+    ADD_MEMORIZATION_ERROR: "database/add-memorization-error",
+    EDIT_MEMORIZATION_ERROR: "database/edit-memorization-error",
+    DELETE_MEMORIZATION_ERROR: "database/delete-memorization-error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
     UNAUTHORIZED: "storage/unauthorized",
     CANCELED: "storage/canceled",
     UNKNOWN: "storage/unknown"
-  }
-};
-
-// Message Codes
-const MESSAGES = {
-  AUTH: {},
-  DATABASE: {
-    STUDENT_FORM_RECORD_DELETED: "database/student-form-record-deleted",
-    STUDENT_STATUS_UPDATED: "database/student-status-updated",
-    YEAR_INFO_CREATED: "database/year-info-created",
-    YEAR_INFO_UPDATED: "database/year-info-updated",
-    YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
-      "database/year-info-registration-period-updated",
-    EXAM_MARKS_UPDATED: "database/exam_marks_updated",
-    QUESTION_ADDED: "database/question-added",
-    QUESTION_DELETED: "database/question-deleted",
-    STUDENT_MARK_UPDATED: "database/student-mark-updated",
-    STUDENT_ANSWERS_SUBMITTED: "database/student-answers-submitted",
-    GROUP_ADDED: "database/group-added",
-    GROUP_UPDATED: "database/group-updated",
-    GROUP_DELETED: "database/group-deleted",
-    STUDENT_GROUP_JOINED: "database/student-group-joined",
-    MEMORIZATION_ADDED: "database/memorization-added"
   }
 };
 

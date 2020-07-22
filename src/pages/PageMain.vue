@@ -37,28 +37,28 @@ export default {
     return {
       items: [
         {
-          image: "statics/images/admin_logo.png",
+          image: "./images/admin_logo.png",
           title: "بوابة الإدارة",
-          link: "/admin"
+          link: "/admin",
         },
         {
-          image: "statics/images/teacher_logo1.png",
+          image: "./images/teacher_logo.png",
           title: "بوابة المعلمين",
-          link: "/teacher"
+          link: "/teacher",
         },
         {
-          image: "statics/images/parent_logo.png",
+          image: "./images/parent_logo.png",
           title: "بوابة أولياء الأمور",
-          link: "/parent"
-        }
-      ]
+          link: "/parent",
+        },
+      ],
     };
   },
   methods: {
     goToPage(link) {
       this.$router.push(link);
-    }
-  }
+    },
+  },
 };
 </script>
 

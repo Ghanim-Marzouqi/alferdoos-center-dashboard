@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="isAlertDialogOpen">
-    <q-card>
+    <q-card style="width: 400px">
       <q-card-section>{{ alertTitle }}</q-card-section>
       <q-card-actions>
         <q-space></q-space>
@@ -20,14 +20,14 @@ export default {
   props: {
     isAlertDialogOpen: {
       type: Boolean,
-      default: false
+      default: false,
     },
     alertTitle: {
       type: String,
       required: true,
-      default: ""
-    }
+      default: "",
+    },
   },
-  computed: mapGetters({ GET_LOADING: GETTERS.UI.GET_LOADING })
+  computed: mapGetters({ GET_LOADING: GETTERS.UI.GET_LOADING }),
 };
 </script>

@@ -11,7 +11,7 @@
       "sourceMapPathOverrides": {
         "webpack:///./src/*": "${webRoot}/*"
       }
-    },
+    }
     {
       "type": "firefox",
       "request": "launch",

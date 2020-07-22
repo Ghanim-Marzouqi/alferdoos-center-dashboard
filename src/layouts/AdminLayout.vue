@@ -160,10 +160,10 @@
         </q-list>
       </q-scroll-area>
 
-      <q-img class="absolute-top" src="statics/images/bg.png" style="height: 150px">
+      <q-img class="absolute-top" :src="backgroundImage" style="height: 150px">
         <div style="width: 100%" class="text-center bg-transparent">
           <q-avatar size="80px" class="q-mb-sm">
-            <img src="statics/images/avatar.jpg" />
+            <img :src="avatarImage" />
           </q-avatar>
           <div class="text-weight-bold">{{ GET_USER.name }}</div>
         </div>
@@ -184,7 +184,9 @@ export default {
   name: "Layout",
   data() {
     return {
-      rightDrawerOpen: false
+      rightDrawerOpen: false,
+      backgroundImage: "./images/bg.png",
+      avatarImage: "./images/avatar.jpg",
     };
   },
   created() {
@@ -193,26 +195,26 @@ export default {
     }
   },
   computed: mapGetters({
-    GET_USER: GETTERS.AUTH.GET_USER
+    GET_USER: GETTERS.AUTH.GET_USER,
   }),
   methods: {
     ...mapActions({
-      LOGOUT: ACTIONS.AUTH.LOGOUT
+      LOGOUT: ACTIONS.AUTH.LOGOUT,
     }),
     logout() {
       this.LOGOUT();
-    }
+    },
   },
   watch: {
-    GET_USER: function(newState, oldState) {
+    GET_USER: function (newState, oldState) {
       if (Object.keys(newState).length === 0) {
         this.$router.replace("/admin-login");
       }
-    }
+    },
   },
   components: {
-    DrawerLink: () => import("components/DrawerLink")
-  }
+    DrawerLink: () => import("components/DrawerLink"),
+  },
 };
 </script>
 
