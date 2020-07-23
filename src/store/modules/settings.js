@@ -407,6 +407,7 @@ const actions = {
         .doc()
         .set({
           name: payload.name,
+          details: [],
           createdAt: date
         });
 
@@ -479,7 +480,8 @@ const actions = {
       if (docs.length > 0) {
         let memorizations = docs.map(doc => ({
           id: doc.id,
-          name: doc.data().name
+          name: doc.data().name,
+          details: doc.data().details.length > 0 ? [...doc.data().details] : []
         }));
 
         commit(MUTATIONS.SETTINGS.SET_MEMORIZATIONS, memorizations);
@@ -488,6 +490,106 @@ const actions = {
       }
     } catch (error) {
       console.log("FETCH_MEMORIZATIONS ERROR", error);
+    }
+  },
+
+  async ADD_MEMORIZATION_DETAILS({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let date = Date.now();
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
+        .doc(payload.id)
+        .get();
+
+      if (doc.exists) {
+        if (Object.keys(doc.data().details).length > 0) {
+          let newDetails = [
+            ...doc.data().details,
+            {
+              uid: payload.uid,
+              pageNumberFrom: payload.pageNumberFrom,
+              pageNumberTo: payload.pageNumberTo,
+              pageMarks: payload.pageMarks,
+              mistakeMarks: payload.mistakeMarks,
+              cautionMarks: payload.cautionMarks,
+              repeatNumber: payload.repeatNumber,
+              failMarks: payload.failMarks,
+              createdAt: date
+            }
+          ];
+
+          await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
+            .doc(payload.id)
+            .update({
+              details: newDetails
+            });
+
+          commit(MUTATIONS.UI.SET_MESSAGE, {
+            code: MESSAGES.DATABASE.MEMORIZATION_DETAILS_ADDED
+          });
+        } else {
+          let newDetails = [
+            {
+              uid: payload.uid,
+              pageNumberFrom: payload.pageNumberFrom,
+              pageNumberTo: payload.pageNumberTo,
+              pageMarks: payload.pageMarks,
+              mistakeMarks: payload.mistakeMarks,
+              cautionMarks: payload.cautionMarks,
+              repeatNumber: payload.repeatNumber,
+              failMarks: payload.failMarks,
+              createdAt: date
+            }
+          ];
+
+          await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
+            .doc(payload.id)
+            .update({
+              details: newDetails
+            });
+
+          commit(MUTATIONS.UI.SET_MESSAGE, {
+            code: MESSAGES.DATABASE.MEMORIZATION_DETAILS_ADDED
+          });
+        }
+      }
+    } catch (error) {
+      console.log("ADD_MEMORIZATION_DETAILS ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ADD_MEMORIZATION_DETAILS_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async DELETE_MEMORIZATION_DETAILS({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
+        .doc(payload.id)
+        .get();
+      let details = doc
+        .data()
+        .details.filter(detail => detail.uid !== payload.uid);
+      await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
+        .doc(payload.id)
+        .update({
+          details
+        });
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.MEMORIZATION_DETAILS_DELETED
+      });
+    } catch (error) {
+      console.log("DELETE_MEMORIZATION_DETAILS ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.DELETE_MEMORIZATION_DETAILS_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
     }
   }
 };

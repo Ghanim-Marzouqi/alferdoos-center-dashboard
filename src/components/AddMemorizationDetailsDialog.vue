@@ -1,7 +1,7 @@
 <template>
-  <q-dialog v-model="isDialogOpen" @before-show="onShowDialog" @hide="onHideDialog">
+  <q-dialog v-model="isDialogOpen" @hide="onHideDialog">
     <q-card style="width: 400px">
-      <q-form @submit.prevent="addMemorizationDetails" @reset="resetMemorizationDetails">
+      <q-form @submit.prevent="addMemorizationDetails">
         <q-card-section>
           <div class="text-h6">إضافة تفاصيل المحفوظ</div>
           <div class="q-ma-2">
@@ -64,7 +64,7 @@
                 <q-input
                   class="q-mt-sm"
                   filled
-                  v-model="name"
+                  v-model="failMarks"
                   label="درجة الرسوب"
                   mask="#.#"
                   fill-mask="0"
@@ -86,6 +86,7 @@
 </template>
 
 <script>
+import { uid } from "quasar";
 import { mapGetters, mapActions } from "vuex";
 import { GETTERS, ACTIONS } from "../config/constants";
 
@@ -103,7 +104,6 @@ export default {
   },
   data() {
     return {
-      memorizationId: "",
       pageNumberFrom: "",
       pageNumberTo: "",
       pageMarks: "",
@@ -119,28 +119,28 @@ export default {
     }),
   },
   methods: {
-    ...mapActions({}),
+    ...mapActions({
+      ADD_MEMORIZATION_DETAILS: ACTIONS.SETTINGS.ADD_MEMORIZATION_DETAILS,
+    }),
     closeDialog() {
       this.$emit("closeDialog", false);
     },
-    addMemorizationDetails() {},
-    onShowDialog() {
+    addMemorizationDetails() {
       if (Object.keys(this.memorization).length > 0) {
-        this.memorizationId = this.memorization.id;
+        this.ADD_MEMORIZATION_DETAILS({
+          id: this.memorization.id,
+          uid: uid(),
+          pageNumberFrom: Number.parseInt(this.pageNumberFrom),
+          pageNumberTo: Number.parseInt(this.pageNumberTo),
+          pageMarks: Number.parseFloat(this.pageMarks),
+          mistakeMarks: Number.parseFloat(this.mistakeMarks),
+          cautionMarks: Number.parseFloat(this.cautionMarks),
+          repeatNumber: Number.parseInt(this.repeatNumber),
+          failMarks: Number.parseFloat(this.failMarks),
+        });
       }
     },
     onHideDialog() {
-      this.memorizationId = "";
-      this.pageNumberFrom = "";
-      this.pageNumberTo = "";
-      this.pageMarks = "";
-      this.mistakeMarks = "";
-      this.cautionMarks = "";
-      this.repeatNumber = "";
-      this.failMarks = "";
-    },
-    resetMemorizationDetails() {
-      this.memorizationId = "";
       this.pageNumberFrom = "";
       this.pageNumberTo = "";
       this.pageMarks = "";

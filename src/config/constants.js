@@ -266,7 +266,9 @@ const ACTIONS = {
     ADD_MEMORIZATION: "ADD_MEMORIZATION",
     EDIT_MEMORIZATION: "EDIT_MEMORIZATION",
     FETCH_MEMORIZATIONS: "FETCH_MEMORIZATIONS",
-    DELETE_MEMORIZATION: "DELETE_MEMORIZATION"
+    DELETE_MEMORIZATION: "DELETE_MEMORIZATION",
+    ADD_MEMORIZATION_DETAILS: "ADD_MEMORIZATION_DETAILS",
+    DELETE_MEMORIZATION_DETAILS: "DELETE_MEMORIZATION_DETAILS"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -340,7 +342,9 @@ const MESSAGES = {
     STUDENT_GROUP_JOINED: "database/student-group-joined",
     MEMORIZATION_ADDED: "database/memorization-added",
     MEMORIZATION_UPDATED: "database/memorization-updated",
-    MEMORIZATION_DELETED: "database/memorization-deleted"
+    MEMORIZATION_DELETED: "database/memorization-deleted",
+    MEMORIZATION_DETAILS_ADDED: "database/memorization-details-added",
+    MEMORIZATION_DETAILS_DELETED: "database/memorization-details-deleted"
   }
 };
 
@@ -380,7 +384,10 @@ const ERRORS = {
     JOIN_STUDENT_TO_GROUP_ERROR: "database/join-student-to-group-error",
     ADD_MEMORIZATION_ERROR: "database/add-memorization-error",
     EDIT_MEMORIZATION_ERROR: "database/edit-memorization-error",
-    DELETE_MEMORIZATION_ERROR: "database/delete-memorization-error"
+    DELETE_MEMORIZATION_ERROR: "database/delete-memorization-error",
+    ADD_MEMORIZATION_DETAILS_ERROR: "database/add-memorization-details-error",
+    DELETE_MEMORIZATION_DETAILS_ERROR:
+      "database/delete-memorization-details-error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
