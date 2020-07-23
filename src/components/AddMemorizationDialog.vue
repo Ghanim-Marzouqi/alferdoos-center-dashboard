@@ -1,16 +1,16 @@
 <template>
-  <q-dialog v-model="isDialogOpen" @before-show="onDialogShow" @hide="resetMemorization">
+  <q-dialog v-model="isDialogOpen" @before-show="onShowDialog" @hide="onHideDialog">
     <q-card style="width: 400px">
-      <q-form @submit.prevent="addMemorization" @reset="resetMemorization">
+      <q-form @submit.prevent="addMemorization">
         <q-card-section>
           <div class="text-h6">إضافة محفوظ جديد</div>
           <div class="q-ma-2">
             <div class="row q-gutter-2">
               <div class="col">
                 <q-input
+                  v-model="name"
                   class="q-mt-sm"
                   filled
-                  v-model="name"
                   label="أسم المحفوظ"
                   type="text"
                   :rules="[val => val.length > 0 || 'الرجاء إدخال أسم المحفوظ']"
@@ -76,13 +76,13 @@ export default {
         });
       }
     },
-    onDialogShow() {
+    onShowDialog() {
       if (Object.keys(this.memorization).length > 0) {
         this.id = this.memorization.id;
         this.name = this.memorization.name;
       }
     },
-    resetMemorization() {
+    onHideDialog() {
       this.id = "";
       this.name = "";
     },

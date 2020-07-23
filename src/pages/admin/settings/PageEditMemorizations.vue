@@ -44,7 +44,7 @@
                 </q-btn>
               </q-td>
               <q-td key="add" :props="props">
-                <q-btn dense flat @click.stop="onAddMemorizationDetails(props.row.id)">
+                <q-btn dense flat @click.stop="onAddMemorizationDetails(props.row)">
                   <q-icon color="blue" name="add_circle_outline" />
                 </q-btn>
               </q-td>
@@ -79,16 +79,22 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td class="text-center">100 - 200</td>
-                        <td class="text-center">10</td>
-                        <td class="text-center">1.5</td>
-                        <td class="text-center">0.5</td>
-                        <td class="text-center">3</td>
-                        <td class="text-center">5</td>
+                      <tr v-for="(detail, i) in props.row.details" :key="i">
+                        <td
+                          class="text-center"
+                        >{{ detail.pageNumberFrom }} - {{ detail.pageNumberTo}}</td>
+                        <td class="text-center">{{ detail.pageMarks }}</td>
+                        <td class="text-center">{{ detail.mistakeMarks }}</td>
+                        <td class="text-center">{{ detail.cautionMarks }}</td>
+                        <td class="text-center">{{ detail.repeatNumber }}</td>
+                        <td class="text-center">{{ detail.failMarks }}</td>
                         <td class="text-center">
                           <q-btn dense flat>
-                            <q-icon name="o_delete" color="red" />
+                            <q-icon
+                              name="o_delete"
+                              color="red"
+                              @click.stop="onDeleteMemorizationDetails(props.row.id, detail.uid)"
+                            />
                           </q-btn>
                         </td>
                       </tr>
@@ -109,12 +115,26 @@
       @closeDialog="closeAddMemorizationDialog"
     />
 
+    <!-- Add Memorization Details Dialog -->
+    <AddMemorizationDetailsDialog
+      :isDialogOpen="isAddMemorizationDetailsDialogOpen"
+      :memorization="memorization"
+      @closeDialog="closeAddMemorizationDetailsDialog"
+    />
+
     <!-- Delete Memorization Dialog -->
     <DeleteMemorizationDialog
       :isAlertDialogOpen="isDeleteMemorizationDialogOpen"
       alertTitle="هل أنت متأكد من حذف المحفوظ"
-      @closeAlertDialog="closeDeleteMemorizationDialog"
       @alertAction="deleteMemorization"
+      @closeAlertDialog="closeDeleteMemorizationDialog"
+    />
+
+    <DeleteMemorizationDetailsDialog
+      :isAlertDialogOpen="isDeleteMemorizationDetailsDialogOpen"
+      alertTitle="هل أنت متأكد من حذف تفاصيل المحفوظ"
+      @alertAction="deleteMemorizationDetails"
+      @closeAlertDialog="closeDeleteMemorizationDetailsDialog"
     />
   </q-page>
 </template>
@@ -128,8 +148,12 @@ export default {
   data() {
     return {
       isAddMemorizationDialogOpen: false,
+      isAddMemorizationDetailsDialogOpen: false,
       isDeleteMemorizationDialogOpen: false,
+      isDeleteMemorizationDetailsDialogOpen: false,
       memorization: {},
+      memorizationId: "",
+      memorizationDetailId: "",
       columns: [
         {
           name: "name",
@@ -177,6 +201,7 @@ export default {
     ...mapActions({
       FETCH_MEMORIZATIONS: ACTIONS.SETTINGS.FETCH_MEMORIZATIONS,
       DELETE_MEMORIZATION: ACTIONS.SETTINGS.DELETE_MEMORIZATION,
+      DELETE_MEMORIZATION_DETAILS: ACTIONS.SETTINGS.DELETE_MEMORIZATION_DETAILS,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     onEditMemorization(memorization) {
@@ -192,12 +217,39 @@ export default {
         this.DELETE_MEMORIZATION(this.memorization.id);
       }
     },
-    onAddMemorizationDetails(memorizationId) {},
+    onAddMemorizationDetails(memorization) {
+      this.memorization = memorization;
+      this.isAddMemorizationDetailsDialogOpen = true;
+    },
+    onDeleteMemorizationDetails(id, uid) {
+      this.memorizationId = id;
+      this.memorizationDetailId = uid;
+      this.isDeleteMemorizationDetailsDialogOpen = true;
+    },
+    deleteMemorizationDetails() {
+      if (this.memorizationId !== "" && this.memorizationDetailId !== "") {
+        this.DELETE_MEMORIZATION_DETAILS({
+          id: this.memorizationId,
+          uid: this.memorizationDetailId,
+        });
+      }
+    },
     closeAddMemorizationDialog(value) {
+      this.memorization = {};
       this.isAddMemorizationDialogOpen = value;
     },
+    closeAddMemorizationDetailsDialog(value) {
+      this.memorization = {};
+      this.isAddMemorizationDetailsDialogOpen = value;
+    },
     closeDeleteMemorizationDialog(value) {
+      this.memorization = {};
       this.isDeleteMemorizationDialogOpen = value;
+    },
+    closeDeleteMemorizationDetailsDialog(value) {
+      this.memorizationId = "";
+      this.memorizationDetailId = "";
+      this.isDeleteMemorizationDetailsDialogOpen = value;
     },
   },
   watch: {
@@ -236,6 +288,29 @@ export default {
             message: "تم حذف المحفوظ بنجاح",
           });
         }
+
+        if (messageCode === MESSAGES.DATABASE.MEMORIZATION_DETAILS_ADDED) {
+          this.FETCH_MEMORIZATIONS();
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.memorization = {};
+          this.isAddMemorizationDetailsDialogOpen = false;
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم إضافة تفاصيل المحفوظ بنجاح",
+          });
+        }
+
+        if (messageCode === MESSAGES.DATABASE.MEMORIZATION_DETAILS_DELETED) {
+          this.FETCH_MEMORIZATIONS();
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.memorizationId = "";
+          this.memorizationDetailId = "";
+          this.isDeleteMemorizationDetailsDialogOpen = false;
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم حذف تفاصيل المحفوظ بنجاح",
+          });
+        }
       }
     },
     GET_ERRORS: function (newState, oldState) {
@@ -265,12 +340,23 @@ export default {
             message: "حدث خطأ أثناء حذف المحفوظ",
           });
         }
+
+        if (errorCode === ERRORS.DATABASE.DELETE_MEMORIZATION_DETAILS_ERROR) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ أثناء حذف تفاصيل المحفوظ",
+          });
+        }
       }
     },
   },
   components: {
     AddMemorizationDialog: () => import("components/AddMemorizationDialog.vue"),
+    AddMemorizationDetailsDialog: () =>
+      import("components/AddMemorizationDetailsDialog.vue"),
     DeleteMemorizationDialog: () => import("components/AlertDialog.vue"),
+    DeleteMemorizationDetailsDialog: () => import("components/AlertDialog.vue"),
   },
 };
 </script>
