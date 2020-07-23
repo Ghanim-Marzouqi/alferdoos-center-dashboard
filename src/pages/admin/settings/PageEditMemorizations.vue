@@ -44,7 +44,7 @@
                 </q-btn>
               </q-td>
               <q-td key="add" :props="props">
-                <q-btn dense flat @click.stop="onAddMemorizationDetails(props.row.id)">
+                <q-btn dense flat @click.stop="onAddMemorizationDetails(props.row)">
                   <q-icon color="blue" name="add_circle_outline" />
                 </q-btn>
               </q-td>
@@ -109,12 +109,19 @@
       @closeDialog="closeAddMemorizationDialog"
     />
 
+    <!-- Add Memorization Details Dialog -->
+    <AddMemorizationDetailsDialog
+      :isDialogOpen="isAddMemorizationDetailsDialogOpen"
+      :memorization="memorization"
+      @closeDialog="closeAddMemorizationDetailsDialog"
+    />
+
     <!-- Delete Memorization Dialog -->
     <DeleteMemorizationDialog
       :isAlertDialogOpen="isDeleteMemorizationDialogOpen"
       alertTitle="هل أنت متأكد من حذف المحفوظ"
-      @closeAlertDialog="closeDeleteMemorizationDialog"
       @alertAction="deleteMemorization"
+      @closeAlertDialog="closeDeleteMemorizationDialog"
     />
   </q-page>
 </template>
@@ -128,6 +135,7 @@ export default {
   data() {
     return {
       isAddMemorizationDialogOpen: false,
+      isAddMemorizationDetailsDialogOpen: false,
       isDeleteMemorizationDialogOpen: false,
       memorization: {},
       columns: [
@@ -192,11 +200,20 @@ export default {
         this.DELETE_MEMORIZATION(this.memorization.id);
       }
     },
-    onAddMemorizationDetails(memorizationId) {},
+    onAddMemorizationDetails(memorization) {
+      this.memorization = memorization;
+      this.isAddMemorizationDetailsDialogOpen = true;
+    },
     closeAddMemorizationDialog(value) {
+      this.memorization = {};
       this.isAddMemorizationDialogOpen = value;
     },
+    closeAddMemorizationDetailsDialog(value) {
+      this.memorization = {};
+      this.isAddMemorizationDetailsDialogOpen = value;
+    },
     closeDeleteMemorizationDialog(value) {
+      this.memorization = {};
       this.isDeleteMemorizationDialogOpen = value;
     },
   },
@@ -270,6 +287,8 @@ export default {
   },
   components: {
     AddMemorizationDialog: () => import("components/AddMemorizationDialog.vue"),
+    AddMemorizationDetailsDialog: () =>
+      import("components/AddMemorizationDetailsDialog.vue"),
     DeleteMemorizationDialog: () => import("components/AlertDialog.vue"),
   },
 };

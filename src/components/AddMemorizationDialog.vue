@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="isDialogOpen" @before-show="onDialogShow" @hide="resetMemorization">
+  <q-dialog v-model="isDialogOpen" @before-show="onShowDialog" @hide="onHideDialog">
     <q-card style="width: 400px">
       <q-form @submit.prevent="addMemorization" @reset="resetMemorization">
         <q-card-section>
@@ -76,11 +76,15 @@ export default {
         });
       }
     },
-    onDialogShow() {
+    onShowDialog() {
       if (Object.keys(this.memorization).length > 0) {
         this.id = this.memorization.id;
         this.name = this.memorization.name;
       }
+    },
+    onHideDialog() {
+      this.id = "";
+      this.name = "";
     },
     resetMemorization() {
       this.id = "";
