@@ -15,7 +15,8 @@ const state = {
   students: [],
   studentMarks: [],
   studentAnswers: {},
-  studentsAndMarks: []
+  studentsAndMarks: [],
+  studentGroup: {}
 };
 
 // Getters
@@ -23,7 +24,8 @@ const getters = {
   GET_STUDENTS: state => state.students,
   GET_STUDENTS_MARKS: state => state.studentMarks,
   GET_STUDENT_ANSWERS: state => state.studentAnswers,
-  GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks
+  GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks,
+  GET_STUDENT_GROUP: state => state.studentGroup
 };
 
 // Actions
@@ -521,6 +523,27 @@ const actions = {
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
+  },
+
+  async FETECH_GROUP_BY_STUDENT_ID({ commit }, payload) {
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.GROUPS)
+        .doc(payload.groupId)
+        .get();
+
+      if (doc.exists) {
+        let group = {
+          groupId: doc.id,
+          groupName: doc.data().name
+        };
+
+        commit(MUTATIONS.STUDNETS.SET_STUDENT_GROUP, group);
+      } else {
+        commit(MUTATIONS.STUDNETS.SET_STUDENT_GROUP, {});
+      }
+    } catch (error) {
+      console.log("FETECH_GROUP_BY_STUDENT_ID error");
+    }
   }
 };
 
@@ -531,7 +554,8 @@ const mutations = {
     (state.studentMarks = studentMarks),
   SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers),
   SET_STUDENTS_AND_MARKS: (state, updatedStudents) =>
-    (state.studentsAndMarks = updatedStudents)
+    (state.studentsAndMarks = updatedStudents),
+  SET_STUDENT_GROUP: (state, group) => (state.studentGroup = group)
 };
 
 // Export
