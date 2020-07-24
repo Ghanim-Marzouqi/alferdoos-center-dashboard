@@ -53,6 +53,13 @@
       :student="selectedStudent"
       @closeJoinGroupDialog="closeJoinGroupDialog"
     />
+
+    <!-- Student Registration Info Dialog -->
+    <StudentRegistrationInfoDialog
+      :isStudentDialogOpen="isStudentDialogOpen"
+      :student="selectedStudent"
+      @closeStudentRegistrationInfoDialog="isStudentDialogOpen = false"
+    />
   </q-page>
 </template>
 
@@ -71,6 +78,7 @@ export default {
   data() {
     return {
       isJoinGroupDialogOpen: false,
+      isStudentDialogOpen: false,
       filter: "",
       students: [],
       selectedStudent: {},
@@ -94,7 +102,7 @@ export default {
         {
           name: "show",
           align: "center",
-          label: "إستعراض",
+          label: "الملف الشخصي",
           field: "show",
         },
         {
@@ -175,7 +183,10 @@ export default {
         return true;
       }
     },
-    showStudentDialog(student) {},
+    showStudentDialog(student) {
+      this.selectedStudent = student;
+      this.isStudentDialogOpen = true;
+    },
     goToStudentDashboard(student) {
       if (student.groupId && student.groupId !== "") {
         this.$router.push(`/admin/${student.id}/student-dashboard`);
@@ -236,6 +247,8 @@ export default {
   },
   components: {
     JoinGroupDialog: () => import("components/JoinGroupDialog.vue"),
+    StudentRegistrationInfoDialog: () =>
+      import("components/StudentRegistrationInfoDialog.vue"),
   },
 };
 </script>
