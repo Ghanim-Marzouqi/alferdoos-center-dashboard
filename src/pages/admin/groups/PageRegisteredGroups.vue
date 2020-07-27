@@ -110,18 +110,15 @@ export default {
   created() {
     this.FETCH_GROUPS();
   },
-  mounted() {
-    console.log("Groups", this.GET_GROUPS);
-  },
   computed: {
     ...mapGetters({
-      GET_GROUPS: GETTERS.SETTINGS.GET_GROUPS,
+      GET_GROUPS: GETTERS.GROUPS.GET_GROUPS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
     }),
   },
   methods: {
     ...mapActions({
-      FETCH_GROUPS: ACTIONS.SETTINGS.FETCH_GROUPS,
+      FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
     }),
     goToRegisteredStudents(group) {},
     goToAssingedTeachers(group) {},

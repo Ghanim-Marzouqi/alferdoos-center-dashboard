@@ -3,23 +3,21 @@ import Vuex from "vuex";
 
 // Vuex Store Modules
 import auth from "./modules/auth";
-import students from "./modules/students";
-import settings from "./modules/settings";
-import ui from "./modules/ui";
 import groups from "./modules/groups";
-import shared from "./modules/shared";
+import settings from "./modules/settings";
+import students from "./modules/students";
+import ui from "./modules/ui";
 
 Vue.use(Vuex);
 
 export default function(/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      ui,
       auth,
-      students,
+      groups,
       settings,
-      // groups,
-      shared
+      students,
+      ui
     },
     strict: process.env.DEV
   });

@@ -32,32 +32,32 @@ export default {
   props: {
     isGroupDialogOpen: {
       type: Boolean,
-      default: false
+      default: false,
     },
     dialogTitle: {
       type: String,
-      required: true
+      required: true,
     },
     group: {
       type: Object,
-      default: () => {}
-    }
+      default: () => {},
+    },
   },
   data() {
     return {
       groupId: "",
-      groupName: ""
+      groupName: "",
     };
   },
   computed: {
     ...mapGetters({
-      GET_LOADING: GETTERS.UI.GET_LOADING
-    })
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+    }),
   },
   methods: {
     ...mapActions({
-      ADD_GROUP: ACTIONS.SETTINGS.ADD_GROUP,
-      EDIT_GROUP: ACTIONS.SETTINGS.EDIT_GROUP
+      ADD_GROUP: ACTIONS.GROUPS.ADD_GROUP,
+      EDIT_GROUP: ACTIONS.GROUPS.EDIT_GROUP,
     }),
     intializeValues() {
       if (this.group && Object.keys(this.group).length > 0) {
@@ -69,18 +69,18 @@ export default {
       if (this.groupId !== "") {
         this.EDIT_GROUP({
           id: this.groupId,
-          name: this.groupName
+          name: this.groupName,
         });
       } else {
         this.ADD_GROUP({
-          name: this.groupName
+          name: this.groupName,
         });
       }
     },
     closeGroupDialog() {
       this.groupName = "";
       this.$emit("closeGroupDialog", false);
-    }
-  }
+    },
+  },
 };
 </script>

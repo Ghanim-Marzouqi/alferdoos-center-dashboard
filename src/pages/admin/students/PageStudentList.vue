@@ -126,7 +126,7 @@ export default {
   computed: {
     ...mapGetters({
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
-      GET_STUDENT_GROUP: GETTERS.STUDNETS.GET_STUDENT_GROUP,
+      GET_STUDENT_GROUP: GETTERS.GROUPS.GET_STUDENT_GROUP,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
@@ -135,16 +135,18 @@ export default {
   methods: {
     ...mapActions({
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
-      FETECH_GROUP_BY_STUDENT_ID: ACTIONS.STUDNETS.FETECH_GROUP_BY_STUDENT_ID,
+      FETECH_GROUP_BY_STUDENT_ID: ACTIONS.GROUPS.FETECH_GROUP_BY_STUDENT_ID,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     async loadStudentData() {
       await this.FETCH_STUDENTS({ status: STUDENT_STATUS.STUDY });
-
       if (this.GET_STUDENTS.length > 0) {
         this.students = [];
         this.GET_STUDENTS.forEach(async (student) => {
-          if (student.groupId) {
+          if (
+            typeof student.groupId !== "undefined" &&
+            student.groupId !== ""
+          ) {
             await this.FETECH_GROUP_BY_STUDENT_ID({ groupId: student.groupId });
             if (Object.keys(this.GET_STUDENT_GROUP).length > 0) {
               this.students.push({
@@ -155,7 +157,7 @@ export default {
             } else {
               this.students.push({
                 ...student,
-                groupId: student.groupId,
+                groupId: "",
                 groupName: "",
               });
             }
