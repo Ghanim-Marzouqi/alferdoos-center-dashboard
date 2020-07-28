@@ -15,7 +15,8 @@ const state = {
   students: [],
   studentMarks: [],
   studentAnswers: {},
-  studentsAndMarks: []
+  studentsAndMarks: [],
+  studentGroup: {}
 };
 
 // Getters
@@ -521,6 +522,10 @@ const actions = {
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
+  },
+
+  RESET_STUDENTS({ commit }) {
+    commit(MUTATIONS.STUDNETS.SET_STUDENTS, []);
   }
 };
 

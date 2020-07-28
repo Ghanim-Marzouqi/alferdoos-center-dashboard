@@ -62,7 +62,7 @@
                 <q-icon name="o_people" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>الطلاب المسجلين</q-item-label>
+                <q-item-label>الطلاب المقبولين</q-item-label>
               </q-item-section>
             </q-item>
 
