@@ -6,6 +6,6 @@
 
 <script>
 export default {
-  name: "PageSubjectSchedule"
+  name: "PageGroupSchedule",
 };
 </script>

@@ -403,6 +403,7 @@ const actions = {
             ...doc.data().details,
             {
               uid: payload.uid,
+              name: payload.name,
               pageNumberFrom: payload.pageNumberFrom,
               pageNumberTo: payload.pageNumberTo,
               pageMarks: payload.pageMarks,
@@ -427,6 +428,7 @@ const actions = {
           let newDetails = [
             {
               uid: payload.uid,
+              name: payload.name,
               pageNumberFrom: payload.pageNumberFrom,
               pageNumberTo: payload.pageNumberTo,
               pageMarks: payload.pageMarks,

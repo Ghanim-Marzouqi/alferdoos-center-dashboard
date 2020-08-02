@@ -24,7 +24,8 @@ const STUDENT_STATUS = {
   REVIEW: "review",
   EXAM: "exam",
   STUDY: "study",
-  REJECT: "reject"
+  REJECT: "reject",
+  WITHDRAW: "withdraw"
 };
 
 // Quaran Chapters

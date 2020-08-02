@@ -65,15 +65,6 @@
                 <q-item-label>الطلاب المقبولين</q-item-label>
               </q-item-section>
             </q-item>
-
-            <q-item class="q-ma-xs" clickable exact to="/admin/subject-schedule">
-              <q-item-section avatar>
-                <q-icon name="o_today" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>جدول الحصص الدراسية</q-item-label>
-              </q-item-section>
-            </q-item>
           </q-expansion-item>
           <q-expansion-item
             class="q-ma-xs"
@@ -102,6 +93,14 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>المجموعات المسجلة</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/group-schedule">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>جدول الحصص الدراسية</q-item-label>
               </q-item-section>
             </q-item>
           </q-expansion-item>
@@ -150,7 +149,7 @@
           <q-separator />
           <q-item clickable @click="logout">
             <q-item-section avatar>
-              <q-icon name="exit_to_app" />
+              <q-icon name="power_settings_new" />
             </q-item-section>
 
             <q-item-section>

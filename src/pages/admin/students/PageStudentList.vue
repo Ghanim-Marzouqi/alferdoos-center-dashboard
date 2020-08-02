@@ -33,13 +33,13 @@
               </q-btn>
             </q-td>
             <q-td key="edit" :props="props">
-              <q-btn
-                dense
-                flat
-                :disable="disableJoinGroupButton(props.row.groupName)"
-                @click.stop="showJoinGroupDialog(props.row)"
-              >
+              <q-btn dense flat @click.stop="showJoinGroupDialog(props.row)">
                 <q-icon color="teal" name="o_login" />
+              </q-btn>
+            </q-td>
+            <q-td key="withdraw" :props="props">
+              <q-btn dense flat @click.stop="showWithdrawDialog(props.row)">
+                <q-icon color="red" name="o_clear" />
               </q-btn>
             </q-td>
           </q-tr>
@@ -51,6 +51,7 @@
     <JoinGroupDialog
       :isJoinGroupDialogOpen="isJoinGroupDialogOpen"
       :student="selectedStudent"
+      :groupId="selectedGroupId"
       @closeJoinGroupDialog="closeJoinGroupDialog"
     />
 
@@ -59,6 +60,15 @@
       :isStudentDialogOpen="isStudentDialogOpen"
       :student="selectedStudent"
       @closeStudentRegistrationInfoDialog="isStudentDialogOpen = false"
+    />
+
+    <!-- Withdraw Dialog -->
+    <WithDrawDialog
+      :isPromptDialogOpen="isWithdrawDialogOpen"
+      promptTitle="هل أنت متأكد من إنسحاب الطالب؟"
+      promptLabel="أسباب الإنسحاب"
+      @closePromptDialog="closeWithdrawDialog"
+      @promptAction="withdrawStudent"
     />
   </q-page>
 </template>
@@ -79,9 +89,11 @@ export default {
     return {
       isJoinGroupDialogOpen: false,
       isStudentDialogOpen: false,
+      isWithdrawDialogOpen: false,
       filter: "",
       students: [],
       selectedStudent: {},
+      selectedGroupId: "",
       columns: [
         {
           name: "name",
@@ -117,6 +129,12 @@ export default {
           label: "إنضمام إلى مجموعة",
           field: "edit",
         },
+        {
+          name: "withdraw",
+          align: "center",
+          label: "إنسحاب",
+          field: "withdraw",
+        },
       ],
     };
   },
@@ -136,6 +154,7 @@ export default {
     ...mapActions({
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
       FETECH_GROUP_BY_STUDENT_ID: ACTIONS.GROUPS.FETECH_GROUP_BY_STUDENT_ID,
+      EDIT_STUDENT_STATUS: ACTIONS.STUDNETS.EDIT_STUDENT_STATUS,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     async loadStudentData() {
@@ -178,13 +197,6 @@ export default {
         return "لم يتم الإنضمام إلى مجموعة";
       }
     },
-    disableJoinGroupButton(groupName) {
-      if (groupName === "") {
-        return false;
-      } else {
-        return true;
-      }
-    },
     showStudentDialog(student) {
       this.selectedStudent = student;
       this.isStudentDialogOpen = true;
@@ -200,18 +212,30 @@ export default {
       }
     },
     showJoinGroupDialog(student) {
-      if (student.groupId && student.groupId !== "") {
-        this.$q.dialog({
-          title: "تنبيه",
-          message: "تم إضافة الطالب إلى مجموعة مسبقا",
-        });
-      } else {
-        this.selectedStudent = student;
-        this.isJoinGroupDialogOpen = true;
+      this.selectedStudent = student;
+
+      if (this.selectedStudent.groupId) {
+        this.selectedGroupId = this.selectedStudent.groupId;
       }
+
+      this.isJoinGroupDialogOpen = true;
+    },
+    showWithdrawDialog(student) {
+      this.selectedStudent = student;
+      this.isWithdrawDialogOpen = true;
+    },
+    withdrawStudent(value) {
+      this.EDIT_STUDENT_STATUS({
+        id: this.selectedStudent.id,
+        status: STUDENT_STATUS.WITHDRAW,
+        reasons: value,
+      });
     },
     closeJoinGroupDialog(value) {
       this.isJoinGroupDialogOpen = value;
+    },
+    closeWithdrawDialog(value) {
+      this.isWithdrawDialogOpen = value;
     },
   },
   watch: {
@@ -226,6 +250,17 @@ export default {
           this.$q.dialog({
             title: "تمت العملية بنجاح",
             message: "تم إضافة الطالب إلى المجموعة",
+          });
+          this.loadStudentData();
+        }
+
+        if (messageCode === MESSAGES.DATABASE.STUDENT_STATUS_UPDATED) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.selectedStudent = {};
+          this.isWithdrawDialogOpen = false;
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تحديث حالة الطالب",
           });
           this.loadStudentData();
         }
@@ -251,6 +286,7 @@ export default {
     JoinGroupDialog: () => import("components/JoinGroupDialog.vue"),
     StudentRegistrationInfoDialog: () =>
       import("components/StudentRegistrationInfoDialog.vue"),
+    WithDrawDialog: () => import("components/PromptDialog.vue"),
   },
 };
 </script>
