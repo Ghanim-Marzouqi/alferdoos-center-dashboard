@@ -22,7 +22,7 @@
               <q-form ref="hMoretInfoForm">
                             <div class="text-weight-bold">أسم الطالب:</div>
             <div class="row">
-              <div class="col-3">
+              <div class="col-8">
                 <q-input
                   class="q-ma-sm"
                   dense
