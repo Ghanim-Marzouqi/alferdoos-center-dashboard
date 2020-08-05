@@ -1,5 +1,6 @@
 <template>
   <q-page padding>
+    {{ subjectForm }}
     <p class="text-h6">إعدادات المواد الدراسية</p>
         <div class="q-pa-md">
       <!-- Horizontal Stepper -->
@@ -91,7 +92,6 @@
               :loading="GET_LOADING"
               label="إرسال"
               color="primary"
-              :disable="!isRegistrationEnabled"
               @click="onSubmit('hMoretInfoForm')"
             />
             <q-btn
@@ -135,7 +135,11 @@ export default {
       subjectForm: {
         name: "",
         description: "",
-        files: []
+        files: [],
+        status : "Active",
+        createdAt : "",
+        createdBy :"",
+        year : ""
       },
       villages: VILLAGES,
       centerKnownList: KNOWN_BY
@@ -161,7 +165,7 @@ export default {
   methods: {
     ...mapActions({
       FETCH_REGISTRATION_PERIOD: ACTIONS.SETTINGS.FETCH_REGISTRATION_PERIOD,
-      REGISTER_STUDENT: ACTIONS.STUDNETS.REGISTER_STUDENT,
+      REGISTER_SUBJECT: ACTIONS.SUBJECTS.REGISTER_SUBJECT,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
     }),
     onSelectFile(file) {
@@ -171,24 +175,13 @@ export default {
       let valid = await this.$refs[form].validate();
 
       if (valid) {
-        this.REGISTER_STUDENT({
-          firstName: this.subjectForm.name.trim(),
-        });
+        this.REGISTER_SUBJECT(this.subjectForm);
       }
     }
   },
   watch: {
     GET_MESSAGES: function(newState, oldState) {
-      if (newState.length > 0) {
-        this.subjectForm = {
-          name: "",
-          description: "",
-          files: []
-        };
 
-        this.hStep = 1;
-        this.vStep = 1;
-      }
     }
   }
 };

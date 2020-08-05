@@ -6,6 +6,7 @@ import auth from "./modules/auth";
 import groups from "./modules/groups";
 import settings from "./modules/settings";
 import students from "./modules/students";
+import subjects from "./modules/subjects";
 import ui from "./modules/ui";
 
 Vue.use(Vuex);
@@ -17,6 +18,7 @@ export default function(/* { ssrContext } */) {
       groups,
       settings,
       students,
+      subjects,
       ui
     },
     strict: process.env.DEV

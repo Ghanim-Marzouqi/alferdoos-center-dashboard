@@ -1,6 +1,7 @@
 // Firestore Collections
 const COLLECTIONS = {
   ADMINS: "admins",
+  SUBJECTS : "subjects",
   PARENTS: "parents",
   TEACHERS: "teachers",
   STUDENTS: "students",
@@ -259,6 +260,10 @@ const ACTIONS = {
     FETCH_GROUPS: "FETCH_GROUPS",
     FETECH_GROUP_BY_STUDENT_ID: "FETECH_GROUP_BY_STUDENT_ID"
   },
+  SUBJECTS: {
+    REGISTER_SUBJECT : "REGISTER_SUBJECT"
+  },
+
   SETTINGS: {
     FETCH_YEAR_INFO: "FETCH_YEAR_INFO",
     SET_YEAR_NAME: "SET_YEAR_NAME",
@@ -307,6 +312,9 @@ const MUTATIONS = {
   GROUPS: {
     SET_GROUPS: "SET_GROUPS",
     SET_STUDENT_GROUP: "SET_STUDENT_GROUP"
+  },
+  SUBJECTS : {
+    SET_SUBJECTS : "SET_SUBJECTS"
   },
   SETTINGS: {
     SET_YEAR_INFO: "SET_YEAR_INFO",
