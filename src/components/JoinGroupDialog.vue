@@ -25,52 +25,52 @@ export default {
   props: {
     isJoinGroupDialogOpen: {
       type: Boolean,
-      default: false
+      default: false,
     },
     student: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       group: "",
-      groups: []
+      groups: [],
     };
   },
   async created() {
     await this.FETCH_GROUPS();
 
     if (this.GET_GROUPS.length > 0) {
-      this.groups = this.GET_GROUPS.map(group => ({
+      this.groups = this.GET_GROUPS.map((group) => ({
         label: group.name,
-        value: group.id
+        value: group.id,
       }));
     }
   },
   computed: {
     ...mapGetters({
-      GET_GROUPS: GETTERS.SETTINGS.GET_GROUPS,
-      GET_LOADING: GETTERS.UI.GET_LOADING
-    })
+      GET_GROUPS: GETTERS.GROUPS.GET_GROUPS,
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+    }),
   },
   methods: {
     ...mapActions({
-      FETCH_GROUPS: ACTIONS.SETTINGS.FETCH_GROUPS,
-      JOIN_STUDENT_TO_GROUP: ACTIONS.STUDNETS.JOIN_STUDENT_TO_GROUP
+      FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
+      JOIN_STUDENT_TO_GROUP: ACTIONS.STUDNETS.JOIN_STUDENT_TO_GROUP,
     }),
     intializeValues() {},
     joinGroup() {
       this.JOIN_STUDENT_TO_GROUP({
         studentId: this.student.id,
-        groupId: this.group.value
+        groupId: this.group.value,
       });
     },
     closeJoinGroupDialog() {
       this.group = "";
       this.groups = [];
       this.$emit("closeJoinGroupDialog", false);
-    }
-  }
+    },
+  },
 };
 </script>

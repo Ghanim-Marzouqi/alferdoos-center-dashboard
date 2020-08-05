@@ -76,23 +76,23 @@ export default {
           label: "اسم المجموعة",
           field: "name",
           required: true,
-          align: "left"
+          align: "left",
         },
         {
           name: "edit",
           required: true,
           label: "تعديل",
           field: "edit",
-          align: "right"
+          align: "right",
         },
         {
           name: "delete",
           required: true,
           label: "حذف",
           field: "delete",
-          align: "right"
-        }
-      ]
+          align: "right",
+        },
+      ],
     };
   },
   created() {
@@ -100,19 +100,19 @@ export default {
   },
   computed: {
     ...mapGetters({
-      GET_GROUPS: GETTERS.SETTINGS.GET_GROUPS,
+      GET_GROUPS: GETTERS.GROUPS.GET_GROUPS,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
-      GET_LOADING: GETTERS.UI.GET_LOADING
-    })
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+    }),
   },
   methods: {
     ...mapActions({
-      ADD_GROUP: ACTIONS.SETTINGS.ADD_GROUP,
-      EDIT_GROUP: ACTIONS.SETTINGS.EDIT_GROUP,
-      FETCH_GROUPS: ACTIONS.SETTINGS.FETCH_GROUPS,
-      DELETE_GROUP: ACTIONS.SETTINGS.DELETE_GROUP,
-      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+      ADD_GROUP: ACTIONS.GROUPS.ADD_GROUP,
+      EDIT_GROUP: ACTIONS.GROUPS.EDIT_GROUP,
+      DELETE_GROUP: ACTIONS.GROUPS.DELETE_GROUP,
+      FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     showEditGroupDialog(group) {
       this.selectedGroup = group;
@@ -134,10 +134,10 @@ export default {
     closeDeleteGroupDialog() {
       this.selectedGroup = {};
       this.isDeleteGroupDialogOpen = false;
-    }
+    },
   },
   watch: {
-    GET_MESSAGES: function(newState, oldState) {
+    GET_MESSAGES: function (newState, oldState) {
       if (newState.length > 0) {
         let messageCode = newState[0].code;
 
@@ -147,7 +147,7 @@ export default {
           this.isAddGroupDialogOpen = false;
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم إضافة مجموعة جديدة بنجاح"
+            message: "تم إضافة مجموعة جديدة بنجاح",
           });
         }
 
@@ -157,7 +157,7 @@ export default {
           this.isEditGroupDialogOpen = false;
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم تحديث اسم المجموعة بنجاح"
+            message: "تم تحديث اسم المجموعة بنجاح",
           });
         }
 
@@ -167,12 +167,12 @@ export default {
           this.isDeleteGroupDialogOpen = false;
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم حذف المجموعة بنجاح"
+            message: "تم حذف المجموعة بنجاح",
           });
         }
       }
     },
-    GET_ERRORS: function(newState, oldState) {
+    GET_ERRORS: function (newState, oldState) {
       if (newState.length > 0) {
         let errorCode = newState[0].code;
 
@@ -180,7 +180,7 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.$q.dialog({
             title: "خطأ",
-            message: "حدث خطأ أثناء إضافة مجموعة جديدة"
+            message: "حدث خطأ أثناء إضافة مجموعة جديدة",
           });
         }
 
@@ -188,7 +188,7 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.$q.dialog({
             title: "خطأ",
-            message: "حدث خطأ أثناء تحديث اسم المجموعة"
+            message: "حدث خطأ أثناء تحديث اسم المجموعة",
           });
         }
 
@@ -196,16 +196,16 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.$q.dialog({
             title: "خطأ",
-            message: "حدث خطأ أثناء حذف المجموعة"
+            message: "حدث خطأ أثناء حذف المجموعة",
           });
         }
       }
-    }
+    },
   },
   components: {
     AddGroupDialog: () => import("components/GroupDialog.vue"),
     EditGroupDialog: () => import("components/GroupDialog.vue"),
-    DeleteGroupDialog: () => import("components/AlertDialog.vue")
-  }
+    DeleteGroupDialog: () => import("components/AlertDialog.vue"),
+  },
 };
 </script>
