@@ -47,10 +47,6 @@ const routes = [
         component: () => import("pages/admin/students/PageStudentDashboard.vue")
       },
       {
-        path: "subject-schedule",
-        component: () => import("pages/admin/students/PageSubjectSchedule.vue")
-      },
-      {
         path: "teachers",
         component: () =>
           import("pages/admin/teachers/PageRegisteredTeachers.vue")
@@ -58,6 +54,10 @@ const routes = [
       {
         path: "groups",
         component: () => import("pages/admin/groups/PageRegisteredGroups.vue")
+      },
+      {
+        path: "group-schedule",
+        component: () => import("pages/admin/groups/PageGroupSchedule.vue")
       },
       {
         path: "settings-year-info",

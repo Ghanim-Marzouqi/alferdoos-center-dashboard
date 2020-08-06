@@ -10,6 +10,13 @@
                 <q-input
                   class="q-mt-sm"
                   filled
+                  v-model="name"
+                  label="الأسم"
+                  :rules="[val => val.length > 0 || 'الرجاء إدخال الأسم']"
+                />
+                <q-input
+                  class="q-mt-sm"
+                  filled
                   v-model="pageNumberFrom"
                   label="الصفحات (من)"
                   type="number"
@@ -104,6 +111,7 @@ export default {
   },
   data() {
     return {
+      name: "",
       pageNumberFrom: "",
       pageNumberTo: "",
       pageMarks: "",
@@ -130,6 +138,7 @@ export default {
         this.ADD_MEMORIZATION_DETAILS({
           id: this.memorization.id,
           uid: uid(),
+          name: this.name,
           pageNumberFrom: Number.parseInt(this.pageNumberFrom),
           pageNumberTo: Number.parseInt(this.pageNumberTo),
           pageMarks: Number.parseFloat(this.pageMarks),
@@ -141,6 +150,7 @@ export default {
       }
     },
     onHideDialog() {
+      this.name = "";
       this.pageNumberFrom = "";
       this.pageNumberTo = "";
       this.pageMarks = "";

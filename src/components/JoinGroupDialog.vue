@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="isJoinGroupDialogOpen" @before-show="intializeValues">
+  <q-dialog persistent v-model="isJoinGroupDialogOpen" @before-show="intializeValues">
     <q-card style="width: 400px">
       <q-card-section>
         <div class="text-h6">إضافة الطالب إلى مجموعة</div>
@@ -31,6 +31,10 @@ export default {
       type: Object,
       required: true,
     },
+    groupId: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -59,7 +63,12 @@ export default {
       FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
       JOIN_STUDENT_TO_GROUP: ACTIONS.STUDNETS.JOIN_STUDENT_TO_GROUP,
     }),
-    intializeValues() {},
+    intializeValues() {
+      if (this.groupId !== "") {
+        let group = this.GET_GROUPS.find((g) => g.id === this.groupId);
+        this.group = group.name;
+      }
+    },
     joinGroup() {
       this.JOIN_STUDENT_TO_GROUP({
         studentId: this.student.id,

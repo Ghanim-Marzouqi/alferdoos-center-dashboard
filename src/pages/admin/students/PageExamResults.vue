@@ -102,13 +102,6 @@
       statusVal="study"
       @closeDialog="closeEditStudentStatusDialog"
     />
-
-    <!-- Alert Dialog -->
-    <AlertDialog
-      :isErrorDialogOpen="isAlertDialogOpen"
-      errorTitle="تم قبول الطالب للدراسة في المركز. لا يمكن تعديل حالة الطالب"
-      @closeErrorDialog="isAlertDialogOpen = false"
-    />
   </q-page>
 </template>
 
@@ -119,7 +112,7 @@ import {
   ACTIONS,
   STUDENT_STATUS,
   MESSAGES,
-  ERRORS
+  ERRORS,
 } from "../../../config/constants";
 
 export default {
@@ -138,77 +131,75 @@ export default {
         {
           name: "expand",
           required: true,
-          align: "center"
+          align: "center",
         },
         {
           name: "name",
           required: true,
           label: "اسم الطالب",
           align: "left",
-          field: row => row.name,
-          format: val => `${val}`
+          field: (row) => row.name,
+          format: (val) => `${val}`,
         },
         {
           name: "file",
           align: "center",
           label: "الملف الشخصي",
-          field: "file"
+          field: "file",
         },
         {
           name: "write",
           align: "center",
           label: "الإملاء",
           field: "write",
-          sortable: true
+          sortable: true,
         },
         {
           name: "recite",
           align: "center",
           label: "التسميع",
           field: "recite",
-          sortable: true
+          sortable: true,
         },
         {
           name: "read",
           align: "center",
           label: "التلاوة",
           field: "read",
-          sortable: true
+          sortable: true,
         },
         {
           name: "commoknowledge",
           align: "center",
           label: "الثقافة العامة",
           field: "commoknowledge",
-          sortable: true
+          sortable: true,
         },
         {
           name: "personal",
           align: "center",
           label: "اللجنة الرئيسية",
           field: "personal",
-          sortable: true
+          sortable: true,
         },
         {
           name: "total",
           align: "center",
           label: "المجموع",
           field: "total",
-          sortable: true
+          sortable: true,
         },
         {
           name: "status",
           align: "center",
           label: "تعدبل الحالة",
-          field: "status"
-        }
-      ]
+          field: "status",
+        },
+      ],
     };
   },
-  async created() {
-    await this.FETCH_STUDENTS({ status: "" });
-    await this.FETCH_STUDENTS_MARKS();
-    await this.updateStudentTableData();
+  created() {
+    this.updateStudentTableData();
   },
   computed: {
     ...mapGetters({
@@ -216,26 +207,29 @@ export default {
       GET_STUDENTS_MARKS: GETTERS.STUDNETS.GET_STUDENTS_MARKS,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
-      GET_LOADING: GETTERS.UI.GET_LOADING
-    })
+      GET_LOADING: GETTERS.UI.GET_LOADING,
+    }),
   },
   methods: {
     ...mapActions({
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
       FETCH_STUDENTS_MARKS: ACTIONS.STUDNETS.FETCH_STUDENTS_MARKS,
-      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
-    updateStudentTableData() {
+    async updateStudentTableData() {
+      await this.FETCH_STUDENTS({ status: "" });
+      await this.FETCH_STUDENTS_MARKS();
+
       if (
         this.GET_STUDENTS &&
         this.GET_STUDENTS.length > 0 &&
         this.GET_STUDENTS_MARKS &&
         this.GET_STUDENTS_MARKS.length > 0
       ) {
-        this.GET_STUDENTS.forEach(student => {
+        this.GET_STUDENTS.forEach((student) => {
           if (student.status !== STUDENT_STATUS.REVIEW) {
             let studentMarks = this.GET_STUDENTS_MARKS.find(
-              s => s.studentId === student.id
+              (s) => s.studentId === student.id
             );
 
             if (studentMarks) {
@@ -278,11 +272,11 @@ export default {
                 personalNotes: studentMarks.personalNotes,
                 commoknowledge: studentMarks.commonKnowledge
                   ? studentMarks.commonKnowledge
-                  : 0
+                  : 0,
               });
 
               // Calculate Total Marks
-              this.tableData = this.tableData.map(item => ({
+              this.tableData = this.tableData.map((item) => ({
                 id: item.id,
                 name: item.name,
                 file: item.file,
@@ -301,7 +295,7 @@ export default {
                   item.recite +
                   item.read +
                   item.personal +
-                  item.commoknowledge
+                  item.commoknowledge,
               }));
 
               // Sort Marks Based On Total
@@ -321,7 +315,10 @@ export default {
       this.isStudentDialogOpen = true;
     },
     showEditStudentStatusDialog(student) {
-      if (student.status !== STUDENT_STATUS.STUDY) {
+      if (
+        student.status === STUDENT_STATUS.EXAM ||
+        student.status === STUDENT_STATUS.REJECT
+      ) {
         this.registeredStudent = student;
         this.studentStatus = student.status;
         this.rejectionReasons =
@@ -331,7 +328,10 @@ export default {
             : "";
         this.isEditStudentStatusDialogOpen = true;
       } else {
-        this.isAlertDialogOpen = true;
+        this.$q.dialog({
+          title: "تنبيه",
+          message: "لا يمكن تعديل حالة الطالب",
+        });
       }
     },
     closeEditStudentStatusDialog(value) {
@@ -339,10 +339,10 @@ export default {
       this.studentStatus = "";
       this.rejectionReasons = "";
       this.isEditStudentStatusDialogOpen = value;
-    }
+    },
   },
   watch: {
-    GET_MESSAGES: async function(newState, oldState) {
+    GET_MESSAGES: function (newState, oldState) {
       if (newState.length > 0) {
         let messageCode = newState[0].code;
 
@@ -350,17 +350,16 @@ export default {
           this.tableData = [];
           this.isEditStudentStatusDialogOpen = false;
           this.CLEAR_ERRORS_AND_MESSAGES();
-          await this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
-          await this.FETCH_STUDENTS_MARKS();
-          await this.updateStudentTableData();
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم تعديل حالة الطالب بنجاح"
+            message: "تم تعديل حالة الطالب بنجاح",
           });
+
+          this.updateStudentTableData();
         }
       }
     },
-    GET_ERRORS: function(newState, oldState) {
+    GET_ERRORS: function (newState, oldState) {
       if (newState.length > 0) {
         let errorCode = newState[0].code;
 
@@ -368,18 +367,17 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.$q.dialog({
             title: "حدث خطأ",
-            message: "حدث خطأ أثناء تعديل حالة الطالب"
+            message: "حدث خطأ أثناء تعديل حالة الطالب",
           });
         }
       }
-    }
+    },
   },
   components: {
     StudentRegistrationInfoDialog: () =>
       import("components/StudentRegistrationInfoDialog.vue"),
     EditStudentStatusDialog: () =>
       import("components/EditStudentStatusDialog.vue"),
-    AlertDialog: () => import("components/ErrorDialog.vue")
-  }
+  },
 };
 </script>
