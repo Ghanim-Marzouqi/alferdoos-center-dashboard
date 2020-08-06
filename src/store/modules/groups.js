@@ -1,6 +1,11 @@
 // Import Needed Modules
 import { FirebaseAuth, FirebaseDatabase } from "boot/firebase";
-import { COLLECTIONS, MUTATIONS, ERRORS } from "../../config/constants";
+import {
+  COLLECTIONS,
+  MUTATIONS,
+  MESSAGES,
+  ERRORS
+} from "../../config/constants";
 
 // State
 const state = {
