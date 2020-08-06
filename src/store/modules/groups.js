@@ -137,7 +137,7 @@ const actions = {
         commit(MUTATIONS.GROUPS.SET_STUDENT_GROUP, {});
       }
     } catch (error) {
-      console.log("FETECH_GROUP_BY_STUDENT_ID error");
+      console.log("FETECH_GROUP_BY_ID error");
     }
   }
 };

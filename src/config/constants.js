@@ -236,6 +236,10 @@ const GETTERS = {
     GET_STUDENT_ANSWERS: "GET_STUDENT_ANSWERS",
     GET_STUDENTS_AND_MARKS: "GET_STUDENTS_AND_MARKS"
   },
+  TEACHERS: {
+    GET_TEACHERS: "GET_TEACHERS",
+    GET_TEACHER: "GET_TEACHER"
+  },
   UI: {
     GET_LOADING: "GET_LOADING",
     GET_ERRORS: "GET_ERRORS",
@@ -291,6 +295,13 @@ const ACTIONS = {
     JOIN_STUDENT_TO_GROUP: "JOIN_STUDENT_TO_GROUP",
     RESET_STUDENTS: "RESET_STUDENTS"
   },
+  TEACHERS: {
+    ADD_TEACHER: "ADD_TEACHER",
+    EDIT_TEACHER: "EDIT_TEACHER",
+    DELETE_TEACHER: "DELETE_TEACHER",
+    FETCH_TEACHERS: "FETCH_TEACHERS",
+    FETECH_TEACHER_BY_ID: "FETECH_TEACHER_BY_ID"
+  },
   UI: {
     SET_MESSAGE: "SET_MESSAGE",
     SET_ERROR: "SET_ERROR",
@@ -321,6 +332,10 @@ const MUTATIONS = {
     SET_STUDENTS_MARKS: "SET_STUDENTS_MARKS",
     SET_STUDENT_ANSWERS: "SET_STUDENT_ANSWERS",
     SET_STUDENTS_AND_MARKS: "SET_STUDENTS_AND_MARKS"
+  },
+  TEACHERS: {
+    SET_TEACHERS: "SET_TEACHERS",
+    SET_TEACHER: "SET_TEACHER"
   },
   UI: {
     SET_LOADING: "SET_LOADING",
@@ -353,7 +368,10 @@ const MESSAGES = {
     MEMORIZATION_UPDATED: "database/memorization-updated",
     MEMORIZATION_DELETED: "database/memorization-deleted",
     MEMORIZATION_DETAILS_ADDED: "database/memorization-details-added",
-    MEMORIZATION_DETAILS_DELETED: "database/memorization-details-deleted"
+    MEMORIZATION_DETAILS_DELETED: "database/memorization-details-deleted",
+    TEACHER_ADDED: "database/teacher-added",
+    TEACHER_UPDATED: "database/teacher-updated",
+    TEACHER_DELETED: "database/teacher-deleted"
   }
 };
 
@@ -396,7 +414,11 @@ const ERRORS = {
     DELETE_MEMORIZATION_ERROR: "database/delete-memorization-error",
     ADD_MEMORIZATION_DETAILS_ERROR: "database/add-memorization-details-error",
     DELETE_MEMORIZATION_DETAILS_ERROR:
-      "database/delete-memorization-details-error"
+      "database/delete-memorization-details-error",
+    ADD_TEACHER_ERROR: "database/add-teacher-error",
+    EDIT_TEACHER_ERROR: "database/edit-teacher-error",
+    DELETE_TEACHER_ERROR: "database/delete-teacher-error",
+    TEACHER_ALREADY_EXISTED: "database/teacher-already-existed"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
