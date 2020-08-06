@@ -15,24 +15,22 @@
 
       <q-card-section class="q-pt-none">
         <div class="q-pa-md">
-          <P class="text-weight-bold text-indigo">معلومات الطالب الأساسية:</P>
+          <p class="text-weight-bold text-indigo">معلومات الطالب الأساسية:</p>
           <div class="row q-ml-md">
             <div class="col-xs-12 col-md-8">
               <p class="text-weight-bold">
                 انهى الصف:
-                <span class="text-weight-bold text-blue">
-                  {{
-                  getStudentGrade
-                  }}
-                </span>
+                <span class="text-weight-bold text-blue">{{ getStudentGrade }}</span>
               </p>
               <div class="row">
                 <div class="col-xs-12 col-md-6">
                   <p class="text-weight-bold">
                     عدد المواد بتقدير (أ):
-                    <strong
-                      class="text-blue"
-                    >{{ registeredStudent.subjectANumber }}</strong>
+                    <strong class="text-blue">
+                      {{
+                      registeredStudent.subjectANumber
+                      }}
+                    </strong>
                   </p>
                 </div>
                 <div class="col-xs-12 col-md-6">
@@ -89,14 +87,12 @@
           </div>
           <div class="row q-ml-md">
             <div class="col-xs-12 col-md-4">
-              <P class="text-weight-bold">معلومات الحالة الصحية للطالب:</P>
+              <p class="text-weight-bold">معلومات الحالة الصحية للطالب:</p>
               <p>
                 هل يعاني الطالب أي مرض:
-                <strong class="text-blue">
-                  {{
-                  registeredStudent.studentState === "healthy" ? "لا" : "نعم"
-                  }}
-                </strong>
+                <strong
+                  class="text-blue"
+                >{{ registeredStudent.studentState === "healthy" ? "لا" : "نعم" }}</strong>
               </p>
               <p>
                 الأعراض والأمراض التي يعاني منها الطالب:
@@ -110,7 +106,7 @@
               </p>
             </div>
             <div class="col-xs-12 col-md-4">
-              <P class="text-weight-bold">معلومات دراسية سابقة:</P>
+              <p class="text-weight-bold">معلومات دراسية سابقة:</p>
               <p>
                 هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم:
                 <strong class="text-blue">
@@ -134,21 +130,25 @@
             </div>
             <div class="col-xs-12 col-md-4"></div>
           </div>
-          <P class="text-weight-bold text-indigo q-mt-md">معلومات إضافية عن الطالب:</P>
+          <p class="text-weight-bold text-indigo q-mt-md">معلومات إضافية عن الطالب:</p>
           <div class="row q-ma-md">
             <div class="col-xs-12 col-md-4">
               <P class="text-weight-bold">معلومات ولي الأمر:</P>
               <p>
                 أسم ولي الأمر:
-                <span
-                  class="text-weight-bold text-blue"
-                >{{ registeredStudent.parentName }}</span>
+                <span class="text-weight-bold text-blue">
+                  {{
+                  registeredStudent.parentName
+                  }}
+                </span>
               </p>
               <p>
                 ارقام الهواتف:
-                <span
-                  class="text-weight-bold text-blue"
-                >{{ registeredStudent.firstPhoneNumber }}</span>
+                <span class="text-weight-bold text-blue">
+                  {{
+                  registeredStudent.firstPhoneNumber
+                  }}
+                </span>
                 -
                 <span class="text-weight-bold text-blue">
                   {{
@@ -160,15 +160,20 @@
               </p>
             </div>
             <div class="col-xs-12 col-md-4">
-              <P class="text-weight-bold">معلومات عن المركز:</P>
+              <p class="text-weight-bold">معلومات عن المركز:</p>
               <p>
                 كيف عرفت عن المركز:
-                <span
-                  class="text-weight-bold text-blue"
-                >{{ registeredStudent.centerKnownBy }}</span>
+                <span class="text-weight-bold text-blue">
+                  {{
+                  registeredStudent.centerKnownBy
+                  }}
+                </span>
               </p>
             </div>
-            <div class="col-xs-12 col-md-4"></div>
+            <div class="col-xs-12 col-md-4">
+              <p class="text-weight-bold">القرية / مكان الإقامة:</p>
+              <span class="text-weight-bold text-blue">{{ registeredStudent.village }}</span>
+            </div>
           </div>
         </div>
       </q-card-section>

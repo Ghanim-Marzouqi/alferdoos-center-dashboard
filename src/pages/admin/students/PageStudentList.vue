@@ -153,7 +153,7 @@ export default {
   methods: {
     ...mapActions({
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
-      FETECH_GROUP_BY_STUDENT_ID: ACTIONS.GROUPS.FETECH_GROUP_BY_STUDENT_ID,
+      FETECH_GROUP_BY_ID: ACTIONS.GROUPS.FETECH_GROUP_BY_ID,
       EDIT_STUDENT_STATUS: ACTIONS.STUDNETS.EDIT_STUDENT_STATUS,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
@@ -166,7 +166,7 @@ export default {
             typeof student.groupId !== "undefined" &&
             student.groupId !== ""
           ) {
-            await this.FETECH_GROUP_BY_STUDENT_ID({ groupId: student.groupId });
+            await this.FETECH_GROUP_BY_ID({ groupId: student.groupId });
             if (Object.keys(this.GET_STUDENT_GROUP).length > 0) {
               this.students.push({
                 ...student,

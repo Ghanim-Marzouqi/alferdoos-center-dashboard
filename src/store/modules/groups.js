@@ -120,7 +120,7 @@ const actions = {
     }
   },
 
-  async FETECH_GROUP_BY_STUDENT_ID({ commit }, payload) {
+  async FETECH_GROUP_BY_ID({ commit }, payload) {
     try {
       let doc = await FirebaseDatabase.collection(COLLECTIONS.GROUPS)
         .doc(payload.groupId)
