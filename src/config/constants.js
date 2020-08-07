@@ -262,7 +262,9 @@ const ACTIONS = {
     EDIT_GROUP: "EDIT_GROUP",
     DELETE_GROUP: "DELETE_GROUP",
     FETCH_GROUPS: "FETCH_GROUPS",
-    FETECH_GROUP_BY_ID: "FETECH_GROUP_BY_ID"
+    FETECH_GROUP_BY_ID: "FETECH_GROUP_BY_ID",
+    ADD_MEMORIZATION_TO_GROUP: "ADD_MEMORIZATION_TO_GROUP",
+    DELETE_MEMORIZATION_FROM_GROUP: "DELETE_MEMORIZATION_FROM_GROUP"
   },
   SETTINGS: {
     FETCH_YEAR_INFO: "FETCH_YEAR_INFO",
@@ -371,7 +373,9 @@ const MESSAGES = {
     MEMORIZATION_DETAILS_DELETED: "database/memorization-details-deleted",
     TEACHER_ADDED: "database/teacher-added",
     TEACHER_UPDATED: "database/teacher-updated",
-    TEACHER_DELETED: "database/teacher-deleted"
+    TEACHER_DELETED: "database/teacher-deleted",
+    GROUP_MEMORIZATIONS_ADDED: "database/group-memorizations-added",
+    GROUP_MEMORIZATIONS_DELETED: "database/group-memorization-deleted"
   }
 };
 
@@ -418,7 +422,10 @@ const ERRORS = {
     ADD_TEACHER_ERROR: "database/add-teacher-error",
     EDIT_TEACHER_ERROR: "database/edit-teacher-error",
     DELETE_TEACHER_ERROR: "database/delete-teacher-error",
-    TEACHER_ALREADY_EXISTED: "database/teacher-already-existed"
+    TEACHER_ALREADY_EXISTED: "database/teacher-already-existed",
+    ADD_MEMORIZATION_TO_GROUP_ERROR: "database/add-memorization-to-group-error",
+    DELETE_MEMORIZATION_FROM_GROUP_ERROR:
+      "database/delete-memorization-from-group-error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",

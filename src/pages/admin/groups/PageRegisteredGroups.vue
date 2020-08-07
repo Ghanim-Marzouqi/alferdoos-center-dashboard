@@ -43,7 +43,7 @@
                 </q-btn>
               </q-td>
               <q-td key="add" :props="props">
-                <q-btn dense flat @click.stop="onShowAddMemorizationDialog(props.row)">
+                <q-btn dense flat @click.stop="showAddMemorizationDialog(props.row)">
                   <q-icon color="blue" name="o_note_add" />
                 </q-btn>
               </q-td>
@@ -72,7 +72,20 @@
                         </th>
                       </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                      <tr v-for="(memorization, i) in getGroupMemorization(props.row)" :key="i">
+                        <td class="text-left">{{ memorization.name }}</td>
+                        <td class="text-center">
+                          <q-btn
+                            dense
+                            flat
+                            @click.stop="showDeleteMemorizationFromGroupDialog(props.row, memorization)"
+                          >
+                            <q-icon color="red" name="o_delete" />
+                          </q-btn>
+                        </td>
+                      </tr>
+                    </tbody>
                   </q-markup-table>
                 </div>
               </q-td>
@@ -104,12 +117,28 @@
       @alertAction="deleteGroup"
       @closeAlertDialog="closeDeleteGroupDialog"
     />
+
+    <!-- Add Memorization To Group Dialog -->
+    <AddMemorizationToGroupDialog
+      :isAddMemorizationToGroupDialogOpen="isAddMemorizationToGroupDialogOpen"
+      :group="selectedGroup"
+      @closeAddMemorizationToGroupDialog="closeAddMemorizationToGroupDialog"
+    />
+
+    <!-- Delete Group Dialog -->
+    <DeleteMemorizationFromGroupDialog
+      :isAlertDialogOpen="isDeleteMemorizationFromGroupDialogOpen"
+      alertTitle="هل أنت متأكد من حذف المحفوظ من المجموعة؟"
+      @alertAction="deleteMemorizationFromGroup"
+      @closeAlertDialog="closeDeleteMemorizationFromGroupDialog"
+    />
   </q-page>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { GETTERS, ACTIONS, MESSAGES, ERRORS } from "../../../config/constants";
+import groups from "src/store/modules/groups";
 export default {
   name: "PageRegisteredGroups",
   data() {
@@ -117,8 +146,10 @@ export default {
       isAddGroupDialogOpen: false,
       isEditGroupDialogOpen: false,
       isDeleteGroupDialogOpen: false,
-      isAddMemorizationDialogOpen: false,
+      isAddMemorizationToGroupDialogOpen: false,
+      isDeleteMemorizationFromGroupDialogOpen: false,
       selectedGroup: {},
+      selectedMemorization: {},
       filter: "",
       columns: [
         {
@@ -168,10 +199,12 @@ export default {
   },
   created() {
     this.FETCH_GROUPS();
+    this.FETCH_MEMORIZATIONS();
   },
   computed: {
     ...mapGetters({
       GET_GROUPS: GETTERS.GROUPS.GET_GROUPS,
+      GET_MEMORIZATIONS: GETTERS.SETTINGS.GET_MEMORIZATIONS,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
@@ -183,11 +216,31 @@ export default {
       EDIT_GROUP: ACTIONS.GROUPS.EDIT_GROUP,
       DELETE_GROUP: ACTIONS.GROUPS.DELETE_GROUP,
       FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
+      FETCH_MEMORIZATIONS: ACTIONS.SETTINGS.FETCH_MEMORIZATIONS,
+      DELETE_MEMORIZATION_FROM_GROUP:
+        ACTIONS.GROUPS.DELETE_MEMORIZATION_FROM_GROUP,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     goToRegisteredStudents(group) {},
     goToAssingedTeachers(group) {},
-    onShowAddMemorizationDialog() {},
+    getGroupMemorization(group) {
+      let memorizations = [];
+      let groupMemorizationIds = group.memorizations;
+
+      if (groupMemorizationIds && groupMemorizationIds.length > 0) {
+        groupMemorizationIds.forEach((id) => {
+          let memo = this.GET_MEMORIZATIONS.find((m) => m.id === id);
+          if (memo) memorizations.push(memo);
+        });
+        return memorizations;
+      } else {
+        return [];
+      }
+    },
+    showAddMemorizationDialog(group) {
+      this.selectedGroup = group;
+      this.isAddMemorizationToGroupDialogOpen = true;
+    },
     showEditGroupDialog(group) {
       this.selectedGroup = group;
       this.isEditGroupDialogOpen = true;
@@ -196,9 +249,25 @@ export default {
       this.selectedGroup = group;
       this.isDeleteGroupDialogOpen = true;
     },
+    showDeleteMemorizationFromGroupDialog(group, memorization) {
+      this.selectedGroup = group;
+      this.selectedMemorization = memorization;
+      this.isDeleteMemorizationFromGroupDialogOpen = true;
+    },
     deleteGroup() {
       if (Object.keys(this.selectedGroup).length > 0) {
         this.DELETE_GROUP(this.selectedGroup.id);
+      }
+    },
+    deleteMemorizationFromGroup() {
+      if (
+        Object.keys(this.selectedGroup).length > 0 &&
+        Object.keys(this.selectedMemorization).length > 0
+      ) {
+        this.DELETE_MEMORIZATION_FROM_GROUP({
+          groupId: this.selectedGroup.id,
+          memorizationId: this.selectedMemorization.id,
+        });
       }
     },
     closeEditGroupDialog(value) {
@@ -208,6 +277,14 @@ export default {
     closeDeleteGroupDialog() {
       this.selectedGroup = {};
       this.isDeleteGroupDialogOpen = false;
+    },
+    closeAddMemorizationToGroupDialog(value) {
+      this.isAddMemorizationToGroupDialogOpen = value;
+    },
+    closeDeleteMemorizationFromGroupDialog(value) {
+      this.selectedGroup = {};
+      this.selectedMemorization = {};
+      this.isDeleteMemorizationFromGroupDialogOpen = value;
     },
   },
   watch: {
@@ -244,6 +321,26 @@ export default {
             message: "تم حذف المجموعة بنجاح",
           });
         }
+
+        if (messageCode === MESSAGES.DATABASE.GROUP_MEMORIZATIONS_ADDED) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.FETCH_GROUPS();
+          this.isAddMemorizationToGroupDialogOpen = false;
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم إضافة المحفوظات إلى المجموعة بنجاح",
+          });
+        }
+
+        if (messageCode === MESSAGES.DATABASE.GROUP_MEMORIZATIONS_DELETED) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.FETCH_GROUPS();
+          this.isDeleteMemorizationFromGroupDialogOpen = false;
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم حذف المحفوظ من المجموعة بنجاح",
+          });
+        }
       }
     },
     GET_ERRORS: function (newState, oldState) {
@@ -273,6 +370,24 @@ export default {
             message: "حدث خطأ أثناء حذف المجموعة",
           });
         }
+
+        if (errorCode === ERRORS.DATABASE.ADD_MEMORIZATION_TO_GROUP_ERROR) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ أثناء إضافة المحفوظات إلى المجموعة",
+          });
+        }
+
+        if (
+          errorCode === ERRORS.DATABASE.DELETE_MEMORIZATION_FROM_GROUP_ERROR
+        ) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ أثناء حذف المحفوظ من المجموعة",
+          });
+        }
       }
     },
   },
@@ -280,6 +395,10 @@ export default {
     AddGroupDialog: () => import("components/GroupDialog.vue"),
     EditGroupDialog: () => import("components/GroupDialog.vue"),
     DeleteGroupDialog: () => import("components/AlertDialog.vue"),
+    AddMemorizationToGroupDialog: () =>
+      import("components/AddMemorizationsToGroupDialog.vue"),
+    DeleteMemorizationFromGroupDialog: () =>
+      import("components/AlertDialog.vue"),
   },
 };
 </script>
