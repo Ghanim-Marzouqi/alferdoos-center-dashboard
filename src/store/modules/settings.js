@@ -14,7 +14,8 @@ const state = {
   registrationPeriod: {},
   questions: [],
   examMarks: [],
-  memorizations: []
+  memorizations: [],
+  memorization: {}
 };
 
 // Getters
@@ -23,7 +24,8 @@ const getters = {
   GET_REGISTRATION_PERIOD: state => state.registrationPeriod,
   GET_QUESTIONS: state => state.questions,
   GET_EXAM_MARKS: state => state.examMarks,
-  GET_MEMORIZATIONS: state => state.memorizations
+  GET_MEMORIZATIONS: state => state.memorizations,
+  GET_MEMORIZATION: state => state.memorization
 };
 
 // Actions
@@ -409,8 +411,8 @@ const actions = {
               pageMarks: payload.pageMarks,
               mistakeMarks: payload.mistakeMarks,
               cautionMarks: payload.cautionMarks,
-              repeatNumber: payload.repeatNumber,
               failMarks: payload.failMarks,
+              repeats: payload.repeats,
               createdAt: date
             }
           ];
@@ -434,8 +436,8 @@ const actions = {
               pageMarks: payload.pageMarks,
               mistakeMarks: payload.mistakeMarks,
               cautionMarks: payload.cautionMarks,
-              repeatNumber: payload.repeatNumber,
               failMarks: payload.failMarks,
+              repeats: payload.repeats,
               createdAt: date
             }
           ];
@@ -488,6 +490,29 @@ const actions = {
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
+  },
+
+  async FETCH_MEMORIZATIONS_BY_ID({ commit }, payload) {
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
+        .doc(payload)
+        .get();
+
+      if (doc.exists) {
+        let memorization = {
+          id: doc.id,
+          name: doc.data().name,
+          createdAt: doc.data().createdAt,
+          details: doc.data().details
+        };
+
+        commit(MUTATIONS.SETTINGS.SET_MEMORIZATION, memorization);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_MEMORIZATION, {});
+      }
+    } catch (error) {
+      console.log("FETCH_MEMORIZATIONS_BY_ID ERROR");
+    }
   }
 };
 
@@ -499,7 +524,8 @@ const mutations = {
   SET_QUESTIONS: (state, questions) => (state.questions = questions),
   SET_EXAM_MARKS: (state, marks) => (state.examMarks = marks),
   SET_MEMORIZATIONS: (state, memorizations) =>
-    (state.memorizations = memorizations)
+    (state.memorizations = memorizations),
+  SET_MEMORIZATION: (state, memorization) => (state.memorization = memorization)
 };
 
 // Export

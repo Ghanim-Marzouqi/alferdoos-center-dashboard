@@ -56,6 +56,9 @@
                     <thead>
                       <tr class="bg-primary text-white">
                         <th class="text-center">
+                          <strong>الأسم</strong>
+                        </th>
+                        <th class="text-center">
                           <strong>الصفحات (من - إلى)</strong>
                         </th>
                         <th class="text-center">
@@ -80,13 +83,14 @@
                     </thead>
                     <tbody>
                       <tr v-for="(detail, i) in props.row.details" :key="i">
+                        <td class="text-center">{{ detail.name }}</td>
                         <td
                           class="text-center"
                         >{{ detail.pageNumberFrom }} - {{ detail.pageNumberTo}}</td>
                         <td class="text-center">{{ detail.pageMarks }}</td>
                         <td class="text-center">{{ detail.mistakeMarks }}</td>
                         <td class="text-center">{{ detail.cautionMarks }}</td>
-                        <td class="text-center">{{ detail.repeatNumber }}</td>
+                        <td class="text-center">{{ detail.repeats.length }}</td>
                         <td class="text-center">{{ detail.failMarks }}</td>
                         <td class="text-center">
                           <q-btn dense flat>

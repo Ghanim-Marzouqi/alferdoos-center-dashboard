@@ -8,11 +8,18 @@
       <q-card-section>
         <div class="text-h6">إضافة محفوظات إلى مجموعة</div>
         <div class="q-ma-md">
-          <q-option-group
+          <q-select
+            filled
+            v-model="selectedOption"
             :options="options"
-            label="إختر المحفوظ"
+            label="إحتر المحفوظ"
+            @input="onSelectedMemorization"
+          />
+          <q-option-group
+            :options="optionDetails"
+            label="إختر من بين الخيارات المطروحة"
             type="checkbox"
-            v-model="selectedMemorizations"
+            v-model="selectedOptionDetails"
           />
         </div>
       </q-card-section>
@@ -23,7 +30,7 @@
           dense
           flat
           color="primary"
-          :disable="selectedMemorizations.length < 1"
+          :disable="selectedOptionDetails.length < 1"
           :loading="GET_LOADING"
           @click="addMemorizationToGroupDialog"
         >حفظ</q-btn>
@@ -56,7 +63,9 @@ export default {
   data() {
     return {
       options: [],
-      selectedMemorizations: [],
+      selectedOption: "",
+      optionDetails: [],
+      selectedOptionDetails: [],
     };
   },
   created() {
@@ -66,12 +75,14 @@ export default {
     ...mapGetters({
       GET_MEMORIZATIONS: GETTERS.SETTINGS.GET_MEMORIZATIONS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
+      GET_MEMORIZATION: GETTERS.SETTINGS.GET_MEMORIZATION,
     }),
   },
   methods: {
     ...mapActions({
       FETCH_MEMORIZATIONS: ACTIONS.SETTINGS.FETCH_MEMORIZATIONS,
       ADD_MEMORIZATION_TO_GROUP: ACTIONS.GROUPS.ADD_MEMORIZATION_TO_GROUP,
+      FETCH_MEMORIZATIONS_BY_ID: ACTIONS.SETTINGS.FETCH_MEMORIZATIONS_BY_ID,
     }),
     intializeValues() {
       this.options = this.GET_MEMORIZATIONS.map((memorization) => ({
@@ -79,14 +90,23 @@ export default {
         value: memorization.id,
       }));
     },
+    async onSelectedMemorization(memorization) {
+      await this.FETCH_MEMORIZATIONS_BY_ID(memorization.value);
+      this.optionDetails = this.GET_MEMORIZATION.details.map((detail) => ({
+        label: `${detail.name} (${detail.pageNumberFrom} - ${detail.pageNumberTo})`,
+        value: detail.uid,
+      }));
+      console.log("memo", this.selectedOption);
+    },
     addMemorizationToGroupDialog() {
       if (
         Object.keys(this.group).length > 0 &&
-        this.selectedMemorizations.length > 0
+        this.selectedOptionDetails.length > 0
       ) {
         this.ADD_MEMORIZATION_TO_GROUP({
           groupId: this.group.id,
-          memorizations: this.selectedMemorizations,
+          memorizationId: this.selectedOption.value,
+          memorizationDetails: this.selectedOptionDetails,
         });
       }
     },
@@ -97,7 +117,9 @@ export default {
     },
     resetValues() {
       this.options = [];
-      this.selectedMemorizations = [];
+      this.selectedOption = "";
+      this.optionDetails = [];
+      this.selectedOptionDetails = [];
     },
   },
 };

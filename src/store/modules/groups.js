@@ -152,15 +152,47 @@ const actions = {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
-      await FirebaseDatabase.collection(COLLECTIONS.GROUPS)
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.GROUPS)
         .doc(payload.groupId)
-        .update({
-          memorizations: payload.memorizations
-        });
+        .get();
 
-      commit(MUTATIONS.UI.SET_MESSAGE, {
-        code: MESSAGES.DATABASE.GROUP_MEMORIZATIONS_ADDED
-      });
+      if (doc.data().memorizations && doc.data().memorizations > 0) {
+        let memorizations = doc.data().memorizations;
+        let newMemorizations = [
+          {
+            memorizationId: payload.memorizationId,
+            memorizationDetails: payload.memorizationDetails
+          },
+          ...memorizations
+        ];
+
+        await FirebaseDatabase.collection(COLLECTIONS.GROUPS)
+          .doc(payload.groupId)
+          .update({
+            memorizations: newMemorizations
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.GROUP_MEMORIZATIONS_ADDED
+        });
+      } else {
+        let memorizations = [
+          {
+            memorizationId: payload.memorizationId,
+            memorizationDetails: payload.memorizationDetails
+          }
+        ];
+
+        await FirebaseDatabase.collection(COLLECTIONS.GROUPS)
+          .doc(payload.groupId)
+          .update({
+            memorizations: memorizations
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.GROUP_MEMORIZATIONS_ADDED
+        });
+      }
     } catch (error) {
       console.log("ADD_MEMORIZATION_TO_GROUP ERROR", error);
       commit(MUTATIONS.UI.SET_ERROR, {
@@ -182,7 +214,7 @@ const actions = {
       if (doc.exists) {
         let memorizations = doc.data().memorizations;
         let filteredMemorizations = memorizations.filter(
-          memo => memo !== payload.memorizationId
+          memo => memo.memorizationId !== payload.memorizationId
         );
 
         await FirebaseDatabase.collection(COLLECTIONS.GROUPS)

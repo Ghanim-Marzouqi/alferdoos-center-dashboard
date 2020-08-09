@@ -67,6 +67,9 @@
                         <th class="text-left">
                           <strong>المحفوظات</strong>
                         </th>
+                        <th class="text-left">
+                          <strong>تفاصيل المحفوظ</strong>
+                        </th>
                         <th class="text-center">
                           <strong>حذف</strong>
                         </th>
@@ -75,6 +78,12 @@
                     <tbody>
                       <tr v-for="(memorization, i) in getGroupMemorization(props.row)" :key="i">
                         <td class="text-left">{{ memorization.name }}</td>
+                        <td class="text-left">
+                          <div
+                            v-for="(detail, j) in memorization.details"
+                            :key="j"
+                          >{{ `${detail.name} (${detail.pageNumberFrom} - ${detail.pageNumberTo})`}}</div>
+                        </td>
                         <td class="text-center">
                           <q-btn
                             dense
@@ -225,12 +234,14 @@ export default {
     goToAssingedTeachers(group) {},
     getGroupMemorization(group) {
       let memorizations = [];
-      let groupMemorizationIds = group.memorizations;
+      let groupMemorizations = group.memorizations;
 
-      if (groupMemorizationIds && groupMemorizationIds.length > 0) {
-        groupMemorizationIds.forEach((id) => {
-          let memo = this.GET_MEMORIZATIONS.find((m) => m.id === id);
-          if (memo) memorizations.push(memo);
+      if (groupMemorizations && groupMemorizations.length > 0) {
+        groupMemorizations.forEach((memo) => {
+          let memorization = this.GET_MEMORIZATIONS.find(
+            (m) => m.id === memo.memorizationId
+          );
+          if (memorization) memorizations.push(memorization);
         });
         return memorizations;
       } else {
