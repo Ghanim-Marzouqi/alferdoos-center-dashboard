@@ -21,25 +21,35 @@ const getters = {
 // Actions
 const actions = {
   async FETCH_SUBJECTS({ commit }, payload) {
-    console.log(payload)
     commit(MUTATIONS.UI.SET_LOADING, true);
     try {
       let snapshot = null;
 
       if (payload.status !== "") {
         snapshot = await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
-          .where("status", "==", payload.status)
-          .where("year", "==", payload.year )
+          //.where("status", "==", payload.status)
+          //.where("year", "==", payload.year )
           .get();
       } else {
-        snapshot = await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
           .orderBy("createdAt", "desc")
-          .where("year", "==", payload.year )
+          //.where("year", "==", payload.year )
           .get();
       }
-      let subjects =  snapshot.docs.data();
 
-      commit(MUTATIONS.SUBJECTS.SET_SUBJECTS, subjects);
+      let docs = snapshot.docs;
+
+      console.log(docs);
+
+      if (docs.length > 0) {
+        let subjects = docs.map(doc => ({
+          id: doc.id,
+          name: doc.data().name
+        }));
+
+        commit(MUTATIONS.SUBJECTS.SET_SUBJECTS, subjects);
+      }
+      
     } catch (error) {
       console.log("FETCH_SUBJECTS", error);
       commit(MUTATIONS.UI.SET_ERROR, error);
@@ -112,50 +122,13 @@ const actions = {
     }
   },
 
-  async EDIT_STUDENT_STATUS({ commit }, payload) {
-    commit(MUTATIONS.UI.SET_LOADING, true);
-
-    try {
-      let doc = await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
-        .doc(payload.id)
-        .get();
-
-      if (doc.exists) {
-        await FirebaseDatabase.collection(COLLECTIONS.STUDENTS)
-          .doc(payload.id)
-          .update({
-            status: payload.status,
-            rejectionReasons: payload.reasons
-          });
-
-        commit(MUTATIONS.UI.SET_MESSAGE, {
-          code: MESSAGES.DATABASE.STUDENT_STATUS_UPDATED
-        });
-      } else {
-        commit(MUTATIONS.UI.SET_ERROR, {
-          code: ERRORS.DATABASE.STUDENT_NOT_FOUND
-        });
-      }
-    } catch (error) {
-      console.log("EDIT_APPLICATION_STATUS ERROR", error);
-      commit(MUTATIONS.UI.SET_ERROR, {
-        code: ERRORS.DATABASE.EDIT_STUDENT_STATUS_ERROR
-      });
-    } finally {
-      commit(MUTATIONS.UI.SET_LOADING, false);
-    }
-  },
 
 };
 
 // Mutations
 const mutations = {
-  SET_STUDENTS: (state, students) => (state.students = students),
-  SET_STUDENTS_MARKS: (state, studentMarks) =>
-    (state.studentMarks = studentMarks),
-  SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers),
-  SET_STUDENTS_AND_MARKS: (state, updatedStudents) =>
-    (state.studentsAndMarks = updatedStudents)
+  SET_SUBJECTS: (state, subjects) => (state.subjects = subjects),
+
 };
 
 // Export

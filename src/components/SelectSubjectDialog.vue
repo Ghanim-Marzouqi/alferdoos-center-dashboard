@@ -4,7 +4,7 @@
       <q-card-section>
         <div class="text-h6">المادة</div>
         <div class="q-ma-2">
-          <q-select filled v-model="subject" :options="groups" label="إختر مادة" />
+          <q-select filled v-model="subject" :options="subjects" label="إختر مادة" />
           <q-input
             class="q-mt-sm"
             filled
@@ -18,7 +18,7 @@
       <q-card-actions>
         <q-space></q-space>
         <q-btn dense flat color="primary" @click="closeDialog">إلغاء</q-btn>
-        <q-btn dense flat color="primary" :loading="GET_LOADING" @click="joinGroup">حفظ</q-btn>
+        <q-btn dense flat color="primary" :loading="GET_LOADING" @click="saveSubject">حفظ</q-btn>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -27,6 +27,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { GETTERS, ACTIONS } from "../config/constants";
+import subjects from 'src/store/modules/subjects';
 
 export default {
   name: "JoinGroupDialog",
@@ -40,36 +41,37 @@ export default {
     return {
       time : "",
       subject: null,
-      groups: [],
+      subjects: [],
     };
   },
   async created() {
-    await this.FETCH_SUBJECTS();
+    await this.FETCH_SUBJECTS({ year : ""/*YEAR_INFO*/ });
 
     if (this.GET_SUBJECTS.length > 0) {
-      this.groups = this.GET_GROUPS.map((group) => ({
-        label: group.name,
-        value: group.id,
+      this.subjects = this.GET_SUBJECTS.map((subject) => ({
+        label: subject.name,
+        value: subject.id,
       }));
     }
   },
   computed: {
     ...mapGetters({
       GET_SUBJECTS: GETTERS.SUBJECTS.GET_SUBJECTS,
+      YEAR_INFO : GETTERS.SETTINGS.GET_YEAR_INFO,
       GET_LOADING: GETTERS.UI.GET_LOADING,
     }),
   },
   methods: {
     ...mapActions({
-      FETCH_SUBJECTS: ACTIONS.SUBJECTS.FETCH_SUBJECTS,
-      JOIN_STUDENT_TO_GROUP: ACTIONS.STUDNETS.JOIN_STUDENT_TO_GROUP,
+      FETCH_SUBJECTS: ACTIONS.SUBJECTS.FETCH_SUBJECTS
     }),
     intializeValues() {},
-    joinGroup() {
+    saveSubject() {
+      console.log(this.subject);
       this.$emit("input", {
             time: this.time,
             avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
-            subject: 'Meeting with CEO'
+            subject: this.subject
      });
      this.time = "",
       this.$emit("close", false); 
