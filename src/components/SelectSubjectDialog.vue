@@ -4,11 +4,11 @@
       <q-card-section>
         <div class="text-h6">المادة</div>
         <div class="q-ma-2">
-          <q-select filled v-model="subject" :options="subjects" label="إختر مادة" />
+          <q-select filled v-model="session.subject" :options="subjects" label="إختر مادة" />
           <q-input
             class="q-mt-sm"
             filled
-            v-model="time"
+            v-model="session.time"
             label="الوقت"
             type="text"
             :rules="[val => val.length > 0 || 'الرجاء ادخال الوقت']"
@@ -30,23 +30,27 @@ import { GETTERS, ACTIONS } from "../config/constants";
 import subjects from 'src/store/modules/subjects';
 
 export default {
-  name: "JoinGroupDialog",
+  name: "SelectSubjectDialog",
   props: {
     isOpen: {
       type: Boolean,
       default: false,
     },
+    isEdit: {
+      type: Boolean,
+      default: false,
+    },session: {
+      type: Object
+    },
   },
   data() {
     return {
-      time : "",
-      subject: null,
       subjects: [],
     };
   },
   async created() {
     await this.FETCH_SUBJECTS({ year : ""/*YEAR_INFO*/ });
-
+   
     if (this.GET_SUBJECTS.length > 0) {
       this.subjects = this.GET_SUBJECTS.map((subject) => ({
         label: subject.name,
@@ -67,11 +71,11 @@ export default {
     }),
     intializeValues() {},
     saveSubject() {
-      console.log(this.subject);
       this.$emit("input", {
-            time: this.time,
+            id : this.session.id,
+            time: this.session.time,
             avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
-            subject: this.subject
+            subject: this.session.subject
      });
      this.time = "",
       this.$emit("close", false); 
