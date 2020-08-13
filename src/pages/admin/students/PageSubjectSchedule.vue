@@ -70,7 +70,7 @@
             text-color="black"
             icon="edit"/>
              <q-btn
-            @click="removeSession(agenda,timestamp)"
+            @click="removeSession(i,timestamp)"
             round
             color="white"
             size = "xs"
@@ -149,6 +149,15 @@ export default {
       if (schedual != undefined)
       {
         this.schedual = schedual
+      }else
+      {
+        this.schedual =  {
+        0: [],
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+      };
       }
     },
     saveSchedual(){
@@ -215,9 +224,9 @@ export default {
           session.toTime = tdate.format("hh:mm");
         })
       },
-    removeSession(agenda,day) {
+    removeSession(index,day) {
       let i = parseInt(day.weekday, 10);
-     this.schedual[i] = this.schedual[i].filter(session => session.id != agenda.id);
+     this.schedual[i].splice(index,1);
     },
   },
     computed: {
