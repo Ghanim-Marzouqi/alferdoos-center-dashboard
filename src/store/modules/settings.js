@@ -14,7 +14,8 @@ const state = {
   registrationPeriod: {},
   questions: [],
   examMarks: [],
-  memorizations: []
+  memorizations: [],
+  schaduals : []
 };
 
 // Getters
@@ -23,7 +24,8 @@ const getters = {
   GET_REGISTRATION_PERIOD: state => state.registrationPeriod,
   GET_QUESTIONS: state => state.questions,
   GET_EXAM_MARKS: state => state.examMarks,
-  GET_MEMORIZATIONS: state => state.memorizations
+  GET_MEMORIZATIONS: state => state.memorizations,
+  GET_SCHADUALS : state => state.schaduals
 };
 
 // Actions
@@ -31,7 +33,6 @@ const actions = {
   async FETCH_YEAR_INFO({ commit }) {
     // Get Date
     let date = new Date();
-
     try {
       // Get Year Info If Exists
       let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)
@@ -486,7 +487,53 @@ const actions = {
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
-  }
+  } ,
+  async ADD_SCHEDUAL({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.SCHEDUALS)
+        .doc(payload.group.value)
+        .set(payload);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.SCHEDUAL_ADDED
+      });
+    } catch (error) {
+      console.log("ADD_SCHEDUAL ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ADD_SCHEDUAL_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
+  async FETCH_SCHEDUAL({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(COLLECTIONS.SCHEDUALS)
+        .get();
+
+      let docs = snapshot.docs;
+
+      let schaduals = docs.map(schadual => ({
+        group: schadual.data().group,
+        0: schadual.data()[0],
+        1: schadual.data()[1],
+        2: schadual.data()[2],
+        3: schadual.data()[3],
+        4: schadual.data()[4]
+      }));
+
+      if (schaduals.length > 0) {
+        commit(MUTATIONS.SETTINGS.SET_SCHEDUALS, schaduals);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_SCHEDUALS, []);
+      }
+    } catch (error) {
+      console.log("FETCH_SCHADUALS ERROR", error);
+    }
+  },
 };
 
 // Mutations
@@ -497,7 +544,8 @@ const mutations = {
   SET_QUESTIONS: (state, questions) => (state.questions = questions),
   SET_EXAM_MARKS: (state, marks) => (state.examMarks = marks),
   SET_MEMORIZATIONS: (state, memorizations) =>
-    (state.memorizations = memorizations)
+    (state.memorizations = memorizations),
+    SET_SCHEDUALS : (state,schaduals) => state.schaduals = schaduals,
 };
 
 // Export

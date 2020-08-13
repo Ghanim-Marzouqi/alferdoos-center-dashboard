@@ -1,18 +1,22 @@
 <template>
   <q-page>
-    <div class="row q-pa-lg">
-      <div class="q-ma-3">
-        <q-select filled v-model="group"  :options="groups" label="إختر مادة" />
+    <div class="row justify-center q-pa-lg">
+      <div class="col-12 col-md-4">
+        <q-select filled
+        @input="changeGroup"
+        v-model="group"
+          :options="groups"
+           label="إختر مجموعة" />
       </div>
 
-      <div class="q-ma-3">
+      <div class="col-12 col-md-4">
         <q-btn
-            @click=" isSelectSubjectOpen = true"
+            @click="saveSchedual"
             round
             color="amber"
             glossy
-            text-color="black"
-            icon="layers_clear"
+            text-color="white"
+            icon="save"
           />
       </div>
     </div>
@@ -30,8 +34,8 @@
             round
             color="amber"
             glossy
-            text-color="black"
-            icon="layers_clear"
+            text-color="white"
+            icon="add_circle"
           />
         </template>
 
@@ -71,7 +75,7 @@
             color="white"
             size = "xs"
             text-color="black"
-            icon="remove"/>
+            icon="clear"/>
             </div>
             </div>
           </template>
@@ -132,9 +136,24 @@ export default {
   methods: {
     ...mapActions({
       FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
+      ADD_SCHEDUAL: ACTIONS.SETTINGS.ADD_SCHEDUAL,
+      FETCH_SCHEDUAL : ACTIONS.SETTINGS.FETCH_SCHEDUAL
     }),
     getSchedual(day) {
       return this.schedual[parseInt(day.weekday, 10)];
+    },
+    changeGroup(){
+      console.log("change Happen")
+      let schedual = this.GET_SCHADUALS.find(s => s.group.value == this.group.value);
+      console.log(schedual);
+      if (schedual != undefined)
+      {
+        this.schedual = schedual
+      }
+    },
+    saveSchedual(){
+      this.schedual.group = this.group
+      this.ADD_SCHEDUAL(this.schedual)
     },
     addSubject(subject) {
       console.log(subject);
@@ -196,8 +215,6 @@ export default {
           session.toTime = tdate.format("hh:mm");
         })
       },
-      
-    
     removeSession(agenda,day) {
       let i = parseInt(day.weekday, 10);
      this.schedual[i] = this.schedual[i].filter(session => session.id != agenda.id);
@@ -207,10 +224,12 @@ export default {
     ...mapGetters({
       GET_GROUPS: GETTERS.GROUPS.GET_GROUPS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
+      GET_SCHADUALS : GETTERS.SETTINGS.GET_SCHADUALS
     }),
   },
     async created() {
     await this.FETCH_GROUPS();
+    await this.FETCH_SCHEDUAL();
     if (this.GET_GROUPS.length > 0) {
       this.groups = this.GET_GROUPS.map((group) => ({
         label: group.name,

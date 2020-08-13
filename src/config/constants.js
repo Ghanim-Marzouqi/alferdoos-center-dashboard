@@ -11,7 +11,8 @@ const COLLECTIONS = {
   STUDENT_EXAM_MARKS: "studentExamMarks",
   STUDENT_QUESTION_MARKS: "studentQuestionMarks",
   GROUPS: "groups",
-  MEMORIZATIONS: "memorizations"
+  MEMORIZATIONS: "memorizations",
+  SCHEDUALS : "Scheduals"
 };
 
 const STUDENT_GRADE = {
@@ -228,7 +229,8 @@ const GETTERS = {
     GET_QUESTIONS: "GET_QUESTIONS",
     GET_EXAM_MARKS: "GET_EXAM_MARKS",
     GET_GROUPS: "GET_GROUPS",
-    GET_MEMORIZATIONS: "GET_MEMORIZATIONS"
+    GET_MEMORIZATIONS: "GET_MEMORIZATIONS",
+    GET_SCHADUALS :"GET_SCHADUALS"
   },
   STUDNETS: {
     GET_STUDENTS: "GET_STUDENTS",
@@ -283,7 +285,9 @@ const ACTIONS = {
     FETCH_MEMORIZATIONS: "FETCH_MEMORIZATIONS",
     DELETE_MEMORIZATION: "DELETE_MEMORIZATION",
     ADD_MEMORIZATION_DETAILS: "ADD_MEMORIZATION_DETAILS",
-    DELETE_MEMORIZATION_DETAILS: "DELETE_MEMORIZATION_DETAILS"
+    DELETE_MEMORIZATION_DETAILS: "DELETE_MEMORIZATION_DETAILS",
+    ADD_SCHEDUAL : "ADD_SCHEDUAL",
+    FETCH_SCHEDUAL : "FETCH_SCHEDUAL"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -325,7 +329,8 @@ const MUTATIONS = {
     SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
     SET_QUESTIONS: "SET_QUESTIONS",
     SET_EXAM_MARKS: "SET_EXAM_MARKS",
-    SET_MEMORIZATIONS: "SET_MEMORIZATIONS"
+    SET_MEMORIZATIONS: "SET_MEMORIZATIONS",
+    SET_SCHEDUALS : "SET_SCHEDUALS"
   },
   STUDNETS: {
     SET_STUDENTS: "SET_STUDENTS",
@@ -349,6 +354,7 @@ const MESSAGES = {
     STUDENT_STATUS_UPDATED: "database/student-status-updated",
     YEAR_INFO_CREATED: "database/year-info-created",
     YEAR_INFO_UPDATED: "database/year-info-updated",
+    SCHEDUAL_ADDED : "database/schedual been saved",
     YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
       "database/year-info-registration-period-updated",
     EXAM_MARKS_UPDATED: "database/exam_marks_updated",
@@ -396,6 +402,7 @@ const ERRORS = {
     EDIT_STUDENT_MARK_ERROR: "database/edit-student-mark-error",
     STUDENT_ANSWERS_SUBMIT_ERROR: "database/student-answers-submit-error",
     STUDENT_ALREADY_TAKEN_EXAM: "student-already-taken-exam",
+    ADD_SCHEDUAL_ERROR:"Error while saving",
     FETCH_STUDENT_ANSWERS_BY_ID_ERROR:
       "database/fetch-student-answers-by-id-error",
     ADD_GROUP_ERROR: "database/add-group-error",
