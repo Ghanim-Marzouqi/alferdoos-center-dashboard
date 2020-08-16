@@ -1,114 +1,48 @@
 <template>
-  <q-page padding>
-    {{ subjectForm }}
+
+ <q-page padding>
     <p class="text-h6">إعدادات المواد الدراسية</p>
-        <div class="q-pa-md">
-      <!-- Horizontal Stepper -->
-      <q-stepper
-        id="horizontal-stepper"
-        v-model="hStep"
-        ref="hStepper"
-        color="primary"
-        animated
-      >
-        <q-step
-          :name="3"
-          title="بيانات إضافية"
-          icon="assignment"
-          active-icon="assignment"
-        >
-          <div class="row">
-            <div class="col-6">
-              <q-form ref="hMoretInfoForm">
-                            <div class="text-weight-bold">أسم الطالب:</div>
-            <div class="row">
-              <div class="col-8">
-                <q-input
-                  class="q-ma-sm"
-                  dense
-                  square
-                  outlined
-                  clearable
-                  v-model="subjectForm.name"
-                  type="text"
-                  label="الأسم المادة"
-                  lazy-rules
-                  :rules="[
-                    val => (val && val.length > 0) || 'الرجاء كتابة الأسم الأول'
-                  ]"
-                />
-              </div>
-            </div>
-                <div class="row">
-                  <div class="q-gutter-sm">
-                    <div class="text-weight-bold">
-                      توصيف للمادة ؟
-                    </div>
-                    <div class="col-12">
-                      <q-input
-                        class="q-ma-sm"
-                        style="width: 400px;"
-                        dense
-                        square
-                        outlined
-                        :autogrow="false"
-                        clearable
-                        v-model="subjectForm.description"
-                        type="textarea"
-                        label="اكتب المهارات التي يمتلكها الطالب"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="q-gutter-sm">
-                    <div class="text-weight-bold">المرفقات</div>
-                    <div class="col-6">
-                      <q-file
-                        v-model="subjectForm.files"
-                        label="المرفقات"
-                        dense
-                        outlined
-                        use-chips
-                        multiple
-                        style="width: 400px"
-                        class="q-ma-sm"
-                        accept=".pdf"
-                      >
-                        <template v-slot:prepend>
-                          <q-icon name="attach_file" />
-                        </template>
-                      </q-file>
-                    </div>
-                  </div>
-                </div>
-              </q-form>
-            </div>
-            <div class="col-6">
-            </div>
-          </div>
-          <q-stepper-navigation>
-            <q-btn
-              :loading="GET_LOADING"
-              label="إرسال"
-              color="primary"
-              @click="onSubmit('hMoretInfoForm')"
-            />
-            <q-btn
-              label="رجوع"
-              flat
-              type="reset"
-              color="primary"
-              class="q-ml-sm text-weight-bold"
-              :disable="!isRegistrationEnabled"
-              @click="() => (hStep = 2)"
-            />
-          </q-stepper-navigation>
-        </q-step>
-      </q-stepper>
+
+    {{ isOpenDialog }}
+    <!-- Groups Table -->
+    <div class="row q-pa-md">
+      <div class="fit row wrap justify-between items-center content-start">
+        <p class="text-body1 text-weight-bold">المواد</p>
+        <q-btn
+          class="q-mb-md"
+          color="primary"
+          @click=" isOpenDialog = true"
+        >إضافة مادة جديدة</q-btn>
+      </div>
+      <div class="col-12">
+        <q-table :data="GET_SUBJECTS" :columns="columns" row-key="name" :loading="GET_LOADING">
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td key="name" :props="props">{{ props.row.name }}</q-td>
+              <q-td key="edit" :props="props">
+                <q-btn dense flat @click.stop="showEditGroupDialog(props.row)">
+                  <q-icon color="teal" name="o_edit" />
+                </q-btn>
+              </q-td>
+              <q-td key="delete" :props="props">
+                <q-btn dense flat @click.stop="showDeleteGroupDialog(props.row)">
+                  <q-icon color="red" name="o_delete" />
+                </q-btn>
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </div>
     </div>
-  </q-page>
+
+    <!-- Add Group Dialog -->
+    <AddSubjectDialog
+      :isOpen="isOpenDialog"
+      @close='isOpenDialog = false'
+    />
+
   
+  </q-page>
 </template>
 
 
@@ -127,11 +61,12 @@ import {
 
 export default {
   name: "PageEditSubjects",
+  components : {
+    AddSubjectDialog : ()=> import("components/SubjectsAddSubjectDialog.vue")
+  },
   data() {
     return {
-      hStep:3,
-      vStep:3,
-      isRegistrationEnabled: false,
+      isOpenDialog : false,
       subjectForm: {
         name: "",
         description: "",
@@ -141,36 +76,52 @@ export default {
         createdBy :"",
         year : ""
       },
-      villages: VILLAGES,
-      centerKnownList: KNOWN_BY
+      columns: [
+        {
+          name: "name",
+          label: "اسم المادة",
+          field: "name",
+          required: true,
+          align: "left",
+        },
+        {
+          name: "edit",
+          required: true,
+          label: "تعديل",
+          field: "edit",
+          align: "right",
+        },
+        {
+          name: "delete",
+          required: true,
+          label: "حذف",
+          field: "delete",
+          align: "right",
+        },
+      ]     
     };
   },
   created() {
     this.CLEAR_ERRORS_AND_MESSAGES();
-    this.FETCH_REGISTRATION_PERIOD();
+    this.FETCH_SUBJECTS();
   },
   mounted() {
     
   },
   computed: {
     ...mapGetters({
-      GET_USER: GETTERS.AUTH.GET_USER,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
-      GET_REGISTRATION_PERIOD: GETTERS.SETTINGS.GET_REGISTRATION_PERIOD
+      GET_SUBJECTS : GETTERS.SUBJECTS.GET_SUBJECTS
     }),
-
   },
   methods: {
     ...mapActions({
-      FETCH_REGISTRATION_PERIOD: ACTIONS.SETTINGS.FETCH_REGISTRATION_PERIOD,
       REGISTER_SUBJECT: ACTIONS.SUBJECTS.REGISTER_SUBJECT,
+      FETCH_SUBJECTS : ACTIONS.SUBJECTS.FETCH_SUBJECTS,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
     }),
-    onSelectFile(file) {
-      
-    },
     async onSubmit(form) {
       let valid = await this.$refs[form].validate();
 

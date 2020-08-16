@@ -25,17 +25,12 @@ const actions = {
     try {
       let snapshot = null;
 
-      if (payload.status !== "") {
+
         snapshot = await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
-          //.where("status", "==", payload.status)
+          //.orderBy("createdAt", "desc")
           //.where("year", "==", payload.year )
           .get();
-      } else {
-        snapshot = await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
-          .orderBy("createdAt", "desc")
-          //.where("year", "==", payload.year )
-          .get();
-      }
+      
 
       let docs = snapshot.docs;
 
