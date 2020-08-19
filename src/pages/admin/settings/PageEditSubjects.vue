@@ -20,7 +20,7 @@
             <q-tr :props="props">
               <q-td key="name" :props="props">{{ props.row.name }}</q-td>
               <q-td key="edit" :props="props">
-                <q-btn dense flat @click.stop="showEditGroupDialog(props.row)">
+                <q-btn dense flat @click.stop="editSubject(props.row)">
                   <q-icon color="teal" name="o_edit" />
                 </q-btn>
               </q-td>
@@ -38,7 +38,9 @@
     <!-- Add Group Dialog -->
     <AddSubjectDialog
       :isOpen="isOpenDialog"
-      @close='isOpenDialog = false'
+      :marks="marks"
+      :subject="subjectForm"
+      @close='resrtForm'
     />
 
   
@@ -67,14 +69,13 @@ export default {
   data() {
     return {
       isOpenDialog : false,
+      marks : [],
       subjectForm: {
+        id : "",
+        year : 0,
         name: "",
         description: "",
         files: [],
-        status : "Active",
-        createdAt : "",
-        createdBy :"",
-        year : ""
       },
       columns: [
         {
@@ -114,7 +115,8 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
-      GET_SUBJECTS : GETTERS.SUBJECTS.GET_SUBJECTS
+      GET_SUBJECTS : GETTERS.SUBJECTS.GET_SUBJECTS,
+      GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
     }),
   },
   methods: {
@@ -124,12 +126,73 @@ export default {
       FETCH_YEAR_INFO : ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
     }),
+    resrtForm(){
+      this.isOpenDialog = false;
+      this.subjectForm = {
+        id : "",
+        year : this.GET_YEAR_INFO.name,
+        name: "",
+        description: "",
+        files: [],
+      },
+      this.marks = this.GET_YEAR_INFO.semesters.map(sem =>({
+        id : sem.id,
+        name : sem.name,
+        options : [],
+        totalMarks : 0,
+        isActive : false,
+        option : {
+          text : "", 
+          mark : "",
+        }
+      }));
+      
+    },
+    editSubject(sub)
+    {
+      
+      let subject = this.GET_SUBJECTS.find(subj => subj.id == sub.id);
+      this.subjectForm.id = subject.id,
+      this.subjectForm.year = subject.year;
+      this.subjectForm.name = subject.name;
+      this.subjectForm.description = subject.description;
+      this.marks = subject.marks.map(sem =>
+      ({
+        id : sem.semesterId,
+        name : this.marks.find(m => m.id == sem.semesterId).name,
+        options : sem.criteria.length > 0 ? sem.criteria : [],
+        totalMarks : 0,
+        isActive : sem.criteria.length > 0 ? true : false,
+        option : {
+          text : "", 
+          mark : "",
+        }
+      }));
+      
+      this.isOpenDialog = true;
+    }
 
   },
   watch: {
     GET_MESSAGES: function(newState, oldState) {
 
-    }
+    },
+     GET_YEAR_INFO: function(newState, oldState) {
+      if (Object.keys(newState).length > 0) {
+        this.subjectForm.year = newState.name;
+        this.marks = newState.semesters.map(sem =>({
+        id : sem.id,
+        name : sem.name,
+        options : [],
+        totalMarks : 0,
+        isActive : false,
+        option : {
+          text : "", 
+          mark : "",
+        }
+      }));
+      }
+    },
   }
 };
 </script>

@@ -39,7 +39,10 @@ const actions = {
       if (docs.length > 0) {
         let subjects = docs.map(doc => ({
           id: doc.id,
-          name: doc.data().name
+          name: doc.data().name,
+          marks : doc.data().marks,
+          year : doc.data().year,
+          description : doc.data().description
         }));
 
         commit(MUTATIONS.SUBJECTS.SET_SUBJECTS, subjects);
@@ -82,7 +85,7 @@ const actions = {
       }
 
       await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
-        .doc(subject.name)
+        .doc()
         .set(subject);
         commit(MUTATIONS.UI.SET_MESSAGE, "تم تسجيل المادة بنجاح");
 
@@ -115,6 +118,39 @@ const actions = {
       commit(MUTATIONS.UI.SET_ERROR, {
         code: ERRORS.DATABASE.STUDENT_FORM_RECORD_NOT_DELETED
       });
+    }
+  },
+
+  async UPDATE_SUBJECT({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+  
+      let subject = {
+        name : payload.name,
+        description : payload.description,
+        createdAt : payload.createdAt,
+        createdBy : payload.createdBy,
+        marks : payload.marks,
+      }
+
+      await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
+        .doc(payload.id)
+        .update(subject);
+        commit(MUTATIONS.UI.SET_MESSAGE, "تم تعديل المادة بنجاح");
+
+      Dialog.create({
+        title: "تنبيه",
+        message: "تم تعديل المادة بنجاح"
+      });
+    } catch (error) {
+      console.log("UPDATE_SUBJECT", error);
+      Dialog.create({
+        title: "تنبيه",
+        message: "حدث خطأ اثناء التعديل"
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
 

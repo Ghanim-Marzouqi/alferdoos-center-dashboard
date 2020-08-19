@@ -17,7 +17,7 @@
                 square
                 outlined
                 clearable
-                v-model="subjectForm.name"
+                v-model="subject.name"
                 type="text"
                 label="إسم المادة"
                 lazy-rules
@@ -33,7 +33,7 @@
                 outlined
                 :autogrow="false"
                 clearable
-                v-model="subjectForm.description"
+                v-model="subject.description"
                 type="textarea"
                 label="مختصر بسيط للمادة"
               />
@@ -41,7 +41,7 @@
               <div class="text-weight-bold">المرفقات</div>
 
               <q-file
-                v-model="subjectForm.files"
+                v-model="subject.files"
                 label="المرفقات"
                 dense
                 outlined
@@ -55,9 +55,9 @@
               </q-file>
             </q-form>
           </div>
-          <div v-for="sem in subjectForm.marks" :key="sem.id" class="col-xs-12 col-md-2 text-center">
+          <div v-for="sem in marks" :key="sem.id" class="col-xs-12 col-md-2 text-center">
             <div class="q-ma-2">
-             <q-checkbox v-model="sem.isActive" label="تفعيل" />
+             <q-checkbox v-model="sem.isActive" :label="sem.name" />
             </div>
             <div class="row q-my-sm">
               <q-form @submit.prevent="addEvaluationsCriteria(sem.option,sem.options)">
@@ -131,19 +131,17 @@ export default {
       type: Boolean,
       default: false,
     },
+    subject : {
+      type : Object,
+    },
+    marks : {
+      type : Array,
+      default : []
+    }
   },
   data() {
     return {
-      subjectForm: {
-        name: "",
-        description: "",
-        files: [],
-        status: "Active",
-        createdAt: "",
-        createdBy: "",
-        year: "",
-        marks : null,
-      },
+
     };
   },
   computed: {
@@ -157,6 +155,7 @@ export default {
   methods: {
     ...mapActions({
       REGISTER_SUBJECT: ACTIONS.SUBJECTS.REGISTER_SUBJECT,
+      UPDATE_SUBJECT : ACTIONS.SUBJECTS.UPDATE_SUBJECT,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     addEvaluationsCriteria(option,evaluations) {
@@ -175,36 +174,36 @@ export default {
       let valid = true;
 
       if (valid) {
-        this.subjectForm.marks = this.subjectForm.marks.map(sem => ({
+        let markCriteria = this.marks.map(sem => ({
           semesterId : sem.id,
           criteria : sem.isActive ?  sem.options : [],
           isActive : sem.isActive,
-          option : {
-            text : "", 
-            mark : 0
-          }
         }));
-        this.REGISTER_SUBJECT(this.subjectForm);
+
+      let subject = {
+        name: this.subject.name,
+        description: this.subject.description,
+        files: this.subject.files,
+        status: "Active",
+        createdAt: "",
+        createdBy: "",
+        year: this.subject.year,
+        marks : markCriteria,
+      }
+      if (this.subject.id === "")
+        this.REGISTER_SUBJECT(subject);
+      else
+      {
+        subject.id = this.subject.id;
+        this.UPDATE_SUBJECT(subject);
+      }
+         
+
         this.$emit("close");
       }
     },
   },
-    watch: {
-    GET_YEAR_INFO: function(newState, oldState) {
-      if (Object.keys(newState).length > 0) {
-        this.subjectForm.marks = newState.semesters.map(sem =>({
-        id : sem.id,
-        name : sem.name,
-        options : [],
-        totalMarks : 0,
-        isActive : false,
-        option : {
-          text : "", 
-          mark : "",
-        }
-      }));
-      }
-    },
-    }
+
+    
 };
 </script>
