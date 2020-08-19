@@ -178,9 +178,12 @@ export default {
         this.subjectForm.marks = this.subjectForm.marks.map(sem => ({
           semesterId : sem.id,
           criteria : sem.isActive ?  sem.options : [],
-          isActive : sem.isActive
+          isActive : sem.isActive,
+          option : {
+            text : "", 
+            mark : 0
+          }
         }));
-        console.log(this.subjectForm);
         this.REGISTER_SUBJECT(this.subjectForm);
         this.$emit("close");
       }
