@@ -46,7 +46,8 @@ const actions = {
           id: doc.data().id,
           name: doc.data().name,
           startPeriodDate: doc.data().startPeriodDate,
-          endPeriodDate: doc.data().endPeriodDate
+          endPeriodDate: doc.data().endPeriodDate,
+          semesters : doc.data().semesters,
         });
       }
     } catch (error) {
@@ -98,6 +99,51 @@ const actions = {
     }
   },
 
+  async SET_YEAR_SEMESTERS({ commit }, payload) {
+
+    console.log("reach the point")
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    let date = new Date();
+
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+        .doc(date.getFullYear().toString())
+        .get();
+
+      if (!doc.exists) {
+        await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+          .doc(date.getFullYear().toString())
+          .set({
+            id: date.getFullYear().toString(),
+            name: payload,
+            startPeriodDate: Date.now(),
+            endPeriodDate: Date.now(),
+            semesters : payload,
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.YEAR_INFO_CREATED
+        });
+      } else {
+        await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+          .doc(date.getFullYear().toString())
+          .update({
+            semesters : payload
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.YEAR_INFO_UPDATED
+        });
+      }
+    } catch (error) {
+      console.log("SET_YEAR_SEMESTERS", error);
+      commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.DATABASE.YEAR_SEMESTERS_ERROR });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
   async SET_REGISTRATION_PERIOD({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -132,6 +178,7 @@ const actions = {
     }
   },
 
+  
   async FETCH_REGISTRATION_PERIOD({ commit }) {
     try {
       let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)

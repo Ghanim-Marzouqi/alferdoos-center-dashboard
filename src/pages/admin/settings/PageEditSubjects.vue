@@ -104,6 +104,7 @@ export default {
   created() {
     this.CLEAR_ERRORS_AND_MESSAGES();
     this.FETCH_SUBJECTS();
+    this.FETCH_YEAR_INFO();
   },
   mounted() {
     
@@ -120,15 +121,10 @@ export default {
     ...mapActions({
       REGISTER_SUBJECT: ACTIONS.SUBJECTS.REGISTER_SUBJECT,
       FETCH_SUBJECTS : ACTIONS.SUBJECTS.FETCH_SUBJECTS,
+      FETCH_YEAR_INFO : ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
     }),
-    async onSubmit(form) {
-      let valid = await this.$refs[form].validate();
 
-      if (valid) {
-        this.REGISTER_SUBJECT(this.subjectForm);
-      }
-    }
   },
   watch: {
     GET_MESSAGES: function(newState, oldState) {

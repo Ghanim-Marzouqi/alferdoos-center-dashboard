@@ -9,7 +9,7 @@
 
       <q-card-section class="q-pt-none">
         <div class="row q-ml-md justify-around">
-          <div class="col-xs-12 col-md-3">
+          <div class="col-xs-12 col-md-2">
             <q-form ref="hMoretInfoForm">
               <div class="text-weight-bold">إسم المادة:</div>
               <q-input
@@ -55,24 +55,24 @@
               </q-file>
             </q-form>
           </div>
-          <div class="col-xs-12 col-md-3 text-center">
+          <div v-for="sem in subjectForm.marks" :key="sem.id" class="col-xs-12 col-md-2 text-center">
             <div class="q-ma-2">
-              مجموع الدرجات:
-              <span class="text-weight-bold">{{ getTotalMarks1 }}</span>
+             <q-checkbox v-model="sem.isActive" label="تفعيل" />
             </div>
             <div class="row q-my-sm">
-              <q-form @submit.prevent="addEvaluationsCriteria(option1,subjectForm.evaluations1)">
+              <q-form @submit.prevent="addEvaluationsCriteria(sem.option,sem.options)">
                 <q-list style="width: 100%">
                   <q-item>
                     <q-item-section class="justify-start" avatar>
-                      <q-btn dense round size="sm" color="primary" type="submit">
+                      <q-btn :disable="!sem.isActive" dense round size="sm" color="primary" type="submit">
                         <q-icon name="o_add" />
                       </q-btn>
                     </q-item-section>
                     <q-item-section class="q-mt-lg">
                       <q-input
+                        :disable="!sem.isActive"
                         style="width: 200px"
-                        v-model="option1.text"
+                        v-model="sem.option.text"
                         label="تفاصيل"
                         dense
                         filled
@@ -81,9 +81,10 @@
                     </q-item-section>
                     <q-item-section class="q-mt-lg" side>
                       <q-input
+                       :disable="!sem.isActive"
                         style="width: 100px"
                         type="number"
-                        v-model="option1.mark"
+                        v-model="sem.option.mark"
                         label="الدرجة"
                         dense
                         filled
@@ -91,64 +92,10 @@
                       ></q-input>
                     </q-item-section>
                   </q-item>
-                  <q-item v-for="(option, i) in subjectForm.evaluations1" :key="i">
+                  <q-item v-for="(option, i) in sem.options" :key="i">
                     <q-item-section avatar>
                       <q-btn dense round size="sm" color="red" 
-                      @click="removeExamMarksOption(subjectForm.evaluations1,i)">
-                        <q-icon name="o_remove" />
-                      </q-btn>
-                    </q-item-section>
-                    <q-item-section>{{ option.text }}</q-item-section>
-                    <q-item-section class="text-center" style="width: 100%">
-                      {{
-                      option.mark
-                      }}
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-form>
-            </div>
-          </div>
-          <div class="col-xs-12 col-md-3 text-center">
-            <div class="q-ma-2">
-              مجموع الدرجات:
-              <span class="text-weight-bold">{{ getTotalMarks2 }}</span>
-            </div>
-            <div class="row q-my-sm">
-              <q-form @submit.prevent="addEvaluationsCriteria(option2,subjectForm.evaluations2)">
-                <q-list style="width: 100%">
-                  <q-item>
-                    <q-item-section class="justify-start" avatar>
-                      <q-btn dense round size="sm" color="primary" type="submit">
-                        <q-icon name="o_add" />
-                      </q-btn>
-                    </q-item-section>
-                    <q-item-section class="q-mt-lg">
-                      <q-input
-                        style="width: 200px"
-                        v-model="option2.text"
-                        label="تفاصيل"
-                        dense
-                        filled
-                        :rules="[val => val && val.length > 0 || 'ادخل تفاصيل الدرجة']"
-                      ></q-input>
-                    </q-item-section>
-                    <q-item-section class="q-mt-lg" side>
-                      <q-input
-                        style="width: 100px"
-                        type="number"
-                        v-model="option2.mark"
-                        label="الدرجة"
-                        dense
-                        filled
-                        :rules="[val => val && val > 0 || 'ادخل الدرجة']"
-                      ></q-input>
-                    </q-item-section>
-                  </q-item>
-                  <q-item v-for="(option, i) in subjectForm.evaluations2" :key="i">
-                    <q-item-section avatar>
-                      <q-btn dense round size="sm" color="red" 
-                      @click="removeExamMarksOption(subjectForm.evaluations2,i)">
+                      @click="removeExamMarksOption(sem.options,i)">
                         <q-icon name="o_remove" />
                       </q-btn>
                     </q-item-section>
@@ -187,14 +134,6 @@ export default {
   },
   data() {
     return {
-      option1: {
-        mark: 0,
-        text: "",
-      },
-      option2: {
-        mark: 0,
-        text: "",
-      },
       subjectForm: {
         name: "",
         description: "",
@@ -203,8 +142,7 @@ export default {
         createdAt: "",
         createdBy: "",
         year: "",
-        evaluations1: [],
-        evaluations2: [],
+        marks : null,
       },
     };
   },
@@ -213,25 +151,8 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
+      GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
     }),
-    getTotalMarks1() {
-      let count = 0;
-
-      this.subjectForm.evaluations1.forEach((criteria) => {
-        count = count + parseInt(criteria.mark);
-      });
-
-      return count;
-    },
-        getTotalMarks2() {
-      let count = 0;
-
-      this.subjectForm.evaluations2.forEach((criteria) => {
-        count = count + parseInt(criteria.mark);
-      });
-
-      return count;
-    },
   },
   methods: {
     ...mapActions({
@@ -240,6 +161,7 @@ export default {
     }),
     addEvaluationsCriteria(option,evaluations) {
       evaluations.push({
+        id : evaluations.length +1,
         mark: parseInt(option.mark),
         text: option.text,
       });
@@ -253,10 +175,33 @@ export default {
       let valid = true;
 
       if (valid) {
+        this.subjectForm.marks = this.subjectForm.marks.map(sem => ({
+          semesterId : sem.id,
+          criteria : sem.isActive ?  sem.options : [],
+          isActive : sem.isActive
+        }));
+        console.log(this.subjectForm);
         this.REGISTER_SUBJECT(this.subjectForm);
         this.$emit("close");
       }
     },
   },
+    watch: {
+    GET_YEAR_INFO: function(newState, oldState) {
+      if (Object.keys(newState).length > 0) {
+        this.subjectForm.marks = newState.semesters.map(sem =>({
+        id : sem.id,
+        name : sem.name,
+        options : [],
+        totalMarks : 0,
+        isActive : false,
+        option : {
+          text : "", 
+          mark : "",
+        }
+      }));
+      }
+    },
+    }
 };
 </script>

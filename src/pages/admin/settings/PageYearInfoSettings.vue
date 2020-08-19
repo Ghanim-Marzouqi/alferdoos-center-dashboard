@@ -53,6 +53,44 @@
       </div>
     </div>
 
+        <div class="row q-pa-md">
+      <div class="col-12">
+        <q-markup-table>
+          <thead>
+            <tr>
+              <th class="text-left">الفصول الدراسية</th>
+              <th class="text-right">
+                <q-btn dense round size="sm" @click="isAddSemesterDialogOpen = true" color="primary">
+                        <q-icon name="o_add" />
+                </q-btn>
+                <q-btn dense round size="sm" @click="saveSemestersIntoDb" color="primary" type="submit">
+                        <q-icon name="o_save" />
+                </q-btn>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="sem in semesters" :key="sem.id">
+              <td class="text-left">
+                {{ sem.name }}
+              </td>
+              <td class="text-right">
+                <q-btn dense flat @click="
+                isAddSemesterDialogOpen = true , 
+                selectedSemId = sem.id,
+                semesterTitle = sem.name">
+                  <q-icon name="o_edit" color="teal" />
+                </q-btn>
+                <q-btn dense flat color="red" @click="onDeleteSemeter(sem.id)">
+                  <q-icon name="o_delete"></q-icon>
+                </q-btn>
+              </td>
+            </tr>
+          </tbody>
+        </q-markup-table>
+      </div>
+    </div>
+
     <!-- Year Name Dialog -->
     <q-dialog v-model="isYearDialogOpen" persistent>
       <q-card>
@@ -123,6 +161,29 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="isAddSemesterDialogOpen" persistent>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">اسم الفصل</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            dense
+            outlined
+            v-model="semesterTitle"
+            autofocus
+            @keyup.enter="isAddSemesterDialogOpen = false"
+          />
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="إلغاء" v-close-popup />
+          <q-btn flat label="حفظ" @click="addNewSemester" :loading="GET_LOADING" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -140,10 +201,14 @@ export default {
     return {
       yearInfo: {},
       currentYear: "",
+      semesterTitle : "",
+      selectedSemId : -1,
+      semesters : [],    
       startPeriodDate: date.formatDate(today, "YYYY/MM/DD"),
       endPeriodDate: date.formatDate(today, "YYYY/MM/DD"),
       isYearDialogOpen: false,
-      isDateDialogOpen: false
+      isDateDialogOpen: false,
+      isAddSemesterDialogOpen : false,
     };
   },
   created() {
@@ -169,11 +234,35 @@ export default {
       FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       SET_YEAR_NAME: ACTIONS.SETTINGS.SET_YEAR_NAME,
       SET_REGISTRATION_PERIOD: ACTIONS.SETTINGS.SET_REGISTRATION_PERIOD,
-      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
+      SET_YEAR_SEMESTERS : ACTIONS.SETTINGS.SET_YEAR_SEMESTERS
     }),
+    saveSemestersIntoDb()
+    {
+      this.SET_YEAR_SEMESTERS(this.semesters);
+    },
+    onDeleteSemeter(id){
+      this.semesters.splice(id-1,1);
+    },
+    addNewSemester() {
+      if (this.selectedSemId > -1)
+      {
+        this.semesters
+        .find(sem => sem.id == this.selectedSemId)
+        .name = this.semesterTitle;
+        this.selectedSemId = -1;
+      }else{
+        this.semesters.push({
+        id : this.semesters.length + 1,
+        name : this.semesterTitle,
+      });
+      }
+      
+      this.semesterTitle = "";
+      this.isAddSemesterDialogOpen = false;
+    },
     saveCurrentYear() {
       if (this.currentYear === "") return;
-
       // Set Current Year Name
       this.SET_YEAR_NAME(this.currentYear);
     },
@@ -207,7 +296,9 @@ export default {
   watch: {
     GET_YEAR_INFO: function(newState, oldState) {
       if (Object.keys(newState).length > 0) {
+        console.log(newState);
         this.currentYear = newState.name;
+        this.semesters = newState.semesters;
         (this.startPeriodDate = date.formatDate(
           newState.startPeriodDate,
           "YYYY/MM/DD"

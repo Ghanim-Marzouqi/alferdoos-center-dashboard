@@ -77,11 +77,12 @@ const actions = {
         files : payload.filesUrl,
         description : payload.description,
         createdAt : payload.createdAt,
-        createdBy : payload.createdBy
+        createdBy : payload.createdBy,
+        marks : payload.marks,
       }
 
       await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
-        .doc()
+        .doc(subject.name)
         .set(subject);
         commit(MUTATIONS.UI.SET_MESSAGE, "تم تسجيل المادة بنجاح");
 
