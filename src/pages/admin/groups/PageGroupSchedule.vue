@@ -1,5 +1,6 @@
 <template>
   <q-page>
+    {{ isSelected }}
     <div class="row justify-center q-pa-lg">
       <div class="col-12 col-md-4">
         <q-select filled
@@ -32,6 +33,7 @@
           <q-btn
             @click=" isSelectSubjectOpen = true"
             round
+            :disable="isSelected"
             color="amber"
             glossy
             text-color="white"
@@ -104,6 +106,7 @@ export default {
   },
   data() {
     return {
+      isSelected : false,
       selectedDate: "2019-05-03",
       isSelectSubjectOpen: false,
       isEdit : false,
@@ -116,13 +119,6 @@ export default {
       },
       group : "",
       groups : [],
-      days: {
-        6: 0,
-        0: 1,
-        1: 2,
-        2: 3,
-        3: 4,
-      },
       schedual: {
         0: [],
         1: [],
@@ -143,9 +139,9 @@ export default {
       return this.schedual[parseInt(day.weekday, 10)];
     },
     changeGroup(){
-      console.log("change Happen")
+      isSelected = true;
       let schedual = this.GET_SCHADUALS.find(s => s.group.value == this.group.value);
-      console.log(schedual);
+      
       if (schedual != undefined)
       {
         this.schedual = schedual
@@ -181,7 +177,7 @@ export default {
 
       let fdate = moment("2020-03-02" + " " + "08:00");
       let day = new Date(this.selectedDate).getDay();
-      let schedual = this.schedual[this.days[day]];
+      let schedual = this.schedual[day];
 
       if (schedual.length > 0) {
         fdate = moment(
@@ -198,7 +194,7 @@ export default {
         subject: subject.subject,
         avatar: subject.avatar,
       };
-      this.schedual[this.days[day]].push(session);
+      this.schedual[day].push(session);
       }
 
       this.session.subject = null;
