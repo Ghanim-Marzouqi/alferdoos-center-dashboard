@@ -1,0 +1,8 @@
+{
+  "plugins": ["vue"],
+  "extends": ["plugin:vue/strongly-recommended"],
+  "rules": {
+    "default-case": "off",
+    "custom-event-name-casing": "off"
+  }
+}

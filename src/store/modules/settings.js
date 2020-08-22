@@ -15,7 +15,8 @@ const state = {
   questions: [],
   examMarks: [],
   memorizations: [],
-  schaduals : []
+  schaduals : [],
+  memorization: {}
 };
 
 // Getters
@@ -25,7 +26,8 @@ const getters = {
   GET_QUESTIONS: state => state.questions,
   GET_EXAM_MARKS: state => state.examMarks,
   GET_MEMORIZATIONS: state => state.memorizations,
-  GET_SCHADUALS : state => state.schaduals
+  GET_SCHADUALS : state => state.schaduals,
+  GET_MEMORIZATION: state => state.memorization
 };
 
 // Actions
@@ -451,13 +453,14 @@ const actions = {
             ...doc.data().details,
             {
               uid: payload.uid,
+              name: payload.name,
               pageNumberFrom: payload.pageNumberFrom,
               pageNumberTo: payload.pageNumberTo,
               pageMarks: payload.pageMarks,
               mistakeMarks: payload.mistakeMarks,
               cautionMarks: payload.cautionMarks,
-              repeatNumber: payload.repeatNumber,
               failMarks: payload.failMarks,
+              repeats: payload.repeats,
               createdAt: date
             }
           ];
@@ -475,13 +478,14 @@ const actions = {
           let newDetails = [
             {
               uid: payload.uid,
+              name: payload.name,
               pageNumberFrom: payload.pageNumberFrom,
               pageNumberTo: payload.pageNumberTo,
               pageMarks: payload.pageMarks,
               mistakeMarks: payload.mistakeMarks,
               cautionMarks: payload.cautionMarks,
-              repeatNumber: payload.repeatNumber,
               failMarks: payload.failMarks,
+              repeats: payload.repeats,
               createdAt: date
             }
           ];
@@ -581,6 +585,29 @@ const actions = {
       console.log("FETCH_SCHADUALS ERROR", error);
     }
   },
+
+  async FETCH_MEMORIZATIONS_BY_ID({ commit }, payload) {
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
+        .doc(payload)
+        .get();
+
+      if (doc.exists) {
+        let memorization = {
+          id: doc.id,
+          name: doc.data().name,
+          createdAt: doc.data().createdAt,
+          details: doc.data().details
+        };
+
+        commit(MUTATIONS.SETTINGS.SET_MEMORIZATION, memorization);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_MEMORIZATION, {});
+      }
+    } catch (error) {
+      console.log("FETCH_MEMORIZATIONS_BY_ID ERROR");
+    }
+  }
 };
 
 // Mutations
@@ -593,6 +620,7 @@ const mutations = {
   SET_MEMORIZATIONS: (state, memorizations) =>
     (state.memorizations = memorizations),
     SET_SCHEDUALS : (state,schaduals) => state.schaduals = schaduals,
+  SET_MEMORIZATION: (state, memorization) => (state.memorization = memorization)
 };
 
 // Export

@@ -157,7 +157,7 @@ import {
   STUDENT_STATUS,
   EXAM_TYPE,
   MESSAGES,
-  ERRORS
+  ERRORS,
 } from "../../../config/constants";
 
 export default {
@@ -183,61 +183,58 @@ export default {
           required: true,
           label: "اسم الطالب",
           align: "left",
-          field: row => row.name,
-          format: val => `${val}`
+          field: (row) => row.name,
+          format: (val) => `${val}`,
         },
         {
           name: "createdAt",
           required: true,
           label: "وقت وتاريخ تقديم الطلب",
           align: "center",
-          field: row => row.createdAt,
-          format: val => `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`
+          field: (row) => row.createdAt,
+          format: (val) => `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`,
         },
         {
           name: "file",
           align: "center",
           label: "الملف الشخصي",
-          field: "file"
+          field: "file",
         },
         {
           name: "write",
           align: "center",
           label: "الإملاء",
-          field: "write"
+          field: "write",
         },
         {
           name: "recite",
           align: "center",
           label: "التسميع",
-          field: "recite"
+          field: "recite",
         },
         {
           name: "read",
           align: "center",
           label: "التلاوة",
-          field: "read"
+          field: "read",
         },
         {
           name: "commoknowledge",
           align: "center",
           label: "الثقافة العامة",
-          field: "commoknowledge"
+          field: "commoknowledge",
         },
         {
           name: "personal",
           align: "center",
           label: "اللجنة الرئيسية",
-          field: "personal"
-        }
-      ]
+          field: "personal",
+        },
+      ],
     };
   },
-  async created() {
-    await this.FETCH_STUDENTS({ status: "" });
-    await this.FETCH_EXAM_TOTAL_MARKS();
-    await this.FETCH_STUDENTS_MARKS();
-    await this.getUpdatedStudentRecords();
+  created() {
+    this.getUpdatedStudentRecords();
   },
   computed: {
     ...mapGetters({
@@ -247,8 +244,8 @@ export default {
       GET_STUDENTS_AND_MARKS: GETTERS.STUDNETS.GET_STUDENTS_AND_MARKS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
-      GET_ERRORS: GETTERS.UI.GET_ERRORS
-    })
+      GET_ERRORS: GETTERS.UI.GET_ERRORS,
+    }),
   },
   methods: {
     ...mapActions({
@@ -259,7 +256,7 @@ export default {
       SET_STUDENTS_AND_MARKS: ACTIONS.STUDNETS.SET_STUDENTS_AND_MARKS,
       FETCH_EXAM_TOTAL_MARKS: ACTIONS.SETTINGS.FETCH_EXAM_TOTAL_MARKS,
       SET_ERROR: ACTIONS.UI.SET_ERROR,
-      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     showStudentDialog(student) {
       this.registeredStudent = student;
@@ -267,10 +264,12 @@ export default {
     },
     showMarkDialog(examTitle, examType, studentId) {
       this.examTitle = examTitle;
-      this.examDetails = this.GET_EXAM_MARKS.find(exam => exam.id === examType);
+      this.examDetails = this.GET_EXAM_MARKS.find(
+        (exam) => exam.id === examType
+      );
       this.studentId = studentId;
       let studentMarks = this.GET_STUDENTS_MARKS.find(
-        marks => marks.studentId === studentId
+        (marks) => marks.studentId === studentId
       );
       if (studentMarks) this.studentMarks = studentMarks;
       else this.studentMarks = {};
@@ -294,63 +293,64 @@ export default {
       this.studentId = "";
       this.isTakeExamDialogOpen = value;
     },
-    getUpdatedStudentRecords() {
+    async getUpdatedStudentRecords() {
+      await this.FETCH_STUDENTS({ status: "" });
+      await this.FETCH_EXAM_TOTAL_MARKS();
+      await this.FETCH_STUDENTS_MARKS();
+
       let students = [];
+
       for (let i = 0; i < this.GET_STUDENTS.length; i++) {
         let student = this.GET_STUDENTS[i];
 
         if (student.status !== STUDENT_STATUS.REVIEW) {
           let studentMark = this.GET_STUDENTS_MARKS.find(
-            mark => mark.studentId === student.id
+            (mark) => mark.studentId === student.id
           );
           students.push({
             ...student,
-            ...studentMark
+            ...studentMark,
           });
         }
       }
 
       this.SET_STUDENTS_AND_MARKS({ updatedStudents: students });
-    }
+    },
   },
   filters: {
     formatDate(val) {
       return `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`;
-    }
+    },
   },
   watch: {
-    GET_MESSAGES: async function(newState, oldState) {
+    GET_MESSAGES: function (newState, oldState) {
       if (newState.length > 0) {
         let messageCode = newState[0].code;
 
         if (messageCode === MESSAGES.DATABASE.STUDENT_MARK_UPDATED) {
           this.isAddStudentMarkDialogOpen = false;
           this.CLEAR_ERRORS_AND_MESSAGES();
-          await this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
-          await this.FETCH_STUDENTS_MARKS();
-          this.getUpdatedStudentRecords();
-
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم تحديث درجات الطالب بنجاح"
+            message: "تم تحديث درجات الطالب بنجاح",
           });
+
+          this.getUpdatedStudentRecords();
         }
 
         if (messageCode === MESSAGES.DATABASE.STUDENT_ANSWERS_SUBMITTED) {
           this.isTakeExamDialogOpen = false;
           this.CLEAR_ERRORS_AND_MESSAGES();
-          await this.FETCH_STUDENTS({ status: STUDENT_STATUS.EXAM });
-          await this.FETCH_STUDENTS_MARKS();
-          this.getUpdatedStudentRecords();
-
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم تسليم إجابات إختبار الثقافة العامة بنجاح"
+            message: "تم تسليم إجابات إختبار الثقافة العامة بنجاح",
           });
+
+          this.getUpdatedStudentRecords();
         }
       }
     },
-    GET_ERRORS: function(newState, oldState) {
+    GET_ERRORS: function (newState, oldState) {
       if (newState.length > 0) {
         let errorCode = newState[0].code;
 
@@ -358,7 +358,7 @@ export default {
           this.isAddStudentMarkDialogOpen = false;
           this.$q.dialog({
             title: "فشلت العملية",
-            message: "حدث خطأ أثناء تحديث درجات الطالب"
+            message: "حدث خطأ أثناء تحديث درجات الطالب",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
@@ -367,7 +367,7 @@ export default {
           this.isTakeExamDialogOpen = false;
           this.$q.dialog({
             title: "فشلت العملية",
-            message: "حدث خطأ أثناء تسليم إجابات الثقافة العامة"
+            message: "حدث خطأ أثناء تسليم إجابات الثقافة العامة",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
@@ -376,18 +376,18 @@ export default {
           this.isTakeExamDialogOpen = false;
           this.$q.dialog({
             title: "فشلت العملية",
-            message: "لا يمكن للطالب تقديم الإختبار مرة أخرى"
+            message: "لا يمكن للطالب تقديم الإختبار مرة أخرى",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
       }
-    }
+    },
   },
   components: {
     StudentRegistrationInfoDialog: () =>
       import("components/StudentRegistrationInfoDialog.vue"),
     AddStudentMarkDialog: () => import("components/AddStudentMarkDialog.vue"),
-    TakeExamDialog: () => import("components/TakeExamDialog.vue")
-  }
+    TakeExamDialog: () => import("components/TakeExamDialog.vue"),
+  },
 };
 </script>

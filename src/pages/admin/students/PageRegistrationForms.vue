@@ -72,7 +72,7 @@ import {
   STUDENT_GRADE,
   MESSAGES,
   ERRORS,
-  STUDENT_STATUS
+  STUDENT_STATUS,
 } from "../../../config/constants";
 
 export default {
@@ -93,54 +93,54 @@ export default {
           required: true,
           label: "اسم الطالب",
           align: "left",
-          field: row => row.name,
-          format: val => `${val}`
+          field: (row) => row.name,
+          format: (val) => `${val}`,
         },
         {
           name: "createdAt",
           required: true,
           label: "وقت وتاريخ تقديم الطلب",
           align: "center",
-          field: row => row.createdAt,
-          format: val => `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`
+          field: (row) => row.createdAt,
+          format: (val) => `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`,
         },
         {
           name: "status",
           required: true,
           label: "حالة الطلب",
           align: "center",
-          field: row => row.status,
-          format: val => `${val}`
+          field: (row) => row.status,
+          format: (val) => `${val}`,
         },
         {
           name: "show",
           align: "center",
           label: "إستعراض",
-          field: "show"
+          field: "show",
         },
         {
           name: "edit",
           align: "center",
           label: "تعديل الحالة",
-          field: "edit"
+          field: "edit",
         },
         {
           name: "delete",
           align: "center",
           label: "حذف",
-          field: "delete"
-        }
+          field: "delete",
+        },
       ],
       statuses: [
         {
           label: "قبول لأداء الإختبار",
-          value: "accept_for_exam"
+          value: "accept_for_exam",
         },
         {
           label: "رفض الطلب",
-          value: "reject"
-        }
-      ]
+          value: "reject",
+        },
+      ],
     };
   },
   created() {
@@ -151,8 +151,8 @@ export default {
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
-      GET_ERRORS: GETTERS.UI.GET_ERRORS
-    })
+      GET_ERRORS: GETTERS.UI.GET_ERRORS,
+    }),
   },
   methods: {
     ...mapActions({
@@ -160,7 +160,7 @@ export default {
       DELETE_STUDENT: ACTIONS.STUDNETS.DELETE_STUDENT,
       EDIT_STUDENT_STATUS: ACTIONS.STUDNETS.EDIT_STUDENT_STATUS,
       SET_ERROR: ACTIONS.UI.SET_ERROR,
-      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     deleteStudentRegistrationForm(student) {
       if (student.status === STUDENT_STATUS.REVIEW) {
@@ -169,7 +169,7 @@ export default {
             title: "تنبيه",
             message: "هل أنت واثق من أنك تريد حذف هذا الطلب؟",
             cancel: true,
-            persistent: true
+            persistent: true,
           })
           .onOk(() => {
             this.DELETE_STUDENT(student.id);
@@ -177,7 +177,7 @@ export default {
       } else {
         this.$q.dialog({
           title: "تنبيه",
-          message: "لا يمكن حذف طالب حالته ليست قيد المراجعة"
+          message: "لا يمكن حذف طالب حالته ليست قيد المراجعة",
         });
       }
     },
@@ -188,19 +188,31 @@ export default {
     showEditStudentStatusDialog(student) {
       this.registeredStudent = student;
       this.studentStatus = student.status;
-      this.rejectionReasons =
-        typeof student.rejectionReasons !== "undefined" &&
-        student.rejectionReasons !== ""
-          ? student.rejectionReasons
-          : "";
-      this.isEditStudentStatusDialogOpen = true;
+
+      if (
+        this.studentStatus === STUDENT_STATUS.REVIEW ||
+        this.studentStatus === STUDENT_STATUS.REJECT
+      ) {
+        this.rejectionReasons =
+          typeof student.rejectionReasons !== "undefined" &&
+          student.rejectionReasons !== ""
+            ? student.rejectionReasons
+            : "";
+        this.isEditStudentStatusDialogOpen = true;
+      } else {
+        this.$q.dialog({
+          title: "تنبيه",
+          message:
+            "لا يمكن تعديل حالة الطالب ما لم يكن طلبه قيد المراجعة أو مرفوض",
+        });
+      }
     },
     closeEditStudentStatusDialog(value) {
       this.registeredStudent = {};
       this.studentStatus = "";
       this.rejectionReasons = "";
       this.isEditStudentStatusDialogOpen = value;
-    }
+    },
   },
   filters: {
     formatDate(val) {
@@ -211,18 +223,19 @@ export default {
       else if (val === STUDENT_STATUS.EXAM) return "مقبول لأداء الإختبار";
       else if (val === STUDENT_STATUS.STUDY) return "مقبول للدراسة في المركز";
       else if (val === STUDENT_STATUS.REJECT) return "تم الرفض";
+      else if (val === STUDENT_STATUS.WITHDRAW) return "تم الإنسحاب";
       else return "حالة الطالب غير معروفة";
-    }
+    },
   },
   watch: {
-    GET_MESSAGES: function(newState, oldState) {
+    GET_MESSAGES: function (newState, oldState) {
       if (newState.length > 0) {
         let messageCode = newState[0].code;
 
         if (messageCode === MESSAGES.DATABASE.STUDENT_FORM_RECORD_DELETED) {
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم حذف الطلب بنجاح"
+            message: "تم حذف الطلب بنجاح",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.FETCH_STUDENTS({ status: "" });
@@ -231,21 +244,21 @@ export default {
         if (messageCode === MESSAGES.DATABASE.STUDENT_STATUS_UPDATED) {
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم تعديل حالة الطالب بنجاح"
+            message: "تم تعديل حالة الطالب بنجاح",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.FETCH_STUDENTS({ status: "" });
         }
       }
     },
-    GET_ERRORS: function(newState, oldState) {
+    GET_ERRORS: function (newState, oldState) {
       if (newState.length > 0) {
         let errorCode = newState[0].code;
 
         if (errorCode === ERRORS.DATABASE.STUDENT_FORM_RECORD_NOT_DELETED) {
           this.$q.dialog({
             title: "فشلت العملية",
-            message: "حدث خطأ اثناء حذف المستخدم"
+            message: "حدث خطأ اثناء حذف المستخدم",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
@@ -253,7 +266,7 @@ export default {
         if (errorCode === ERRORS.STORAGE.OBJECT_NOT_FOUND) {
           this.$q.dialog({
             title: "حدث خطأ",
-            message: "لم يتم العثور على الملف"
+            message: "لم يتم العثور على الملف",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
@@ -261,7 +274,7 @@ export default {
         if (errorCode === ERRORS.STORAGE.UNAUTHORIZED) {
           this.$q.dialog({
             title: "حدث خطأ",
-            message: "لا تملك الصلاحيات لتحميل الملف"
+            message: "لا تملك الصلاحيات لتحميل الملف",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
@@ -269,7 +282,7 @@ export default {
         if (errorCode === ERRORS.STORAGE.CANCELED) {
           this.$q.dialog({
             title: "حدث خطأ",
-            message: "تم إلغاء تنزيل الملف"
+            message: "تم إلغاء تنزيل الملف",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
@@ -277,7 +290,7 @@ export default {
         if (errorCode === ERRORS.STORAGE.UNKNOWN) {
           this.$q.dialog({
             title: "حدث خطأ",
-            message: "حدث خطأ اثناء تنزيل الملف"
+            message: "حدث خطأ اثناء تنزيل الملف",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
@@ -285,7 +298,7 @@ export default {
         if (errorCode === ERRORS.DATABASE.STUDENT_NOT_FOUND) {
           this.$q.dialog({
             title: "حدث خطأ",
-            message: "لم يتم العثور على بيانات الطالب"
+            message: "لم يتم العثور على بيانات الطالب",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
@@ -293,19 +306,19 @@ export default {
         if (errorCode === ERRORS.DATABASE.EDIT_STUDENT_STATUS_ERROR) {
           this.$q.dialog({
             title: "حدث خطأ",
-            message: "حدث خطأ أثناء تعديل حالة الطالب"
+            message: "حدث خطأ أثناء تعديل حالة الطالب",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
       }
-    }
+    },
   },
   components: {
     StudentRegistrationInfoDialog: () =>
       import("components/StudentRegistrationInfoDialog.vue"),
     EditStudentStatusDialog: () =>
-      import("components/EditStudentStatusDialog.vue")
-  }
+      import("components/EditStudentStatusDialog.vue"),
+  },
 };
 </script>
 

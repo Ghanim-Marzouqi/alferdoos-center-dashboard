@@ -7,6 +7,7 @@ import groups from "./modules/groups";
 import settings from "./modules/settings";
 import students from "./modules/students";
 import subjects from "./modules/subjects";
+import teachers from "./modules/teachers";
 import ui from "./modules/ui";
 
 Vue.use(Vuex);
@@ -19,6 +20,7 @@ export default function(/* { ssrContext } */) {
       settings,
       students,
       subjects,
+      teachers,
       ui
     },
     strict: process.env.DEV

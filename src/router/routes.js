@@ -47,10 +47,6 @@ const routes = [
         component: () => import("pages/admin/students/PageStudentDashboard.vue")
       },
       {
-        path: "subject-schedule",
-        component: () => import("pages/admin/students/PageSubjectSchedule.vue")
-      },
-      {
         path: "teachers",
         component: () =>
           import("pages/admin/teachers/PageRegisteredTeachers.vue")
@@ -60,16 +56,16 @@ const routes = [
         component: () => import("pages/admin/groups/PageRegisteredGroups.vue")
       },
       {
+        path: "group-schedule",
+        component: () => import("pages/admin/groups/PageGroupSchedule.vue")
+      },
+      {
         path: "settings-year-info",
         component: () => import("pages/admin/settings/PageYearInfoSettings.vue")
       },
       {
         path: "settings-prepare-exams",
         component: () => import("pages/admin/settings/PagePrepareExams.vue")
-      },
-      {
-        path: "settings-edit-groups",
-        component: () => import("pages/admin/settings/PageEditGroups.vue")
       },
       {
         path: "settings-edit-memorizations",

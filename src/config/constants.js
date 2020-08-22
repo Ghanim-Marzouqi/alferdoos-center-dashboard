@@ -26,7 +26,8 @@ const STUDENT_STATUS = {
   REVIEW: "review",
   EXAM: "exam",
   STUDY: "study",
-  REJECT: "reject"
+  REJECT: "reject",
+  WITHDRAW: "withdraw"
 };
 
 // Quaran Chapters
@@ -231,7 +232,7 @@ const GETTERS = {
     GET_GROUPS: "GET_GROUPS",
     GET_MEMORIZATIONS: "GET_MEMORIZATIONS",
     GET_SCHADUALS :"GET_SCHADUALS",
-    
+    GET_MEMORIZATION: "GET_MEMORIZATION"
   },
   STUDNETS: {
     GET_STUDENTS: "GET_STUDENTS",
@@ -241,6 +242,10 @@ const GETTERS = {
   },
   SUBJECTS :{
     GET_SUBJECTS : "GET_SUBJECTS"
+  },
+  TEACHERS: {
+    GET_TEACHERS: "GET_TEACHERS",
+    GET_TEACHER: "GET_TEACHER"
   },
   UI: {
     GET_LOADING: "GET_LOADING",
@@ -264,7 +269,9 @@ const ACTIONS = {
     EDIT_GROUP: "EDIT_GROUP",
     DELETE_GROUP: "DELETE_GROUP",
     FETCH_GROUPS: "FETCH_GROUPS",
-    FETECH_GROUP_BY_STUDENT_ID: "FETECH_GROUP_BY_STUDENT_ID"
+    FETECH_GROUP_BY_ID: "FETECH_GROUP_BY_ID",
+    ADD_MEMORIZATION_TO_GROUP: "ADD_MEMORIZATION_TO_GROUP",
+    DELETE_MEMORIZATION_FROM_GROUP: "DELETE_MEMORIZATION_FROM_GROUP"
   },
   SUBJECTS: {
     REGISTER_SUBJECT : "REGISTER_SUBJECT",
@@ -290,7 +297,8 @@ const ACTIONS = {
     DELETE_MEMORIZATION_DETAILS: "DELETE_MEMORIZATION_DETAILS",
     ADD_SCHEDUAL : "ADD_SCHEDUAL",
     FETCH_SCHEDUAL : "FETCH_SCHEDUAL",
-    SET_YEAR_SEMESTERS : "SET_YEAR_SEMESTERS"
+    SET_YEAR_SEMESTERS : "SET_YEAR_SEMESTERS",
+    FETCH_MEMORIZATIONS_BY_ID: "FETCH_MEMORIZATIONS_BY_ID"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -305,6 +313,13 @@ const ACTIONS = {
     SET_STUDENTS_AND_MARKS: "SET_STUDENTS_AND_MARKS",
     JOIN_STUDENT_TO_GROUP: "JOIN_STUDENT_TO_GROUP",
     RESET_STUDENTS: "RESET_STUDENTS"
+  },
+  TEACHERS: {
+    ADD_TEACHER: "ADD_TEACHER",
+    EDIT_TEACHER: "EDIT_TEACHER",
+    DELETE_TEACHER: "DELETE_TEACHER",
+    FETCH_TEACHERS: "FETCH_TEACHERS",
+    FETECH_TEACHER_BY_ID: "FETECH_TEACHER_BY_ID"
   },
   UI: {
     SET_MESSAGE: "SET_MESSAGE",
@@ -333,13 +348,18 @@ const MUTATIONS = {
     SET_QUESTIONS: "SET_QUESTIONS",
     SET_EXAM_MARKS: "SET_EXAM_MARKS",
     SET_MEMORIZATIONS: "SET_MEMORIZATIONS",
-    SET_SCHEDUALS : "SET_SCHEDUALS"
+    SET_SCHEDUALS : "SET_SCHEDUALS",
+    SET_MEMORIZATION: "SET_MEMORIZATION"
   },
   STUDNETS: {
     SET_STUDENTS: "SET_STUDENTS",
     SET_STUDENTS_MARKS: "SET_STUDENTS_MARKS",
     SET_STUDENT_ANSWERS: "SET_STUDENT_ANSWERS",
     SET_STUDENTS_AND_MARKS: "SET_STUDENTS_AND_MARKS"
+  },
+  TEACHERS: {
+    SET_TEACHERS: "SET_TEACHERS",
+    SET_TEACHER: "SET_TEACHER"
   },
   UI: {
     SET_LOADING: "SET_LOADING",
@@ -373,7 +393,12 @@ const MESSAGES = {
     MEMORIZATION_UPDATED: "database/memorization-updated",
     MEMORIZATION_DELETED: "database/memorization-deleted",
     MEMORIZATION_DETAILS_ADDED: "database/memorization-details-added",
-    MEMORIZATION_DETAILS_DELETED: "database/memorization-details-deleted"
+    MEMORIZATION_DETAILS_DELETED: "database/memorization-details-deleted",
+    TEACHER_ADDED: "database/teacher-added",
+    TEACHER_UPDATED: "database/teacher-updated",
+    TEACHER_DELETED: "database/teacher-deleted",
+    GROUP_MEMORIZATIONS_ADDED: "database/group-memorizations-added",
+    GROUP_MEMORIZATIONS_DELETED: "database/group-memorization-deleted"
   }
 };
 
@@ -418,7 +443,14 @@ const ERRORS = {
     DELETE_MEMORIZATION_ERROR: "database/delete-memorization-error",
     ADD_MEMORIZATION_DETAILS_ERROR: "database/add-memorization-details-error",
     DELETE_MEMORIZATION_DETAILS_ERROR:
-      "database/delete-memorization-details-error"
+      "database/delete-memorization-details-error",
+    ADD_TEACHER_ERROR: "database/add-teacher-error",
+    EDIT_TEACHER_ERROR: "database/edit-teacher-error",
+    DELETE_TEACHER_ERROR: "database/delete-teacher-error",
+    TEACHER_ALREADY_EXISTED: "database/teacher-already-existed",
+    ADD_MEMORIZATION_TO_GROUP_ERROR: "database/add-memorization-to-group-error",
+    DELETE_MEMORIZATION_FROM_GROUP_ERROR:
+      "database/delete-memorization-from-group-error"
   },
   STORAGE: {
     OBJECT_NOT_FOUND: "storage/object-not-found",
