@@ -1,6 +1,5 @@
 <template>
   <q-page>
-    {{ isSelected }}
     <div class="row justify-center q-pa-lg">
       <div class="col-12 col-md-4">
         <q-select filled
@@ -33,7 +32,7 @@
           <q-btn
             @click=" isSelectSubjectOpen = true"
             round
-            :disable="isSelected"
+            :disable="!isSelected"
             color="amber"
             glossy
             text-color="white"
@@ -139,7 +138,7 @@ export default {
       return this.schedual[parseInt(day.weekday, 10)];
     },
     changeGroup(){
-      isSelected = true;
+      this.isSelected = true;
       let schedual = this.GET_SCHADUALS.find(s => s.group.value == this.group.value);
       
       if (schedual != undefined)
