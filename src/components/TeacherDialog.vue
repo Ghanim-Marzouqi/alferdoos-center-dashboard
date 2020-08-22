@@ -43,6 +43,7 @@
               :options="isActiveOptions"
               label="حالة الحساب"
               v-if="getStatus"
+              @input="changeStatus"
             />
           </div>
         </q-card-section>
@@ -129,6 +130,9 @@ export default {
     isEmailValid(email) {
       return email == "" ? "" : this.reg.test(email) ? true : false;
     },
+    changeStatus(status) {
+      this.teacherData.isTeacherActive = status.label;
+    },
     async onSubmit() {
       let valid = await this.$refs["teacherForm"].validate();
 
@@ -143,7 +147,7 @@ export default {
           name: this.teacherData.teacherName,
           email: this.teacherData.teacherEmail,
           phone: this.teacherData.teacherPhone,
-          isActive: this.teacherData.isTeacherActive.value,
+          isActive: this.teacherData.isTeacherActive === "نشط" ? true : false,
         });
       } else {
         this.ADD_TEACHER({

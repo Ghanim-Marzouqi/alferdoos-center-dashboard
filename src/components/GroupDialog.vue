@@ -3,9 +3,8 @@
     <q-card style="width: 400px">
       <q-card-section>
         <div class="text-h6">{{ dialogTitle }}</div>
-        <div class="q-ma-2">
+        <div class="q-mt-md">
           <q-input
-            class="q-mt-sm"
             filled
             v-model="groupName"
             label="اسم المجموعة"
@@ -63,6 +62,8 @@ export default {
       if (this.group && Object.keys(this.group).length > 0) {
         this.groupId = this.group.id;
         this.groupName = this.group.name;
+      } else {
+        this.groupName = "";
       }
     },
     editGroup() {

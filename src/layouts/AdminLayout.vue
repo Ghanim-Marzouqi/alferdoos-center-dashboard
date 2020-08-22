@@ -121,14 +121,6 @@
                 <q-item-label>إعداد الإختبارات</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item class="q-ma-xs" clickable exact to="/admin/settings-edit-groups">
-              <q-item-section avatar>
-                <q-icon name="o_group_work" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>إعداد المجموعات</q-item-label>
-              </q-item-section>
-            </q-item>
             <q-item class="q-ma-xs" clickable exact to="/admin/settings-edit-memorizations">
               <q-item-section avatar>
                 <q-icon name="o_menu_book" />
