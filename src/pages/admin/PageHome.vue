@@ -71,21 +71,25 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-12 col-md-6 col-xs-12 q-pa-xl">
-        <BarGraph
-          :formApplicationCount="getFormApplicationCount"
-          :admittedStudentsCount="getAdmittedStudentsCount"
-          :rejectedStudentsCount="getRejectedStudentsCount"
-          :withdrawnStudentsCount="getWithdrawnStudentsCount"
-        />
+      <div class="col-12 col-md-6 col-xs-12 q-pa-xs">
+        <q-card class="q-pa-xl">
+          <BarGraph
+            :formApplicationCount="getFormApplicationCount"
+            :admittedStudentsCount="getAdmittedStudentsCount"
+            :rejectedStudentsCount="getRejectedStudentsCount"
+            :withdrawnStudentsCount="getWithdrawnStudentsCount"
+          />
+        </q-card>
       </div>
-      <div class="col-12 col-md-6 col-xs-12 q-pa-xl">
-        <DoughnutChart
-          :formApplicationCount="getFormApplicationCount"
-          :admittedStudentsCount="getAdmittedStudentsCount"
-          :rejectedStudentsCount="getRejectedStudentsCount"
-          :withdrawnStudentsCount="getWithdrawnStudentsCount"
-        />
+      <div class="col-12 col-md-6 col-xs-12 q-pa-xs">
+        <q-card class="q-pa-xl">
+          <DoughnutChart
+            :formApplicationCount="getFormApplicationCount"
+            :admittedStudentsCount="getAdmittedStudentsCount"
+            :rejectedStudentsCount="getRejectedStudentsCount"
+            :withdrawnStudentsCount="getWithdrawnStudentsCount"
+          />
+        </q-card>
       </div>
     </div>
   </q-page>
