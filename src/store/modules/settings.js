@@ -1,4 +1,5 @@
 // Import Needed Modules
+import { Dialog } from "quasar";
 import { date } from "quasar";
 import { FirebaseDatabase } from "boot/firebase";
 import {
@@ -547,11 +548,20 @@ const actions = {
         .doc(payload.group.value)
         .set(payload);
 
+        Dialog.create({
+          title: "تنبيه",
+          message: "تم حفظ بنجاح"
+        });
+
       commit(MUTATIONS.UI.SET_MESSAGE, {
         code: MESSAGES.DATABASE.SCHEDUAL_ADDED
       });
     } catch (error) {
       console.log("ADD_SCHEDUAL ERROR", error);
+      Dialog.create({
+        title: "تنبيه",
+        message: "حدثت مشكلة أثناء الحفظ"
+      });
       commit(MUTATIONS.UI.SET_ERROR, {
         code: ERRORS.DATABASE.ADD_SCHEDUAL_ERROR
       });
