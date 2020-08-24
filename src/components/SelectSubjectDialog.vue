@@ -1,10 +1,21 @@
 <template>
   <q-dialog v-model="isOpen" @before-show="intializeValues">
+    
     <q-card style="width: 400px">
       <q-card-section>
         <div class="text-h6">المادة</div>
         <div class="q-ma-2">
-          <q-select filled v-model="session.subject" :options="subjects" label="إختر مادة" />
+          <q-select filled v-model="session.subject" :options="GET_SUBJECTS"
+          :option-value="sub => sub"
+          :option-label="sub => sub.name"
+          @input="val => teachers = val.teachers"
+           label="إختر مادة" />
+           <div class="text-h6">المعلم</div>
+
+            <q-select filled v-model="session.teacher" :options="teachers"
+          :option-label="teacher => teacher.name"
+           label="إختر معلم" />
+           <div class="text-h6">الوقت (بالدقائق)</div>
           <q-input
             class="q-mt-sm"
             filled
@@ -13,6 +24,7 @@
             type="text"
             :rules="[val => val.length > 0 || 'الرجاء ادخال الوقت']"
           />
+          
         </div>
       </q-card-section>
       <q-card-actions>
@@ -45,18 +57,13 @@ export default {
   },
   data() {
     return {
+      teachers : [],
       subjects: [],
     };
   },
   async created() {
-    await this.FETCH_SUBJECTS({ year : ""/*YEAR_INFO*/ });
-   
-    if (this.GET_SUBJECTS.length > 0) {
-      this.subjects = this.GET_SUBJECTS.map((subject) => ({
-        label: subject.name,
-        value: subject.id,
-      }));
-    }
+    this.FETCH_SUBJECTS({ year : ""/*YEAR_INFO*/ });
+
   },
   computed: {
     ...mapGetters({
@@ -75,7 +82,8 @@ export default {
             id : this.session.id,
             time: this.session.time,
             avatar: 'https://cdn.quasar.dev/img/boy-avatar.png',
-            subject: this.session.subject
+            subject: { id : this.session.subject.id , name : this.session.subject.name},
+            teacher : this.session.teacher,
      });
      this.time = "",
       this.$emit("close", false); 

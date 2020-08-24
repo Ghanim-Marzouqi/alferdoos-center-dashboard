@@ -60,6 +60,10 @@ const routes = [
         component: () => import("pages/admin/groups/PageGroupSchedule.vue")
       },
       {
+        path: "group-attendence",
+        component: () => import("pages/admin/groups/PageGroupAttendence.vue")
+      },
+      {
         path: "settings-year-info",
         component: () => import("pages/admin/settings/PageYearInfoSettings.vue")
       },

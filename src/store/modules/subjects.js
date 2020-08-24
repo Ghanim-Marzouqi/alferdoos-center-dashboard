@@ -41,6 +41,7 @@ const actions = {
           id: doc.id,
           name: doc.data().name,
           marks : doc.data().marks,
+          teachers : doc.data().teachers,
           year : doc.data().year,
           description : doc.data().description
         }));
@@ -80,6 +81,7 @@ const actions = {
         files : payload.filesUrl,
         description : payload.description,
         createdAt : payload.createdAt,
+        teachers : payload.teachers,
         createdBy : payload.createdBy,
         marks : payload.marks,
       }

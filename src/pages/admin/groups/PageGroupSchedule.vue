@@ -114,6 +114,7 @@ export default {
       session :{
         time : "",
         subject : null,
+        teacher : null,
         id : 0,
       },
       group : "",
@@ -160,7 +161,6 @@ export default {
       this.ADD_SCHEDUAL(this.schedual)
     },
     addSubject(subject) {
-      console.log(subject);
 
       if (this.isEdit)
       {
@@ -191,6 +191,7 @@ export default {
         toTime: tdate.format("hh:mm"),
         time: subject.time,
         subject: subject.subject,
+        teacher : subject.teacher,
         avatar: subject.avatar,
       };
       this.schedual[day].push(session);
@@ -203,6 +204,7 @@ export default {
     update(session,day,index){
       this.session.time = session.time;
       this.session.subject = session.subject,
+      this.session.teacher = session.teacher,
       this.index = index,
       this.session.id = session.id
       this.day = parseInt(day.weekday, 10);

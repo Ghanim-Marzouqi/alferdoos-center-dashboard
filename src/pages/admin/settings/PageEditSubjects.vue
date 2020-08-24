@@ -76,6 +76,7 @@ export default {
         name: "",
         description: "",
         files: [],
+        teachers : [],
       },
       columns: [
         {
@@ -104,8 +105,9 @@ export default {
   },
   created() {
     this.CLEAR_ERRORS_AND_MESSAGES();
-    this.FETCH_SUBJECTS();
+    this.FETCH_TEACHERS();
     this.FETCH_YEAR_INFO();
+    this.FETCH_SUBJECTS();
   },
   mounted() {
     
@@ -117,6 +119,7 @@ export default {
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
       GET_SUBJECTS : GETTERS.SUBJECTS.GET_SUBJECTS,
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
+       GET_TEACHERS: GETTERS.TEACHERS.GET_TEACHERS
     }),
   },
   methods: {
@@ -124,6 +127,7 @@ export default {
       REGISTER_SUBJECT: ACTIONS.SUBJECTS.REGISTER_SUBJECT,
       FETCH_SUBJECTS : ACTIONS.SUBJECTS.FETCH_SUBJECTS,
       FETCH_YEAR_INFO : ACTIONS.SETTINGS.FETCH_YEAR_INFO,
+      FETCH_TEACHERS : ACTIONS.TEACHERS.FETCH_TEACHERS,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES
     }),
     resrtForm(){
@@ -134,6 +138,7 @@ export default {
         name: "",
         description: "",
         files: [],
+        teachers : []
       },
       this.marks = this.GET_YEAR_INFO.semesters.map(sem =>({
         id : sem.id,
@@ -150,11 +155,11 @@ export default {
     },
     editSubject(sub)
     {
-      
       let subject = this.GET_SUBJECTS.find(subj => subj.id == sub.id);
       this.subjectForm.id = subject.id,
       this.subjectForm.year = subject.year;
       this.subjectForm.name = subject.name;
+      this.subjectForm.teachers = subject.teachers.map(t => this.GET_TEACHERS.find( te=> te.id == t.id));
       this.subjectForm.description = subject.description;
       this.marks = subject.marks.map(sem =>
       ({

@@ -26,6 +26,19 @@
                     :rules="[
                        val => (val && val.length > 0) || 'الرجاء كتابة الأسم الأول']"
                   />
+                  <div class="text-weight-bold">المعلمين</div>
+                  <q-select
+                    v-model="subject.teachers"
+                    multiple
+                    :options="GET_TEACHERS"
+                    :option-label="obj => obj.name"
+                    :option-value="obj => obj.id"
+                    use-chips
+                    stack-label
+                    dense
+                    outlined
+                    label="Multiple selection"
+                  />
 
                   <div class="text-weight-bold">توصيف للمادة ؟</div>
 
@@ -168,6 +181,7 @@ export default {
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
+      GET_TEACHERS: GETTERS.TEACHERS.GET_TEACHERS,
     }),
   },
   methods: {
@@ -202,6 +216,7 @@ export default {
           name: this.subject.name,
           description: this.subject.description,
           files: this.subject.files,
+          teachers : this.subject.teachers.map(teacher => ({ id : teacher.id, name : teacher.name })),
           status: "Active",
           createdAt: "",
           createdBy: "",

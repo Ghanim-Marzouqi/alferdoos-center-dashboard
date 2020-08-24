@@ -80,6 +80,14 @@
                 <q-item-label>المعلمين المسجلين</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/group-attendence">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>تسجيل الحضور</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-expansion-item>
           <q-expansion-item
             class="q-ma-xs"
@@ -95,6 +103,7 @@
                 <q-item-label>المجموعات المسجلة</q-item-label>
               </q-item-section>
             </q-item>
+            
             <q-item class="q-ma-xs" clickable exact to="/admin/group-schedule">
               <q-item-section avatar>
                 <q-icon name="o_today" />
@@ -103,6 +112,7 @@
                 <q-item-label>جدول الحصص الدراسية</q-item-label>
               </q-item-section>
             </q-item>
+                        
           </q-expansion-item>
           <q-expansion-item class="q-ma-xs" expand-separator icon="o_settings" label="الإعدادات">
             <q-item class="q-ma-xs" clickable exact to="/admin/settings-year-info">

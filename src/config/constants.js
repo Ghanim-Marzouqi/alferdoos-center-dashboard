@@ -12,7 +12,7 @@ const COLLECTIONS = {
   STUDENT_QUESTION_MARKS: "studentQuestionMarks",
   GROUPS: "groups",
   MEMORIZATIONS: "memorizations",
-  SCHEDUALS : "Scheduals"
+  SCHEDUALS : "Schedules"
 };
 
 const STUDENT_GRADE = {
