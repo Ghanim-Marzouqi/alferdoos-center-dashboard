@@ -42,12 +42,19 @@
 
       <q-card-actions align="right">
         <q-btn flat round @click="student.attendence = !student.attendence " :color="student.attendence ? 'green' : 'red'" icon="how_to_reg" />
-        <q-btn flat round :color="student.late > 0 ? 'red' :'green'" icon="alarm" />
-        <q-btn flat round :color="student.leave > 0 ? 'red' :'green'" icon="follow_the_signs" />
+        <q-btn flat round @click="TimerDialog = true, type = 'late' ,selectedStudent = student" :color="student.late > 0 ? 'red' :'green'" icon="alarm" />
+        <q-btn flat round @click="TimerDialog = true, type = 'leave' ,selectedStudent = student" :color="student.leave > 0 ? 'red' :'green'" icon="follow_the_signs" />
       </q-card-actions>
     </q-card>
       </div>
     </div>
+    <TimeDialog
+    :isOpen="TimerDialog"
+    :student="selectedStudent"
+    :type="timeType"
+    :dialogTitle="title"
+    @closeDialog="TimerDialog = false"
+    />
   </q-page>
 </template>
 
@@ -59,8 +66,15 @@ import students from 'src/store/modules/students';
 const moment = require("moment");
 
 export default {
+  components : { 
+    TimeDialog :()=> import("components/AttendenceTimeDialog.vue"),
+  },
   data() {
     return {
+      timeType : "",
+      selectedStudent : {},
+      title : "الوقت بالدقائق",
+      TimerDialog : false,
       isSelected: false,
       teacherId : "",
       selectedSession : {},
@@ -76,7 +90,8 @@ export default {
     ...mapActions({
       FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
       FETCH_SCHEDUAL: ACTIONS.SETTINGS.FETCH_SCHEDUAL,
-      FETCH_STUDENTS : ACTIONS.STUDNETS.FETCH_STUDENTS
+      FETCH_STUDENTS : ACTIONS.STUDNETS.FETCH_STUDENTS,
+      SAVE_ATTENDEANCE : ACTIONS.STUDNETS.SAVE_ATTENDEANCE
     }),
     changeSession(ses){
       console.log(ses);
@@ -113,7 +128,13 @@ export default {
       }
     },
     saveSchedual() {
-      this.schedual.group = this.group;
+      let doc = { session : this.sessions.find(x => x.selected) , 
+      date  :  moment(new Date()).format("DD/MM/YYYY"),
+      attendance : this.students }
+
+    console.log(doc);
+
+      this.SAVE_ATTENDEANCE(doc)
     },
 
   },
@@ -132,18 +153,16 @@ export default {
   watch : {
     GET_STUDENTS : function(oldState,newState) {
       this.students = newState.filter(student => student.groupId != undefined).map(student => ({
-        date :  moment(new Date()).format("DD/MM/YYYY"),
-        id : student.Id,
+        id : student.id,
         name : student.name,
         groupId : student.groupId,
-        takingBy : { id : this.GET_USER.Id, name : this.GET_USER.name },
+        takingBy : { id : this.GET_USER.id, name : this.GET_USER.name },
         notes : "",
         day : 0,
         validExecuse : true,
         attendence : true,
         late : 0,
         leave : 0,
-        session : ""
       }));
     },
     GET_SCHADUALS : function(oldState,newState) {

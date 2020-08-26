@@ -526,7 +526,34 @@ const actions = {
 
   RESET_STUDENTS({ commit }) {
     commit(MUTATIONS.STUDNETS.SET_STUDENTS, []);
+  },
+  async SAVE_ATTENDEANCE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    console.log(payload);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.ATTENDANCE)
+        .doc()
+        .set(payload);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, "تم الحفظ بنجاح");
+
+      Dialog.create({
+        title: "تنبيه",
+        message: "تم الحفظ بنجاح"
+      });
+    } catch (error) {
+      console.log("SAVE_ATTENDENACE", error);
+      Dialog.create({
+        title: "تنبيه",
+        message: "حدث خطأ اثناء الحفظ"
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
   }
+
 };
 
 // Mutations
