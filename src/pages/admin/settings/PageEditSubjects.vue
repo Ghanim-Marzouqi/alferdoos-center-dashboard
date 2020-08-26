@@ -159,7 +159,7 @@ export default {
       this.subjectForm.id = subject.id,
       this.subjectForm.year = subject.year;
       this.subjectForm.name = subject.name;
-      this.subjectForm.teachers = subject.teachers.map(t => this.GET_TEACHERS.find( te=> te.id == t.id));
+      this.subjectForm.teachers = subject.teachers != undefined ? subject.teachers.map(t => this.GET_TEACHERS.find( te=> te.id == t.id)) : [];
       this.subjectForm.description = subject.description;
       this.marks = subject.marks.map(sem =>
       ({
@@ -178,7 +178,7 @@ export default {
     }
 
   },
-  watch: {
+   watch:{
     GET_MESSAGES: function(newState, oldState) {
 
     },
