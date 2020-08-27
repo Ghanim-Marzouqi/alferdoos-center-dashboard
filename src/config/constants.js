@@ -1,6 +1,7 @@
 // Firestore Collections
 const COLLECTIONS = {
   ADMINS: "admins",
+  SUBJECTS : "subjects",
   PARENTS: "parents",
   TEACHERS: "teachers",
   STUDENTS: "students",
@@ -10,7 +11,8 @@ const COLLECTIONS = {
   STUDENT_EXAM_MARKS: "studentExamMarks",
   STUDENT_QUESTION_MARKS: "studentQuestionMarks",
   GROUPS: "groups",
-  MEMORIZATIONS: "memorizations"
+  MEMORIZATIONS: "memorizations",
+  SCHEDUALS : "Scheduals"
 };
 
 const STUDENT_GRADE = {
@@ -229,6 +231,7 @@ const GETTERS = {
     GET_EXAM_MARKS: "GET_EXAM_MARKS",
     GET_GROUPS: "GET_GROUPS",
     GET_MEMORIZATIONS: "GET_MEMORIZATIONS",
+    GET_SCHADUALS :"GET_SCHADUALS",
     GET_MEMORIZATION: "GET_MEMORIZATION"
   },
   STUDNETS: {
@@ -236,6 +239,9 @@ const GETTERS = {
     GET_STUDENTS_MARKS: "GET_STUDENTS_MARKS",
     GET_STUDENT_ANSWERS: "GET_STUDENT_ANSWERS",
     GET_STUDENTS_AND_MARKS: "GET_STUDENTS_AND_MARKS"
+  },
+  SUBJECTS :{
+    GET_SUBJECTS : "GET_SUBJECTS"
   },
   TEACHERS: {
     GET_TEACHERS: "GET_TEACHERS",
@@ -267,6 +273,12 @@ const ACTIONS = {
     ADD_MEMORIZATION_TO_GROUP: "ADD_MEMORIZATION_TO_GROUP",
     DELETE_MEMORIZATION_FROM_GROUP: "DELETE_MEMORIZATION_FROM_GROUP"
   },
+  SUBJECTS: {
+    REGISTER_SUBJECT : "REGISTER_SUBJECT",
+    UPDATE_SUBJECT : "UPDATE_SUBJECT",
+    FETCH_SUBJECTS : "FETCH_SUBJECTS"
+  },
+
   SETTINGS: {
     FETCH_YEAR_INFO: "FETCH_YEAR_INFO",
     SET_YEAR_NAME: "SET_YEAR_NAME",
@@ -283,6 +295,9 @@ const ACTIONS = {
     DELETE_MEMORIZATION: "DELETE_MEMORIZATION",
     ADD_MEMORIZATION_DETAILS: "ADD_MEMORIZATION_DETAILS",
     DELETE_MEMORIZATION_DETAILS: "DELETE_MEMORIZATION_DETAILS",
+    ADD_SCHEDUAL : "ADD_SCHEDUAL",
+    FETCH_SCHEDUAL : "FETCH_SCHEDUAL",
+    SET_YEAR_SEMESTERS : "SET_YEAR_SEMESTERS",
     FETCH_MEMORIZATIONS_BY_ID: "FETCH_MEMORIZATIONS_BY_ID"
   },
   STUDNETS: {
@@ -324,12 +339,16 @@ const MUTATIONS = {
     SET_GROUPS: "SET_GROUPS",
     SET_STUDENT_GROUP: "SET_STUDENT_GROUP"
   },
+  SUBJECTS : {
+    SET_SUBJECTS : "SET_SUBJECTS",
+  },
   SETTINGS: {
     SET_YEAR_INFO: "SET_YEAR_INFO",
     SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
     SET_QUESTIONS: "SET_QUESTIONS",
     SET_EXAM_MARKS: "SET_EXAM_MARKS",
     SET_MEMORIZATIONS: "SET_MEMORIZATIONS",
+    SET_SCHEDUALS : "SET_SCHEDUALS",
     SET_MEMORIZATION: "SET_MEMORIZATION"
   },
   STUDNETS: {
@@ -358,6 +377,7 @@ const MESSAGES = {
     STUDENT_STATUS_UPDATED: "database/student-status-updated",
     YEAR_INFO_CREATED: "database/year-info-created",
     YEAR_INFO_UPDATED: "database/year-info-updated",
+    SCHEDUAL_ADDED : "database/schedual been saved",
     YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
       "database/year-info-registration-period-updated",
     EXAM_MARKS_UPDATED: "database/exam_marks_updated",
@@ -386,6 +406,7 @@ const MESSAGES = {
 const ERRORS = {
   AUTH: {
     USER_NOT_FOUND: "auth/user-not-found",
+    YEAR_SEMESTERS_ERROR : "db/error while saving semsters",
     PHONE_NOT_FOUND: "auth/phone-not-found",
     EMAIL_NOT_VERIFIED: "auth/email-not-verified",
     EMAIL_OR_PHONE_INACTIVE: "auth/email-or-phone-inactive",
@@ -410,6 +431,7 @@ const ERRORS = {
     EDIT_STUDENT_MARK_ERROR: "database/edit-student-mark-error",
     STUDENT_ANSWERS_SUBMIT_ERROR: "database/student-answers-submit-error",
     STUDENT_ALREADY_TAKEN_EXAM: "student-already-taken-exam",
+    ADD_SCHEDUAL_ERROR:"Error while saving",
     FETCH_STUDENT_ANSWERS_BY_ID_ERROR:
       "database/fetch-student-answers-by-id-error",
     ADD_GROUP_ERROR: "database/add-group-error",

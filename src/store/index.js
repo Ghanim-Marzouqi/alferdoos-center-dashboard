@@ -6,6 +6,7 @@ import auth from "./modules/auth";
 import groups from "./modules/groups";
 import settings from "./modules/settings";
 import students from "./modules/students";
+import subjects from "./modules/subjects";
 import teachers from "./modules/teachers";
 import ui from "./modules/ui";
 
@@ -18,6 +19,7 @@ export default function(/* { ssrContext } */) {
       groups,
       settings,
       students,
+      subjects,
       teachers,
       ui
     },

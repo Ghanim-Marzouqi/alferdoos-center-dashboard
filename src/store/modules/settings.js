@@ -1,4 +1,5 @@
 // Import Needed Modules
+import { Dialog } from "quasar";
 import { date } from "quasar";
 import { FirebaseDatabase } from "boot/firebase";
 import {
@@ -15,6 +16,7 @@ const state = {
   questions: [],
   examMarks: [],
   memorizations: [],
+  schaduals : [],
   memorization: {}
 };
 
@@ -25,6 +27,7 @@ const getters = {
   GET_QUESTIONS: state => state.questions,
   GET_EXAM_MARKS: state => state.examMarks,
   GET_MEMORIZATIONS: state => state.memorizations,
+  GET_SCHADUALS : state => state.schaduals,
   GET_MEMORIZATION: state => state.memorization
 };
 
@@ -33,7 +36,6 @@ const actions = {
   async FETCH_YEAR_INFO({ commit }) {
     // Get Date
     let date = new Date();
-
     try {
       // Get Year Info If Exists
       let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)
@@ -47,7 +49,8 @@ const actions = {
           id: doc.data().id,
           name: doc.data().name,
           startPeriodDate: doc.data().startPeriodDate,
-          endPeriodDate: doc.data().endPeriodDate
+          endPeriodDate: doc.data().endPeriodDate,
+          semesters : doc.data().semesters,
         });
       }
     } catch (error) {
@@ -99,6 +102,51 @@ const actions = {
     }
   },
 
+  async SET_YEAR_SEMESTERS({ commit }, payload) {
+
+    console.log("reach the point")
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    let date = new Date();
+
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+        .doc(date.getFullYear().toString())
+        .get();
+
+      if (!doc.exists) {
+        await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+          .doc(date.getFullYear().toString())
+          .set({
+            id: date.getFullYear().toString(),
+            name: payload,
+            startPeriodDate: Date.now(),
+            endPeriodDate: Date.now(),
+            semesters : payload,
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.YEAR_INFO_CREATED
+        });
+      } else {
+        await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+          .doc(date.getFullYear().toString())
+          .update({
+            semesters : payload
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.YEAR_INFO_UPDATED
+        });
+      }
+    } catch (error) {
+      console.log("SET_YEAR_SEMESTERS", error);
+      commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.DATABASE.YEAR_SEMESTERS_ERROR });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
   async SET_REGISTRATION_PERIOD({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -133,6 +181,7 @@ const actions = {
     }
   },
 
+  
   async FETCH_REGISTRATION_PERIOD({ commit }) {
     try {
       let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)
@@ -490,6 +539,61 @@ const actions = {
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
+  } ,
+  async ADD_SCHEDUAL({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.SCHEDUALS)
+        .doc(payload.group.value)
+        .set(payload);
+
+        Dialog.create({
+          title: "تنبيه",
+          message: "تم حفظ بنجاح"
+        });
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.SCHEDUAL_ADDED
+      });
+    } catch (error) {
+      console.log("ADD_SCHEDUAL ERROR", error);
+      Dialog.create({
+        title: "تنبيه",
+        message: "حدثت مشكلة أثناء الحفظ"
+      });
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ADD_SCHEDUAL_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
+  async FETCH_SCHEDUAL({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(COLLECTIONS.SCHEDUALS)
+        .get();
+
+      let docs = snapshot.docs;
+
+      let schaduals = docs.map(schadual => ({
+        group: schadual.data().group,
+        0: schadual.data()[0],
+        1: schadual.data()[1],
+        2: schadual.data()[2],
+        3: schadual.data()[3],
+        4: schadual.data()[4]
+      }));
+
+      if (schaduals.length > 0) {
+        commit(MUTATIONS.SETTINGS.SET_SCHEDUALS, schaduals);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_SCHEDUALS, []);
+      }
+    } catch (error) {
+      console.log("FETCH_SCHADUALS ERROR", error);
+    }
   },
 
   async FETCH_MEMORIZATIONS_BY_ID({ commit }, payload) {
@@ -525,6 +629,7 @@ const mutations = {
   SET_EXAM_MARKS: (state, marks) => (state.examMarks = marks),
   SET_MEMORIZATIONS: (state, memorizations) =>
     (state.memorizations = memorizations),
+    SET_SCHEDUALS : (state,schaduals) => state.schaduals = schaduals,
   SET_MEMORIZATION: (state, memorization) => (state.memorization = memorization)
 };
 
