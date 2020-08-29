@@ -583,7 +583,9 @@ const actions = {
         1: schadual.data()[1],
         2: schadual.data()[2],
         3: schadual.data()[3],
-        4: schadual.data()[4]
+        4: schadual.data()[4],
+        5: schadual.data()[5],
+        6: schadual.data()[6],
       }));
 
       if (schaduals.length > 0) {

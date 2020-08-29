@@ -25,25 +25,22 @@
       </div>
     </div>
 
-
+    <div class="row justify-center">
+      <h5 v-if="isSelected && sessions.length == 0">لا توجد حصص مسجلة لهذه المجموعة</h5>
+    </div>
         <div class="row">
       <div v-for="student in  students" :key="student.id" class="col-2">
-          <q-card v-if="isSelected" class="my-card" style="margin:10px;">
-      <div class="row justify-center">
-        <p style="font-size:20px; margin-top:10px">
-          {{ student.id }} <br>
-        </p>
-      </div>
+          <q-card v-if="isSelected && sessions.length > 0" class="my-card" style="margin:10px;">
       <div class="row justify-center" style="marjin-top:-20px;">
-        <p style="font-size:15px; margin-top:-10px">
+        <p style="font-size:15px; margin-top:10px">
           {{ student.name }} <br>
         </p>
       </div>
 
       <q-card-actions align="right">
-        <q-btn flat round @click="student.attendence = !student.attendence " :color="student.attendence ? 'green' : 'red'" icon="how_to_reg" />
-        <q-btn flat round @click="TimerDialog = true, type = 'late' ,selectedStudent = student" :color="student.late > 0 ? 'red' :'green'" icon="alarm" />
-        <q-btn flat round @click="TimerDialog = true, type = 'leave' ,selectedStudent = student" :color="student.leave > 0 ? 'red' :'green'" icon="follow_the_signs" />
+        <q-btn :disable="student.isLate || student.isLeave" flat round @click="student.attendence = !student.attendence " :color="student.attendence ? 'green' : 'red'" icon="how_to_reg" />
+        <q-btn :disable="!student.attendence" flat round @click="timeType = 'late', TimerDialog = true ,selectedStudent = student" :color="student.late > 0 ? 'red' :'green'" icon="alarm" />
+        <q-btn :disable="!student.attendence" flat round @click="timeType = 'leave', TimerDialog = true ,selectedStudent = student" :color="student.leave > 0 ? 'red' :'green'" icon="follow_the_signs" />
       </q-card-actions>
     </q-card>
       </div>
@@ -124,6 +121,8 @@ export default {
           2: [],
           3: [],
           4: [],
+          5 : [],
+          6: [],
         };
       }
     },
@@ -163,6 +162,8 @@ export default {
         attendence : true,
         late : 0,
         leave : 0,
+        isLate : false,
+        isLeave : false,
       }));
     },
     GET_SCHADUALS : function(oldState,newState) {

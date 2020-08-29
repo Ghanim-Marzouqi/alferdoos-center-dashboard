@@ -8,7 +8,7 @@
             filled
             v-model="TimeInMinuts"
             label="الوقت بالدقائق"
-            type="text"
+            type="number"
             :rules="[val => val.length > 0 || 'الرجاء إدخال الوقت']"
           />
         </div>
@@ -60,12 +60,17 @@ export default {
       this.$emit("closeDialog", false);
     },
     save(){
-      if (this.type == "late")
+      console.log(this.type)
+      let min = parseInt(this.TimeInMinuts);
+      if (this.type == 'late')
       {
-        this.tudent.late = parseInt(this.TimeInMinuts);
+        this.student.late = min
+        this.student.isLate = min > 0 ? true : false;
       }else
       {
-        this.student.leave = parseInt(this.TimeInMinuts);
+        let min = parseInt(this.TimeInMinuts);
+        this.student.leave = min;
+        this.student.isLeave = min > 0 ? true : false;
       }
       this.closeGroupDialog();
     }

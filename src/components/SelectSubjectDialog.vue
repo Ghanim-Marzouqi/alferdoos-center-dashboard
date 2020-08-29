@@ -2,6 +2,7 @@
   <q-dialog v-model="isOpen" @before-show="intializeValues">
     
     <q-card style="width: 400px">
+      <q-form ref="selectSubject">
       <q-card-section>
         <div class="text-h6">المادة</div>
         <div class="q-ma-2">
@@ -9,19 +10,21 @@
           :option-value="sub => sub"
           :option-label="sub => sub.name"
           @input="val => teachers = val.teachers"
+          :rules="[val => val && val.length > 0 || 'اخر مادة']"
            label="إختر مادة" />
            <div class="text-h6">المعلم</div>
 
             <q-select filled v-model="session.teacher" :options="teachers"
           :option-label="teacher => teacher.name"
+          :rules="[val => val && val.length > 0 || 'اخر معلم']"
            label="إختر معلم" />
            <div class="text-h6">الوقت (بالدقائق)</div>
           <q-input
             class="q-mt-sm"
             filled
+            type="number"
             v-model="session.time"
             label="الوقت"
-            type="text"
             :rules="[val => val.length > 0 || 'الرجاء ادخال الوقت']"
           />
           
@@ -30,8 +33,9 @@
       <q-card-actions>
         <q-space></q-space>
         <q-btn dense flat color="primary" @click="closeDialog">إلغاء</q-btn>
-        <q-btn dense flat color="primary" :loading="GET_LOADING" @click="saveSubject">حفظ</q-btn>
+        <q-btn dense flat type="submit" color="primary" :loading="GET_LOADING" @click="saveSubject">حفظ</q-btn>
       </q-card-actions>
+      </q-form>
     </q-card>
   </q-dialog>
 </template>

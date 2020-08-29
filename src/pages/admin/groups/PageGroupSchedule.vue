@@ -24,7 +24,7 @@
       <q-calendar
         v-model="selectedDate"
         view="week-agenda"
-        :weekdays="[0,1,2,3,4]"
+        :weekdays="[0,1,2,3,4,5,6]"
         locale="ar"
         no-scroll
       >
@@ -125,6 +125,8 @@ export default {
         2: [],
         3: [],
         4: [],
+        5: [],
+        6: [],
       },
     };
   },
@@ -153,6 +155,8 @@ export default {
         2: [],
         3: [],
         4: [],
+        5: [],
+        6: [],
       };
       }
     },

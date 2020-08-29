@@ -12,9 +12,11 @@
           <div class="col">
             <q-card style="margin:10px;" class="full-height">
               <q-card-section>
-                <q-form ref="hMoretInfoForm">
+                <q-form ref="subjectForm">
                   <div class="text-weight-bold">إسم المادة:</div>
-                  <q-input
+                  <div class="row">
+                    <div class="col-8">
+                                        <q-input
                     dense
                     square
                     outlined
@@ -23,21 +25,38 @@
                     type="text"
                     label="إسم المادة"
                     lazy-rules
-                    :rules="[
-                       val => (val && val.length > 0) || 'الرجاء كتابة الأسم الأول']"
+                    :rules="[ val => (val && val.length > 0) || 'الرجاء كتابة إسم المادة']"
                   />
+                    </div>
+                    <div class="col-3" style="margin-right:20px">
+                    <q-input
+                    dense
+                    square
+                    outlined
+                    clearable
+                    type="number"
+                    disable
+                    :label="getTotal(0)"
+                    lazy-rules
+                    :rules="[ val => (val && val < 100) || 'الرجاء إضافة الدرجات']"
+                  />
+                    </div>
+                  </div>
+
+
                   <div class="text-weight-bold">المعلمين</div>
                   <q-select
                     v-model="subject.teachers"
                     multiple
                     :options="GET_TEACHERS"
+                    :rules="[ val => (val && val.length > 0) || 'الرجاء إختيار المعلمين']"
                     :option-label="obj => obj.name"
                     :option-value="obj => obj.id"
                     use-chips
                     stack-label
                     dense
                     outlined
-                    label="Multiple selection"
+                    label="إختر المعلمين"
                   />
 
                   <div class="text-weight-bold">توصيف للمادة ؟</div>
@@ -49,6 +68,7 @@
                     :autogrow="false"
                     clearable
                     v-model="subject.description"
+                    :rules="[ val => (val && val.length > 0) || 'أضف توصيفا للمادة']"
                     type="textarea"
                     label="مختصر بسيط للمادة"
                   />
@@ -78,8 +98,11 @@
                 <div class="q-ma-2">
                   <q-checkbox v-model="sem.isActive" :label="sem.name" />
                 </div>
+                <div class="q-ma-2">
+                  <label>المجموع:</label><label>{{ sem.totalMarks }}</label>
+                </div>
                 <div class="row q-my-sm">
-                  <q-form @submit.prevent="addEvaluationsCriteria(sem.option,sem.options)">
+                  <q-form @submit.prevent="addEvaluationsCriteria(sem.option,sem)">
                     <q-list style="width: 100%">
                       <q-item>
                         <q-item-section class="justify-start" avatar>
@@ -114,7 +137,8 @@
                             label="الدرجة"
                             dense
                             filled
-                            :rules="[val => val && val > 0 || 'ادخل الدرجة']"
+                            :rules="[val => val && val > 0  || 'ادخل الدرجة',
+                            val => getTotal(val) <= 100 || 'تجاوز الحد الأقصى 100']"
                           ></q-input>
                         </q-item-section>
                       </q-item>
@@ -190,12 +214,19 @@ export default {
       UPDATE_SUBJECT: ACTIONS.SUBJECTS.UPDATE_SUBJECT,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
-    addEvaluationsCriteria(option, evaluations) {
-      evaluations.push({
-        id: evaluations.length + 1,
+    getTotal(val){
+      let total = this.marks.reduce((a,b) => ({totalMarks :a.totalMarks+ b.totalMarks })).totalMarks;
+      console.log();
+      return parseInt(total) + parseInt(val);
+    },
+    addEvaluationsCriteria(option, semester) {
+      semester.options.push({
+        id: semester.option.length + 1,
         mark: parseInt(option.mark),
         text: option.text,
       });
+      semester.totalMarks = semester.totalMarks+parseInt(option.mark);
+      
       option.mark = 0;
       option.text = "";
     },
@@ -203,7 +234,8 @@ export default {
       evaluations.splice(i, 1);
     },
     async onSubmit() {
-      let valid = true;
+
+      let valid = this.$refs.subjectForm.validate() && this.getTotal(0) == 100;
 
       if (valid) {
         let markCriteria = this.marks.map((sem) => ({
@@ -223,10 +255,16 @@ export default {
           year: this.subject.year,
           marks: markCriteria,
         };
-        if (this.subject.id === "") this.REGISTER_SUBJECT(subject);
-        else {
-          subject.id = this.subject.id;
-          this.UPDATE_SUBJECT(subject);
+
+        
+        
+        if (valid){
+          if (this.subject.id === "") 
+              this.REGISTER_SUBJECT(subject);
+          else {
+            subject.id = this.subject.id;
+            this.UPDATE_SUBJECT(subject);
+          }
         }
 
         this.$emit("close");
