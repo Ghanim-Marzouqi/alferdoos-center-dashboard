@@ -239,7 +239,8 @@ const GETTERS = {
     GET_STUDENTS: "GET_STUDENTS",
     GET_STUDENTS_MARKS: "GET_STUDENTS_MARKS",
     GET_STUDENT_ANSWERS: "GET_STUDENT_ANSWERS",
-    GET_STUDENTS_AND_MARKS: "GET_STUDENTS_AND_MARKS"
+    GET_STUDENTS_AND_MARKS: "GET_STUDENTS_AND_MARKS",
+    GET_ATTENDANCE : "GET_ATTENDANCE"
   },
   SUBJECTS :{
     GET_SUBJECTS : "GET_SUBJECTS"
@@ -314,7 +315,9 @@ const ACTIONS = {
     SET_STUDENTS_AND_MARKS: "SET_STUDENTS_AND_MARKS",
     JOIN_STUDENT_TO_GROUP: "JOIN_STUDENT_TO_GROUP",
     RESET_STUDENTS: "RESET_STUDENTS",
-    SAVE_ATTENDEANCE : "SAVE_ATTENDEANCE"
+    SAVE_ATTENDEANCE : "SAVE_ATTENDEANCE",
+    FETCH_ATTENDANCE : "FETCH_ATTENDANCE",
+    UPDATE_ATTENDANCE : "UPDATE_ATTENDANCE"
   },
   TEACHERS: {
     ADD_TEACHER: "ADD_TEACHER",
@@ -357,7 +360,8 @@ const MUTATIONS = {
     SET_STUDENTS: "SET_STUDENTS",
     SET_STUDENTS_MARKS: "SET_STUDENTS_MARKS",
     SET_STUDENT_ANSWERS: "SET_STUDENT_ANSWERS",
-    SET_STUDENTS_AND_MARKS: "SET_STUDENTS_AND_MARKS"
+    SET_STUDENTS_AND_MARKS: "SET_STUDENTS_AND_MARKS",
+    SET_ATTENDANCE : "SET_ATTENDANCE"
   },
   TEACHERS: {
     SET_TEACHERS: "SET_TEACHERS",
@@ -377,6 +381,7 @@ const MESSAGES = {
   DATABASE: {
     STUDENT_FORM_RECORD_DELETED: "database/student-form-record-deleted",
     STUDENT_STATUS_UPDATED: "database/student-status-updated",
+    STUDENT_ATTENDANCE_UPDATED: "database/student-attendance-status-updated",
     YEAR_INFO_CREATED: "database/year-info-created",
     YEAR_INFO_UPDATED: "database/year-info-updated",
     SCHEDUAL_ADDED : "database/schedual been saved",
@@ -422,7 +427,9 @@ const ERRORS = {
     USER_NOT_FOUND: "database/user-not-found",
     STUDENT_FORM_RECORD_NOT_DELETED: "database/student-form-record-not-deleted",
     STUDENT_NOT_FOUND: "database/student-not-found",
+    ATTENDANCE_RECORD_NOT_FOUND: "database/atteendance-record-not-found",
     EDIT_STUDENT_STATUS_ERROR: "database/edit-student-status-error",
+    UPDATE_ATTENDANCE_STATUS_ERROR: "database/update-attendance-status-error",
     YEAR_INFO_ERROR: "database/year-info-error",
     YEAR_INFO_NOT_FOUND: "database/year-info-not-found",
     FETCH_REGISTRATION_PERIOD_ERROR: "database/fetch-registration-period-error",

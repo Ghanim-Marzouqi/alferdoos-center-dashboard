@@ -16,12 +16,14 @@ const state = {
   studentMarks: [],
   studentAnswers: {},
   studentsAndMarks: [],
-  studentGroup: {}
+  studentGroup: {},
+  attendance : [],
 };
 
 // Getters
 const getters = {
   GET_STUDENTS: state => state.students,
+  GET_ATTENDANCE: state => state.attendance,
   GET_STUDENTS_MARKS: state => state.studentMarks,
   GET_STUDENT_ANSWERS: state => state.studentAnswers,
   GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks
@@ -552,15 +554,76 @@ const actions = {
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
+  },
+  async FETCH_ATTENDANCE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let snapshot = null;
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.ATTENDANCE)
+          .where("date", "==", payload.year)
+          .get();
+
+      let docs = snapshot.docs;
+      let attendance = docs.map(doc => ({
+        id : doc.id,
+        attendance: doc.data().attendance,
+        date: doc.data().date,
+        group: doc.data().group,
+        session: doc.data().session,
+      }));
+
+      commit(MUTATIONS.STUDNETS.SET_ATTENDANCE, attendance);
+    } catch (error) {
+      console.log("FETCH_ATTENDANCE_BY_DAY", error);
+      commit(MUTATIONS.UI.SET_ERROR, error);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
+  async UPDATE_ATTENDANCE({ commit }, payload) {
+
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.ATTENDANCE)
+        .doc(payload.id)
+        .get();
+
+      if (doc.exists) {
+        await FirebaseDatabase.collection(COLLECTIONS.ATTENDANCE)
+          .doc(payload.id)
+          .update({
+            attendance : payload.attendance
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.STUDENT_ATTENDANCE_UPDATED
+        });
+      } else {
+        commit(MUTATIONS.UI.SET_ERROR, {
+          code: ERRORS.DATABASE.ATTENDANCE_RECORD_NOT_FOUND
+        });
+      }
+    } catch (error) {
+      console.log("EDIT_APPLICATION_STATUS ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.UPDATE_ATTENDANCE_STATUS_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
   }
 
 };
 
-// Mutations
+// Mutations 
 const mutations = {
   SET_STUDENTS: (state, students) => (state.students = students),
-  SET_STUDENTS_MARKS: (state, studentMarks) =>
-    (state.studentMarks = studentMarks),
+  SET_ATTENDANCE: (state, attendance) => state.attendance = attendance,
+  SET_STUDENTS_MARKS: (state, studentMarks) => (state.studentMarks = studentMarks),
   SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers),
   SET_STUDENTS_AND_MARKS: (state, updatedStudents) =>
     (state.studentsAndMarks = updatedStudents)

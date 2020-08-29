@@ -26,11 +26,11 @@
     </div>
 
     <div class="row justify-center">
-      <h5 v-if="isSelected && sessions.length == 0">لا توجد حصص مسجلة لهذه المجموعة</h5>
+      <h5 v-if="isGroupSelected && sessions.length == 0">لا توجد حصص مسجلة لهذه المجموعة</h5>
     </div>
         <div class="row">
       <div v-for="student in  students" :key="student.id" class="col-2">
-          <q-card v-if="isSelected && sessions.length > 0" class="my-card" style="margin:10px;">
+          <q-card v-if="isGroupSelected && sessions.length > 0 && isSessoinSelected" class="my-card" style="margin:10px;">
       <div class="row justify-center" style="marjin-top:-20px;">
         <p style="font-size:15px; margin-top:10px">
           {{ student.name }} <br>
@@ -38,9 +38,9 @@
       </div>
 
       <q-card-actions align="right">
-        <q-btn :disable="student.isLate || student.isLeave" flat round @click="student.attendence = !student.attendence " :color="student.attendence ? 'green' : 'red'" icon="how_to_reg" />
-        <q-btn :disable="!student.attendence" flat round @click="timeType = 'late', TimerDialog = true ,selectedStudent = student" :color="student.late > 0 ? 'red' :'green'" icon="alarm" />
-        <q-btn :disable="!student.attendence" flat round @click="timeType = 'leave', TimerDialog = true ,selectedStudent = student" :color="student.leave > 0 ? 'red' :'green'" icon="follow_the_signs" />
+        <q-btn :disable="student.isLate || student.isLeave" flat round @click="student.attend = !student.attend " :color="student.attend ? 'green' : 'red'" icon="how_to_reg" />
+        <q-btn :disable="!student.attend" flat round @click="timeType = 'late', TimerDialog = true ,selectedStudent = student" :color="student.late > 0 ? 'red' :'green'" icon="alarm" />
+        <q-btn :disable="!student.attend" flat round @click="timeType = 'leave', TimerDialog = true ,selectedStudent = student" :color="student.leave > 0 ? 'red' :'green'" icon="follow_the_signs" />
       </q-card-actions>
     </q-card>
       </div>
@@ -70,11 +70,14 @@ export default {
     return {
       timeType : "",
       selectedStudent : {},
+      updatedRecordId : 0,
+      isSessoinSelected : false,
+      date : moment(new Date()).format("DD/MM/YYYY"),
       title : "الوقت بالدقائق",
       TimerDialog : false,
-      isSelected: false,
+      isEdit : false,
+      isGroupSelected: false,
       teacherId : "",
-      selectedSession : {},
       students : [],
       selectedDate: new Date(),
       sessions : [],  
@@ -88,31 +91,51 @@ export default {
       FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
       FETCH_SCHEDUAL: ACTIONS.SETTINGS.FETCH_SCHEDUAL,
       FETCH_STUDENTS : ACTIONS.STUDNETS.FETCH_STUDENTS,
-      SAVE_ATTENDEANCE : ACTIONS.STUDNETS.SAVE_ATTENDEANCE
+      FETCH_ATTENDANCE : ACTIONS.STUDNETS.FETCH_ATTENDANCE,
+      SAVE_ATTENDEANCE : ACTIONS.STUDNETS.SAVE_ATTENDEANCE,
+      UPDATE_ATTENDANCE : ACTIONS.STUDNETS.UPDATE_ATTENDANCE
     }),
     changeSession(ses){
-      console.log(ses);
+      if (this.isSessoinSelected)
+      {
+        this.$q.dialog({
+          title: 'عمل غير محفوظ',
+          message: `هل تريد حفظ التغييرات`,
+          color: 'negative',
+          ok: `نعم`,
+          cancel: true,
+          default: 'cancel'   // <<<<
+        }).onOk(() => {
+          if (isEdit)
+             this.updateSchedual();
+          else
+             this.saveSchedual();
+        } )
+      }
+      this.isSessoinSelected = true;
       this.sessions.forEach(session => {
         ses.id == session.id ? session.selected = true  : session.selected = false;
-        this.selectedSession = ses;
+         if (this.GET_ATTENDANCE.some( record => record.session.id == ses.id )){
+           let record = this.GET_ATTENDANCE.find( rec => rec.session.id == ses.id && rec.date == this.date);
+           this.updatedRecordId = record.id;
+            this.students = record.attendance;
+            this.isEdit = true;
+          } else{
+            this.updatedRecordId = 0;
+           isEdit = false;
+         this.students = this.students.filter(student => student.groupId == this.group.value)}
         })
-
     },
     changeGroup() {
-      this.isSelected = true;
-      let schedual = this.GET_SCHADUALS.find(
-        (s) => s.group.value == this.group.value
-      );
+      console.log(this.group)
+      this.isGroupSelected = true;
+      let schedual = this.GET_SCHADUALS.find((s) => s.group.value == this.group.value);
       if (schedual != undefined) {
         let day = new Date().getDay();
         this.sessions = schedual[day]
         .filter(session => session.teacher.id == this.GET_USER.id)
-                      .map(session => (
-                        { id : session.id ,
-                         name : session.subject.name ,
-                        day : day ,
-                        selected : false}));
-        this.students = this.students.filter(student => student.groupId == this.group.value);
+        .map(session => ({ id : session.id , name : session.subject.name ,day : day , selected : false}));
+        //this.students = this.students.filter(student => student.groupId == this.group.value);
         
       } else {
         this.schedual = {
@@ -121,20 +144,29 @@ export default {
           2: [],
           3: [],
           4: [],
-          5 : [],
+          5: [],
           6: [],
         };
       }
     },
     saveSchedual() {
+      if (this.isEdit)
+        this.updateAttendance();
+      else{
       let doc = { session : this.sessions.find(x => x.selected) , 
-      date  :  moment(new Date()).format("DD/MM/YYYY"),
-      attendance : this.students }
-
-    console.log(doc);
-
+        date  :  this.date,
+        group : this.group.value,
+        attendance : this.students }
       this.SAVE_ATTENDEANCE(doc)
+      }
     },
+    updateAttendance(){
+      let doc = {
+        id : this.updatedRecordId,
+        attendance : this.students
+      }
+      this.UPDATE_ATTENDANCE(doc)
+    }
 
   },
   computed: {
@@ -144,6 +176,7 @@ export default {
       GET_STUDENTS : GETTERS.STUDNETS.GET_STUDENTS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_SCHADUALS: GETTERS.SETTINGS.GET_SCHADUALS,
+      GET_ATTENDANCE : GETTERS.STUDNETS.GET_ATTENDANCE
     }),
     getDay() {
       return [this.selectedDate.getDay()];
@@ -152,14 +185,13 @@ export default {
   watch : {
     GET_STUDENTS : function(oldState,newState) {
       this.students = newState.filter(student => student.groupId != undefined).map(student => ({
-        id : student.id,
+        studentId : student.id,
         name : student.name,
         groupId : student.groupId,
         takingBy : { id : this.GET_USER.id, name : this.GET_USER.name },
         notes : "",
-        day : 0,
         validExecuse : true,
-        attendence : true,
+        attend : true,
         late : 0,
         leave : 0,
         isLate : false,
@@ -171,6 +203,7 @@ export default {
     }
   },
   async created() {
+    await this.FETCH_ATTENDANCE({ year : moment(new Date()).format("DD/MM/YYYY")});
     await this.FETCH_GROUPS();
     await this.FETCH_SCHEDUAL();
     this.FETCH_STUDENTS({ status: "" });
