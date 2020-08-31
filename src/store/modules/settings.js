@@ -51,6 +51,7 @@ const actions = {
           startPeriodDate: doc.data().startPeriodDate,
           endPeriodDate: doc.data().endPeriodDate,
           semesters : doc.data().semesters,
+          session : doc.data().session
         });
       }
     } catch (error) {
@@ -180,8 +181,38 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+  async SET_SESSION_SETTINGS({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
 
-  
+    let date = new Date();
+
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+        .doc(date.getFullYear().toString())
+        .get();
+
+      if (!doc.exists) {
+        commit(MUTATIONS.UI.SET_ERROR, {
+          code: ERRORS.DATABASE.YEAR_INFO_NOT_FOUND
+        });
+      } else {
+        await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+          .doc(date.getFullYear().toString())
+          .update({
+            session: payload.session,
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.YEAR_INFO_REGISTRATION_PERIOD_UPDATED
+        });
+      }
+    } catch (error) {
+      console.log("SET_REGISTRATION_PERIOD", error);
+      commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.DATABASE.YEAR_INFO_ERROR });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
   async FETCH_REGISTRATION_PERIOD({ commit }) {
     try {
       let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)
@@ -597,7 +628,6 @@ const actions = {
       console.log("FETCH_SCHADUALS ERROR", error);
     }
   },
-
   async FETCH_MEMORIZATIONS_BY_ID({ commit }, payload) {
     try {
       let doc = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)

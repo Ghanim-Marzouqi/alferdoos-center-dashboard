@@ -116,6 +116,7 @@ export default {
     ...mapGetters({
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
+      GET_ERRORS : GETTERS.UI.GET_ERRORS,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
       GET_SUBJECTS : GETTERS.SUBJECTS.GET_SUBJECTS,
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
@@ -180,6 +181,13 @@ export default {
   },
    watch:{
     GET_MESSAGES: function(newState, oldState) {
+      this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تحديث درجات الطالب بنجاح",
+          });
+
+    },
+    GET_ERRORS : function(newState, oldState) {
 
     },
      GET_YEAR_INFO: function(newState, oldState) {

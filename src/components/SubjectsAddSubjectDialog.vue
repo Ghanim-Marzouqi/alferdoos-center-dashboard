@@ -149,7 +149,7 @@
                             round
                             size="sm"
                             color="red"
-                            @click="removeExamMarksOption(sem.options,i)"
+                            @click="removeExamMarksOption(sem,i)"
                           >
                             <q-icon name="o_remove" />
                           </q-btn>
@@ -182,7 +182,7 @@ import { mapActions, mapGetters } from "vuex";
 import { ACTIONS, ERRORS, STUDENT_GRADE, GETTERS } from "../config/constants";
 
 export default {
-  name: "StudentRegistrationInfoDialog",
+  name: "SubjectAddSubjectDialog",
   props: {
     isOpen: {
       type: Boolean,
@@ -215,13 +215,14 @@ export default {
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     getTotal(val){
-      let total = this.marks.reduce((a,b) => ({totalMarks :a.totalMarks+ b.totalMarks })).totalMarks;
+      let total = this.marks.length > 1 ? this.marks.reduce((a,b) => ({totalMarks :a.totalMarks+ b.totalMarks })).totalMarks
+      : this.marks.length > 0 ? this.marks[0].totalMarks : 0;
       console.log();
       return parseInt(total) + parseInt(val);
     },
     addEvaluationsCriteria(option, semester) {
       semester.options.push({
-        id: semester.option.length + 1,
+        id: semester.options.length + 1,
         mark: parseInt(option.mark),
         text: option.text,
       });
@@ -231,7 +232,11 @@ export default {
       option.text = "";
     },
     removeExamMarksOption(evaluations, i) {
-      evaluations.splice(i, 1);
+      console.log(evaluations)
+      evaluations.options.splice(i, 1);
+      evaluations.totalMarks = evaluations.options.length > 1 ?
+       evaluations.options.reduce((a,b) => ({ mark : a.mark + b.mark})).mark
+       : evaluations.options.length > 0 ? evaluations.options[0].mark : 0
     },
     async onSubmit() {
 

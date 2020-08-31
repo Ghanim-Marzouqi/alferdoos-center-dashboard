@@ -115,7 +115,7 @@ export default {
       this.isSessoinSelected = true;
       this.sessions.forEach(session => {
         ses.id == session.id ? session.selected = true  : session.selected = false;
-         if (this.GET_ATTENDANCE.some( record => record.session.id == ses.id )){
+         if (this.GET_ATTENDANCE.some(record => record.session.id == ses.id)){
            let record = this.GET_ATTENDANCE.find( rec => rec.session.id == ses.id && rec.date == this.date);
            this.updatedRecordId = record.id;
             this.students = record.attendance;
@@ -135,17 +135,10 @@ export default {
         this.sessions = schedual[day]
         .filter(session => session.teacher.id == this.GET_USER.id)
         .map(session => ({ id : session.id , name : session.subject.name ,day : day , selected : false}));
-        //this.students = this.students.filter(student => student.groupId == this.group.value);
-        
+        this.students = this.students.filter(student => student.groupId == this.group.value);
       } else {
         this.schedual = {
-          0: [],
-          1: [],
-          2: [],
-          3: [],
-          4: [],
-          5: [],
-          6: [],
+
         };
       }
     },

@@ -9,16 +9,15 @@
            label="إختر مجموعة" />
       </div>
 
-      <div class="col-12 col-md-4">
+      <!-- <div class="col-12 col-md-4">
         <q-btn
             @click="saveSchedual"
             round
-            color="amber"
-            glossy
+            color="primary"
             text-color="white"
             icon="save"
           />
-      </div>
+      </div> -->
     </div>
     <div class="row justify-center q-pa-lg">
       <q-calendar
@@ -33,8 +32,7 @@
             @click=" isSelectSubjectOpen = true"
             round
             :disable="!isSelected"
-            color="amber"
-            glossy
+            color="primary"
             text-color="white"
             icon="add_circle"
           />
@@ -135,7 +133,8 @@ export default {
     ...mapActions({
       FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
       ADD_SCHEDUAL: ACTIONS.SETTINGS.ADD_SCHEDUAL,
-      FETCH_SCHEDUAL : ACTIONS.SETTINGS.FETCH_SCHEDUAL
+      FETCH_SCHEDUAL : ACTIONS.SETTINGS.FETCH_SCHEDUAL,
+      FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
     }),
     getSchedual(day) {
       return this.schedual[parseInt(day.weekday, 10)];
@@ -178,14 +177,14 @@ export default {
         this.updateFullDaySchedual(this.day)
       }else{
 
-      let fdate = moment("2020-03-02" + " " + "08:00");
+      let fdate = moment("2020-03-02" + " " + this.GET_YEAR_INFO.session.start);
       let day = new Date(this.selectedDate).getDay();
       let schedual = this.schedual[day];
 
       if (schedual.length > 0) {
         fdate = moment(
           "2020-03-02" + " " + schedual[schedual.length - 1].toTime
-        );
+        ).add(this.GET_YEAR_INFO.session.break,"m");
       }
       let tdate = moment(fdate).add(parseInt(subject.time), "m");
 
@@ -200,9 +199,10 @@ export default {
       };
       this.schedual[day].push(session);
       }
-
+      this.saveSchedual();
       this.session.subject = null;
       this.session.time = "",
+      this.session.teacher = null;
       this.session.id = 0;
     },
     update(session,day,index){
@@ -216,9 +216,9 @@ export default {
       this.isSelectSubjectOpen = true;
       },
       updateFullDaySchedual(day){
-        this.schedual[this.day].forEach((session,i) => {
-          let fdate = i > 0 ?  moment("2020-03-02" + " " + this.schedual[day][i-1].toTime)
-                      :  moment("2020-03-02" + " " + "08:00");
+        this.schedual[day].forEach((session,i) => {
+          let fdate = i > 0 ?  moment("2020-03-02" + " " + this.schedual[day][i-1].toTime).add(this.GET_YEAR_INFO.session.break,"m")
+                      :  moment("2020-03-02" + " " + this.GET_YEAR_INFO.session.start);
 
           let tdate = moment(fdate).add(parseInt(session.time), "m");
           session.fromTime = fdate.format("hh:mm")
@@ -228,18 +228,22 @@ export default {
     removeSession(index,day) {
       let i = parseInt(day.weekday, 10);
      this.schedual[i].splice(index,1);
+     this.updateFullDaySchedual(i);
+     this.saveSchedual();
     },
   },
     computed: {
     ...mapGetters({
       GET_GROUPS: GETTERS.GROUPS.GET_GROUPS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
-      GET_SCHADUALS : GETTERS.SETTINGS.GET_SCHADUALS
+      GET_SCHADUALS : GETTERS.SETTINGS.GET_SCHADUALS,
+      GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
     }),
   },
     async created() {
     await this.FETCH_GROUPS();
     await this.FETCH_SCHEDUAL();
+    this.FETCH_YEAR_INFO();
     if (this.GET_GROUPS.length > 0) {
       this.groups = this.GET_GROUPS.map((group) => ({
         label: group.name,

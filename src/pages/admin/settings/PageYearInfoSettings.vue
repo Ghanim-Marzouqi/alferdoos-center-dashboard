@@ -58,6 +58,41 @@
         <q-markup-table>
           <thead>
             <tr>
+              <th class="text-left">إعداد عامة</th>
+              <th class="text-right">تعديل</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left">
+                توقيت بداية الحصص : {{ session.start }}
+              </td>
+              <td class="text-right">
+                <q-btn dense flat @click="isTimeDialogOpen = true">
+                  <q-icon name="o_edit" color="teal" />
+                </q-btn>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-left">
+               إستراحة بين الحصص (دقائق)  : {{ session.break }}
+              </td>
+              <td class="text-right">
+                <q-btn dense flat @click="isBreakDialogOpen = true">
+                  <q-icon name="o_edit" color="teal" />
+                </q-btn>
+              </td>
+            </tr>
+          </tbody>
+        </q-markup-table>
+      </div>
+    </div>
+
+        <div class="row q-pa-md">
+      <div class="col-12">
+        <q-markup-table>
+          <thead>
+            <tr>
               <th class="text-left">الفصول الدراسية</th>
               <th class="text-right">
                 <q-btn dense round size="sm" @click="isAddSemesterDialogOpen = true" color="primary">
@@ -111,6 +146,29 @@
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="إلغاء" v-close-popup />
           <q-btn flat label="حفظ" @click="saveCurrentYear" :loading="GET_LOADING" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="isBreakDialogOpen" persistent>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">الإستراحة بين الحصص</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            dense
+            outlined
+            v-model="session.break"
+            autofocus
+            @keyup.enter="isBreakDialogOpen = false"
+          />
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="إلغاء" v-close-popup />
+          <q-btn flat label="حفظ" @click="updateSessionSettings" :loading="GET_LOADING" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -184,6 +242,10 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <TimePicker :isOpen="isTimeDialogOpen" :time="session.start"
+     @cancel="isTimeDialogOpen = false"
+     @saveTime="updateSessionSettings" />
   </q-page>
 </template>
 
@@ -197,8 +259,14 @@ const today = new Date();
 
 export default {
   name: "PageYearInfoSettings",
+  components : {
+    TimePicker : ()=> import('components/TimePicker.vue')
+  },
   data() {
     return {
+      isTimeDialogOpen : false,
+      isBreakDialogOpen  :false,
+      session : { break : 0 , start : "8:00"},
       yearInfo: {},
       currentYear: "",
       semesterTitle : "",
@@ -235,8 +303,13 @@ export default {
       SET_YEAR_NAME: ACTIONS.SETTINGS.SET_YEAR_NAME,
       SET_REGISTRATION_PERIOD: ACTIONS.SETTINGS.SET_REGISTRATION_PERIOD,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
-      SET_YEAR_SEMESTERS : ACTIONS.SETTINGS.SET_YEAR_SEMESTERS
+      SET_YEAR_SEMESTERS : ACTIONS.SETTINGS.SET_YEAR_SEMESTERS,
+      SET_SESSION_SETTINGS : ACTIONS.SETTINGS.SET_SESSION_SETTINGS,
     }),
+    updateSessionSettings(){
+      console.log(this.SET_SESSION_SETTINGS);
+      this.SET_SESSION_SETTINGS({ session : this.session});
+    },
     saveSemestersIntoDb()
     {
       this.SET_YEAR_SEMESTERS(this.semesters);
@@ -299,6 +372,7 @@ export default {
         console.log(newState);
         this.currentYear = newState.name;
         this.semesters = newState.semesters;
+        this.session = newState.session;
         (this.startPeriodDate = date.formatDate(
           newState.startPeriodDate,
           "YYYY/MM/DD"
