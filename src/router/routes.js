@@ -64,6 +64,10 @@ const routes = [
         component: () => import("pages/admin/groups/PageGroupAttendence.vue")
       },
       {
+        path: "absence-records",
+        component: () => import("pages/admin/groups/PageStudentAbsenceRecords.vue")
+      },
+      {
         path: "settings-year-info",
         component: () => import("pages/admin/settings/PageYearInfoSettings.vue")
       },

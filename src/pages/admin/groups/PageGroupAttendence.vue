@@ -12,7 +12,7 @@
       </div>
 
       <div class="col-12 col-md-4">
-        <q-btn @click="saveSchedual" round color="amber" glossy text-color="white" icon="save" />
+        <q-btn @click="saveSchedual" round color="primary" text-color="white" icon="save" />
       </div>
     </div>
 
@@ -106,7 +106,7 @@ export default {
           cancel: true,
           default: 'cancel'   // <<<<
         }).onOk(() => {
-          if (isEdit)
+          if (this.isEdit)
              this.updateSchedual();
           else
              this.saveSchedual();
@@ -122,7 +122,7 @@ export default {
             this.isEdit = true;
           } else{
             this.updatedRecordId = 0;
-           isEdit = false;
+           this.isEdit = false;
          this.students = this.students.filter(student => student.groupId == this.group.value)}
         })
     },
@@ -149,6 +149,7 @@ export default {
       let doc = { session : this.sessions.find(x => x.selected) , 
         date  :  this.date,
         group : this.group.value,
+        takingBy : { id : this.GET_USER.id, name : this.GET_USER.name },
         attendance : this.students }
       this.SAVE_ATTENDEANCE(doc)
       }
@@ -181,7 +182,6 @@ export default {
         studentId : student.id,
         name : student.name,
         groupId : student.groupId,
-        takingBy : { id : this.GET_USER.id, name : this.GET_USER.name },
         notes : "",
         validExecuse : true,
         attend : true,

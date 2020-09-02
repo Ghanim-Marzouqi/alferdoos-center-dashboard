@@ -575,13 +575,14 @@ const actions = {
 
       commit(MUTATIONS.STUDNETS.SET_ATTENDANCE, attendance);
     } catch (error) {
-      console.log("FETCH_ATTENDANCE_BY_DAY", error);
+      console.log("FETCH_ATTENDANCE", error);
       commit(MUTATIONS.UI.SET_ERROR, error);
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
 
   },
+  
   async UPDATE_ATTENDANCE({ commit }, payload) {
 
     commit(MUTATIONS.UI.SET_LOADING, true);
@@ -615,7 +616,40 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
 
-  }
+  },
+  async ADD_EXECUSE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let FirebaseStorageRef = FirebaseStorage.ref();
+     
+
+    
+      if (payload.files.length > 0) {
+        let cerArr = await payload.files.map(async file => {
+          let fileRef = FirebaseStorageRef.child(
+            `EXecuses/${file.name}_${Date.now()}`
+          );
+
+          let snapshot = await fileRef.put(file);
+          return await snapshot.ref.getDownloadURL();
+        });
+
+        payload.files = await Promise.all(cerArr);
+      }
+
+      await FirebaseDatabase.collection(COLLECTIONS.EXECUSES)
+        .doc()
+        .set(payload);
+        commit(MUTATIONS.UI.SET_MESSAGE, MESSAGES.DATABASE.EXECUSE_ADDED);
+
+      
+    } catch (error) {
+      console.log("ADD_EXECUSE", ERRORS.DATABASE.ADD_EXECUSE_FAIL);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
 
 };
 

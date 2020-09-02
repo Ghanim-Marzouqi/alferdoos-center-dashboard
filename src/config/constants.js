@@ -1,6 +1,7 @@
 // Firestore Collections
 const COLLECTIONS = {
   ADMINS: "admins",
+  EXECUSES : "execuses",
   SUBJECTS : "subjects",
   PARENTS: "parents",
   TEACHERS: "teachers",
@@ -318,7 +319,8 @@ const ACTIONS = {
     RESET_STUDENTS: "RESET_STUDENTS",
     SAVE_ATTENDEANCE : "SAVE_ATTENDEANCE",
     FETCH_ATTENDANCE : "FETCH_ATTENDANCE",
-    UPDATE_ATTENDANCE : "UPDATE_ATTENDANCE"
+    UPDATE_ATTENDANCE : "UPDATE_ATTENDANCE",
+    ADD_EXECUSE : "ADD_EXECUSE",
   },
   TEACHERS: {
     ADD_TEACHER: "ADD_TEACHER",
@@ -380,6 +382,7 @@ const MUTATIONS = {
 const MESSAGES = {
   AUTH: {},
   DATABASE: {
+    EXECUSE_ADDED : "database/execuse-added",
     STUDENT_FORM_RECORD_DELETED: "database/student-form-record-deleted",
     STUDENT_STATUS_UPDATED: "database/student-status-updated",
     STUDENT_ATTENDANCE_UPDATED: "database/student-attendance-status-updated",
@@ -425,6 +428,7 @@ const ERRORS = {
   },
   DATABASE: {
     ADD_SUBJECT_FAIL : "database/register-subject-error",
+    ADD_EXECUSE_FAIL : "database/add-execuse-fail",
     FETCH_SUBJECTS_FAIL : "database/fetch-subjects-error",
     USER_INACTIVE: "databse/user-inactive",
     USER_NOT_FOUND: "database/user-not-found",
