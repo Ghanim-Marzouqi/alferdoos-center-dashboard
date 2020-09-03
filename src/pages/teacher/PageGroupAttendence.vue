@@ -56,10 +56,10 @@
 </template>
 
 <script>
-import subjects from "../../../store/modules/subjects";
+import subjects from "../../store/modules/subjects";
+import students from "../../store/modules/students";
+import { GETTERS, ACTIONS } from "../../config/constants";
 import { mapGetters, mapActions } from "vuex";
-import { GETTERS, ACTIONS } from "../../../config/constants";
-import students from 'src/store/modules/students';
 const moment = require("moment");
 
 export default {
@@ -196,7 +196,7 @@ export default {
     }
   },
   async created() {
-    await this.FETCH_ATTENDANCE({ year : moment(new Date()).format("DD/MM/YYYY")});
+    await this.FETCH_ATTENDANCE({ type : 1, year : moment(new Date()).format("DD/MM/YYYY")});
     await this.FETCH_GROUPS();
     await this.FETCH_SCHEDUAL();
     this.FETCH_STUDENTS({ status: "" });

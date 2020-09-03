@@ -96,6 +96,14 @@
                 <q-item-label>سجلات الغياب</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/absence-records-report">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>تقارير الحضور و الانصراف</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-expansion-item>
           <q-expansion-item
             class="q-ma-xs"

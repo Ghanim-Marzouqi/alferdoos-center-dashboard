@@ -226,7 +226,7 @@ export default {
       }
     },
     async getAbsenceRecords() {
-      await this.FETCH_ATTENDANCE({ year: this.recordsDate });
+      await this.FETCH_ATTENDANCE({ type : 1, year: this.recordsDate });
       this.records = this.GET_ATTENDANCE.filter(
         (c) => c.group == this.group.value
       );

@@ -18,12 +18,14 @@ const state = {
   studentsAndMarks: [],
   studentGroup: {},
   attendance : [],
+  attendanceRange : [],
 };
 
 // Getters
 const getters = {
   GET_STUDENTS: state => state.students,
   GET_ATTENDANCE: state => state.attendance,
+  GET_ATTENDANCE_RANGE_DATE: state => state.attendanceRange,
   GET_STUDENTS_MARKS: state => state.studentMarks,
   GET_STUDENT_ANSWERS: state => state.studentAnswers,
   GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks
@@ -556,6 +558,7 @@ const actions = {
     }
   },
   async FETCH_ATTENDANCE({ commit }, payload) {
+    console.log(payload.year);
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
@@ -572,8 +575,11 @@ const actions = {
         group: doc.data().group,
         session: doc.data().session,
       }));
-
-      commit(MUTATIONS.STUDNETS.SET_ATTENDANCE, attendance);
+      // type == 1 means only one date fetch , otherwise its many dates fetching
+      if (payload.type == 1)
+          commit(MUTATIONS.STUDNETS.SET_ATTENDANCE, attendance);
+      else 
+        commit(MUTATIONS.STUDNETS.SET_ATTENDANCE_RANGE_DATE, attendance);
     } catch (error) {
       console.log("FETCH_ATTENDANCE", error);
       commit(MUTATIONS.UI.SET_ERROR, error);
@@ -650,6 +656,9 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+  RESET_ATTENDANCE_RANGE_DATE({ commit }){
+    commit(MUTATIONS.STUDNETS.RESET_ATTENDANCE_RANGE_DATE);
+  }
 
 };
 
@@ -657,6 +666,18 @@ const actions = {
 const mutations = {
   SET_STUDENTS: (state, students) => (state.students = students),
   SET_ATTENDANCE: (state, attendance) => state.attendance = attendance,
+  RESET_ATTENDANCE_RANGE_DATE : (state) => state.attendanceRange = [],
+  SET_ATTENDANCE_RANGE_DATE(state, records){
+
+    records.forEach((c) =>
+    c.attendance.forEach((a) => {
+      a.session = c.session;
+      a.date = c.date;
+      a.docId = c.id
+    })
+  );
+    state.attendanceRange.push(records.map(c=> c.attendance))
+  },
   SET_STUDENTS_MARKS: (state, studentMarks) => (state.studentMarks = studentMarks),
   SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers),
   SET_STUDENTS_AND_MARKS: (state, updatedStudents) =>
