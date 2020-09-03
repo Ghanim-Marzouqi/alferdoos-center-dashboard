@@ -65,29 +65,6 @@
                 <q-item-label>الطلاب المقبولين</q-item-label>
               </q-item-section>
             </q-item>
-          </q-expansion-item>
-          <q-expansion-item
-            class="q-ma-xs"
-            expand-separator
-            icon="o_supervisor_account"
-            label="المعلمين"
-          >
-            <q-item class="q-ma-xs" clickable exact to="/admin/teachers">
-              <q-item-section avatar>
-                <q-icon name="o_person" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>المعلمين المسجلين</q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item class="q-ma-xs" clickable exact to="/admin/group-attendence">
-              <q-item-section avatar>
-                <q-icon name="o_today" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>تسجيل الحضور</q-item-label>
-              </q-item-section>
-            </q-item>
             <q-item class="q-ma-xs" clickable exact to="/admin/absence-records">
               <q-item-section avatar>
                 <q-icon name="o_today" />
@@ -102,6 +79,21 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>تقارير الحضور و الانصراف</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-expansion-item>
+          <q-expansion-item
+            class="q-ma-xs"
+            expand-separator
+            icon="o_supervisor_account"
+            label="المعلمين"
+          >
+            <q-item class="q-ma-xs" clickable exact to="/admin/teachers">
+              <q-item-section avatar>
+                <q-icon name="o_person" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>المعلمين المسجلين</q-item-label>
               </q-item-section>
             </q-item>
           </q-expansion-item>
