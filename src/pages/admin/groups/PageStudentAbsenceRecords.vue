@@ -72,13 +72,13 @@
               <q-td key="execuse" :props="props">
                 <q-btn
                   dense
-                  v-if="!props.row.validExecuse"
+                  v-if="props.row.validExecuse"
                   flat
                   @click.stop="addExecuse(props.row)"
                 >
                   <q-icon color="green" name="check_circle" />
                 </q-btn>
-                <q-btn dense v-if="props.row.validExecuse" flat @click.stop="addExecuse(props.row)">
+                <q-btn dense v-if="!props.row.validExecuse" flat @click.stop="addExecuse(props.row)">
                   <q-icon color="red" name="o_edit" />
                 </q-btn>
               </q-td>
@@ -192,6 +192,7 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_SCHADUALS: GETTERS.SETTINGS.GET_SCHADUALS,
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
+      GET_EXECUSES : GETTERS.STUDENTS.GET_EXECUSES,
     }),
   },
   methods: {
@@ -200,6 +201,7 @@ export default {
       FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
       FETCH_SCHEDUAL: ACTIONS.SETTINGS.FETCH_SCHEDUAL,
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
+      FETCH_EXECUSES: ACTIONS.STUDNETS.FETCH_EXECUSES,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     changeGroup() {
@@ -227,6 +229,8 @@ export default {
     },
     async getAbsenceRecords() {
       await this.FETCH_ATTENDANCE({ type : 1, year: this.recordsDate });
+      await this.FETCH_EXECUSES({ year: this.recordsDate });
+      let execuses = this.GET_EXECUSES();
       this.records = this.GET_ATTENDANCE.filter(
         (c) => c.group == this.group.value
       );
@@ -234,6 +238,8 @@ export default {
       // it was common to all the document so i make it in each student record (attendance array) 
       this.records.forEach((c) =>
         c.attendance.forEach((a) => {
+          // check if there is any execuse added.
+          a.validExecuse = execuses.some(e => e.student == a.studentId && c.session.id == e.session.id);
           a.session = c.session;
           a.date = c.date;
           a.docId = c.id

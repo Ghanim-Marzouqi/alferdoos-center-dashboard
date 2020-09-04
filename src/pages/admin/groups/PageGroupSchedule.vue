@@ -1,5 +1,6 @@
 <template>
   <q-page>
+    {{ schedual }}
     <div class="row justify-center q-pa-lg">
       <div class="col-12 col-md-4">
         <q-select
@@ -168,6 +169,7 @@ export default {
       this.ADD_SCHEDUAL(this.schedual);
     },
     addSubject(subject) {
+      console.log(subject);
 
       if (this.isEdit) {
         let session = this.schedual[this.day][this.index];

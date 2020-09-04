@@ -19,6 +19,7 @@ const state = {
   studentGroup: {},
   attendance : [],
   attendanceRange : [],
+  execuses : [],
 };
 
 // Getters
@@ -28,7 +29,8 @@ const getters = {
   GET_ATTENDANCE_RANGE_DATE: state => state.attendanceRange,
   GET_STUDENTS_MARKS: state => state.studentMarks,
   GET_STUDENT_ANSWERS: state => state.studentAnswers,
-  GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks
+  GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks,
+  GET_EXECUSES : state => state.execuses,
 };
 
 // Actions
@@ -658,7 +660,38 @@ const actions = {
   },
   RESET_ATTENDANCE_RANGE_DATE({ commit }){
     commit(MUTATIONS.STUDNETS.RESET_ATTENDANCE_RANGE_DATE);
-  }
+  },
+  async FETCH_EXECUSES({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let snapshot = null;
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.EXECUSES)
+          .where("date", "==", payload.year)
+          .get();
+
+      let docs = snapshot.docs;
+      let execuses = docs.map(doc => ({
+        id : doc.id,
+        student : doc.data().date,
+        date: doc.data().student,
+        files :doc.data().files,
+        title: doc.data().title,
+        description: doc.data().description,
+        group: doc.data().group,
+        session: doc.data().session,
+      }));
+      
+      commit(MUTATIONS.STUDNETS.SET_EXECUSES, execuses);
+      
+    } catch (error) {
+      console.log("FETCH_ATTENDANCE", error);
+      commit(MUTATIONS.UI.SET_ERROR, error);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
 
 };
 
@@ -678,6 +711,7 @@ const mutations = {
   );
     state.attendanceRange.push(records.map(c=> c.attendance))
   },
+  SET_EXECUSES : (state, execuses) => (state.execuses = execuses),
   SET_STUDENTS_MARKS: (state, studentMarks) => (state.studentMarks = studentMarks),
   SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers),
   SET_STUDENTS_AND_MARKS: (state, updatedStudents) =>

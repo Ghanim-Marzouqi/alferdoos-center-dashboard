@@ -1,5 +1,6 @@
 <template>
   <q-page>
+    {{ changeHappen }}
     <div class="row justify-center q-pa-lg">
       <div class="col-12 col-md-4">
         <q-select
@@ -29,7 +30,7 @@
       <h5 v-if="isGroupSelected && sessions.length == 0">لا توجد حصص مسجلة لهذه المجموعة</h5>
     </div>
         <div class="row">
-      <div v-for="student in  students" :key="student.id" class="col-2">
+      <div v-for="student in  attendanceRecords" :key="student.id" class="col-2">
           <q-card v-if="isGroupSelected && sessions.length > 0 && isSessoinSelected" class="my-card" style="margin:10px;">
       <div class="row justify-center" style="marjin-top:-20px;">
         <p style="font-size:15px; margin-top:10px">
@@ -38,9 +39,9 @@
       </div>
 
       <q-card-actions align="right">
-        <q-btn :disable="student.isLate || student.isLeave" flat round @click="student.attend = !student.attend " :color="student.attend ? 'green' : 'red'" icon="how_to_reg" />
-        <q-btn :disable="!student.attend" flat round @click="timeType = 'late', TimerDialog = true ,selectedStudent = student" :color="student.late > 0 ? 'red' :'green'" icon="alarm" />
-        <q-btn :disable="!student.attend" flat round @click="timeType = 'leave', TimerDialog = true ,selectedStudent = student" :color="student.leave > 0 ? 'red' :'green'" icon="follow_the_signs" />
+        <q-btn :disable="student.isLate || student.isLeave" flat round @click="student.attend = !student.attend,changeHappen = true " :color="student.attend ? 'green' : 'red'" icon="how_to_reg" />
+        <q-btn :disable="!student.attend" flat round @click="timeType = 'late', TimerDialog = true ,selectedStudent = student,changeHappen = true" :color="student.late > 0 ? 'red' :'green'" icon="alarm" />
+        <q-btn :disable="!student.attend" flat round @click="timeType = 'leave', TimerDialog = true ,selectedStudent = student,changeHappen = true" :color="student.leave > 0 ? 'red' :'green'" icon="follow_the_signs" />
       </q-card-actions>
     </q-card>
       </div>
@@ -69,6 +70,7 @@ export default {
   data() {
     return {
       timeType : "",
+      changeHappen : false,
       selectedStudent : {},
       updatedRecordId : 0,
       isSessoinSelected : false,
@@ -78,7 +80,8 @@ export default {
       isEdit : false,
       isGroupSelected: false,
       teacherId : "",
-      students : [],
+      allStudents : [],
+      attendanceRecords : [],
       selectedDate: new Date(),
       sessions : [],  
       group: "",
@@ -96,38 +99,26 @@ export default {
       UPDATE_ATTENDANCE : ACTIONS.STUDNETS.UPDATE_ATTENDANCE
     }),
     changeSession(ses){
-      if (this.isSessoinSelected)
-      {
-        this.$q.dialog({
-          title: 'عمل غير محفوظ',
-          message: `هل تريد حفظ التغييرات`,
-          color: 'negative',
-          ok: `نعم`,
-          cancel: true,
-          default: 'cancel'   // <<<<
-        }).onOk(() => {
-          if (this.isEdit)
-             this.updateSchedual();
-          else
-             this.saveSchedual();
-        } )
-      }
       this.isSessoinSelected = true;
+      this.changeHappen = false;
+      let selected = {};
       this.sessions.forEach(session => {
-        ses.id == session.id ? session.selected = true  : session.selected = false;
-         if (this.GET_ATTENDANCE.some(record => record.session.id == ses.id)){
-           let record = this.GET_ATTENDANCE.find( rec => rec.session.id == ses.id && rec.date == this.date);
-           this.updatedRecordId = record.id;
-            this.students = record.attendance;
+        ses.id == session.id ? session.selected = true  : session.selected = false; 
+        });
+
+      if (this.GET_ATTENDANCE.some(record => record.session.id == ses.id)){
+            let record = this.GET_ATTENDANCE.find( rec => rec.session.id == ses.id && rec.date == this.date);
+            this.updatedRecordId = record.id;
+            this.attendanceRecords = record.attendance;
             this.isEdit = true;
           } else{
             this.updatedRecordId = 0;
            this.isEdit = false;
-         this.students = this.students.filter(student => student.groupId == this.group.value)}
-        })
+           this.attendanceRecords = this.allStudents.filter(student => student.groupId == this.group.value)
+    }
     },
     changeGroup() {
-      console.log(this.group)
+      this.isSessoinSelected = false;
       this.isGroupSelected = true;
       let schedual = this.GET_SCHADUALS.find((s) => s.group.value == this.group.value);
       if (schedual != undefined) {
@@ -135,11 +126,7 @@ export default {
         this.sessions = schedual[day]
         .filter(session => session.teacher.id == this.GET_USER.id)
         .map(session => ({ id : session.id , name : session.subject.name ,day : day , selected : false}));
-        this.students = this.students.filter(student => student.groupId == this.group.value);
-      } else {
-        this.schedual = {
-
-        };
+        this.attendanceRecords = this.allStudents.filter(student => student.groupId == this.group.value);
       }
     },
     saveSchedual() {
@@ -150,16 +137,18 @@ export default {
         date  :  this.date,
         group : this.group.value,
         takingBy : { id : this.GET_USER.id, name : this.GET_USER.name },
-        attendance : this.students }
+        attendance : this.attendanceRecords }
       this.SAVE_ATTENDEANCE(doc)
       }
+      this.changeHappen = false;
     },
     updateAttendance(){
       let doc = {
         id : this.updatedRecordId,
-        attendance : this.students
+        attendance : this.attendanceRecords
       }
-      this.UPDATE_ATTENDANCE(doc)
+      this.UPDATE_ATTENDANCE(doc);
+      this.changeHappen = false;
     }
 
   },
@@ -178,12 +167,12 @@ export default {
   },
   watch : {
     GET_STUDENTS : function(oldState,newState) {
-      this.students = newState.filter(student => student.groupId != undefined).map(student => ({
+      this.allStudents = newState.filter(student => student.groupId != undefined).map(student => ({
         studentId : student.id,
         name : student.name,
         groupId : student.groupId,
         notes : "",
-        validExecuse : true,
+        validExecuse : false,
         attend : true,
         late : 0,
         leave : 0,
