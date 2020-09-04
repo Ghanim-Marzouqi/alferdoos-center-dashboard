@@ -108,9 +108,8 @@ export default {
 
     async onSubmit() {
         
-        if (1 ==1 ){
-              this.ADD_EXECUSE(this.execuse);
-        }
+        
+        this.ADD_EXECUSE(this.execuse);      
 
         this.$emit("close");
       }

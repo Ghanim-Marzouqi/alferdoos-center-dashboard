@@ -54,30 +54,19 @@
               <q-td key="name" :props="props">{{ props.row.name }}</q-td>
               <q-td key="session" :props="props">{{ props.row.session.name }}</q-td>
               <q-td key="absence" :props="props">
-                <q-btn flat round :color="props.row.attend ? 'green' : 'red'" icon="how_to_reg" />
+                <q-icon name="how_to_reg" size="sm" :color="!props.row.attend ? 'red' :'green'" />
               </q-td>
               <q-td key="late" :props="props">
-                <q-btn flat round :color="props.row.isLate ? 'red' :'green'" icon="alarm" />
+                <q-icon name="alarm" size="sm" :color="props.row.isLate ? 'red' :'green'" />
                 <p v-if="props.row.isLate ">{{ props.row.late }}</p>
               </q-td>
               <q-td key="leave" :props="props">
-                <q-btn
-                  flat
-                  round
-                  :color="props.row.isLeave ? 'red' :'green'"
-                  icon="follow_the_signs"
-                />
+                 <q-icon name="follow_the_signs" size="sm" :color="props.row.isLeave ? 'red' :'green'" />
                 <p v-if="props.row.isLeave">{{ props.row.leave }}</p>
               </q-td>
               <q-td key="execuse" :props="props">
-                <q-btn
-                  dense
-                  v-if="props.row.validExecuse"
-                  flat
-                  @click.stop="addExecuse(props.row)"
-                >
-                  <q-icon color="green" name="check_circle" />
-                </q-btn>
+                  <q-icon color="green" v-if="props.row.validExecuse" size="sm" name="check_circle" />
+                
                 <q-btn dense v-if="!props.row.validExecuse" flat @click.stop="addExecuse(props.row)">
                   <q-icon color="red" name="o_edit" />
                 </q-btn>
@@ -192,7 +181,7 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_SCHADUALS: GETTERS.SETTINGS.GET_SCHADUALS,
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
-      GET_EXECUSES : GETTERS.STUDENTS.GET_EXECUSES,
+      GET_EXECUSES : GETTERS.STUDNETS.GET_EXECUSES,
     }),
   },
   methods: {
@@ -230,7 +219,7 @@ export default {
     async getAbsenceRecords() {
       await this.FETCH_ATTENDANCE({ type : 1, year: this.recordsDate });
       await this.FETCH_EXECUSES({ year: this.recordsDate });
-      let execuses = this.GET_EXECUSES();
+      let execuses = this.GET_EXECUSES;
       this.records = this.GET_ATTENDANCE.filter(
         (c) => c.group == this.group.value
       );
@@ -246,11 +235,11 @@ export default {
         })
       );
       // this first code will give a code of records for each session of the day, 
-      // here im gonna merge both
+      // here im gonna merge all
       this.records = [].concat.apply([],this.records.map((c) => c.attendance))
       .filter((r) =>(!r.attend || r.isLate || r.isLeave) &&
             this.selectedSession.map((ss) => ss.id).includes(r.session.id));
-      
+      console.log(this.records);
     },
     addExecuse(row) {
       (this.record.date = this.recordsDate),
@@ -287,9 +276,13 @@ export default {
       if (newState.length > 0) {
         let messageCode = newState[0].code;
 
+        console.log(MESSAGES.DATABASE.EXECUSE_ADDED)
+        console.log(messageCode)
+        
+
         if (messageCode === MESSAGES.DATABASE.EXECUSE_ADDED) {
           this.CLEAR_ERRORS_AND_MESSAGES();
-          this.FETCH_GROUPS();
+          this.getAbsenceRecords();
           this.isAddGroupDialogOpen = false;
           this.$q.dialog({
             title: "تمت العملية بنجاح",

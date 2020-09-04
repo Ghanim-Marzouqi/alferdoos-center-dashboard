@@ -649,11 +649,11 @@ const actions = {
       await FirebaseDatabase.collection(COLLECTIONS.EXECUSES)
         .doc()
         .set(payload);
-        commit(MUTATIONS.UI.SET_MESSAGE, MESSAGES.DATABASE.EXECUSE_ADDED);
+        commit(MUTATIONS.UI.SET_MESSAGE, { code:  MESSAGES.DATABASE.EXECUSE_ADDED});
 
       
     } catch (error) {
-      console.log("ADD_EXECUSE", ERRORS.DATABASE.ADD_EXECUSE_FAIL);
+      console.log("ADD_EXECUSE", { code : ERRORS.DATABASE.ADD_EXECUSE_FAIL});
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
@@ -673,14 +673,15 @@ const actions = {
       let docs = snapshot.docs;
       let execuses = docs.map(doc => ({
         id : doc.id,
-        student : doc.data().date,
-        date: doc.data().student,
+        date : doc.data().date,
+        student: doc.data().student,
         files :doc.data().files,
         title: doc.data().title,
         description: doc.data().description,
         group: doc.data().group,
         session: doc.data().session,
       }));
+
       
       commit(MUTATIONS.STUDNETS.SET_EXECUSES, execuses);
       
