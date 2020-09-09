@@ -27,6 +27,19 @@ const routes = [
           import("pages/admin/students/PageRegistrationForms.vue")
       },
       {
+        name: "edit-meetings",
+        path: "edit-meetings",
+        component: () =>
+          import("pages/admin/settings/PageEditMeetings.vue")
+      },
+      {
+        name : "add-meetings-page",
+        path: "add-meetings-page",
+        props: true,
+        component: () =>
+          import("pages/admin/settings/PageAddMeetingsDetails.vue")
+      },
+      {
         path: "exams-dashboard",
         component: () => import("pages/admin/students/PageExamsDashboard.vue")
       },

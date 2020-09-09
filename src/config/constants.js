@@ -6,7 +6,7 @@ const COLLECTIONS = {
   PARENTS: "parents",
   TEACHERS: "teachers",
   STUDENTS: "students",
-  ATTENDANCE : "ATTENDANCE",
+  ATTENDANCE : "attendance",
   YEARS: "years",
   QUESTIONS: "questions",
   EXAM_MARKS: "examMarks",
@@ -14,7 +14,10 @@ const COLLECTIONS = {
   STUDENT_QUESTION_MARKS: "studentQuestionMarks",
   GROUPS: "groups",
   MEMORIZATIONS: "memorizations",
-  SCHEDUALS : "Schedules"
+  SCHEDUALS : "Schedules",
+  MEETINGS : "meetings",
+  EXPANCE : "expense",
+  REPEATED_EXPANCE : "REPEATED_expense"
 };
 
 const STUDENT_GRADE = {
@@ -235,7 +238,10 @@ const GETTERS = {
     GET_GROUPS: "GET_GROUPS",
     GET_MEMORIZATIONS: "GET_MEMORIZATIONS",
     GET_SCHADUALS :"GET_SCHADUALS",
-    GET_MEMORIZATION: "GET_MEMORIZATION"
+    GET_MEMORIZATION: "GET_MEMORIZATION",
+    GET_METTINGS : "GET_METTINGS",
+    GET_REPEATED_EXPENCE : "GET_REPEATED_EXPENCE",
+    GET_EXPENCE : "GET_EXPENCE",
   },
   STUDNETS: {
     GET_STUDENTS: "GET_STUDENTS",
@@ -301,11 +307,21 @@ const ACTIONS = {
     DELETE_MEMORIZATION: "DELETE_MEMORIZATION",
     ADD_MEMORIZATION_DETAILS: "ADD_MEMORIZATION_DETAILS",
     DELETE_MEMORIZATION_DETAILS: "DELETE_MEMORIZATION_DETAILS",
+    ADD_REPEATED_EXPANCE : "ADD_REPEATED_EXPANCE",
+    ADD_EXPANCE : "ADD_EXPANCE",
     ADD_SCHEDUAL : "ADD_SCHEDUAL",
     FETCH_SCHEDUAL : "FETCH_SCHEDUAL",
     SET_YEAR_SEMESTERS : "SET_YEAR_SEMESTERS",
     FETCH_MEMORIZATIONS_BY_ID: "FETCH_MEMORIZATIONS_BY_ID",
-    SET_SESSION_SETTINGS : "SET_SESSION_SETTINGS"
+    SET_SESSION_SETTINGS : "SET_SESSION_SETTINGS",
+    FETCH_MEETINGS : "FETCH_MEETINGS",
+    DELETE_MEETINGS : "DELET_MEETINGS",
+    SET_MEETINGS : "SET_MEETINGS",
+    EDIT_MEETING : "EDIT_MEETING",
+    DELETE_MEETINGS : "DELETE_MEETINGS",
+    FETCH_EXPANCE : "FETCH_EXPANCE",
+    FETCH_REPEATED_EXPANCE : "FETCH_REPEATED_EXPANCE",
+    DELETE_EXPANCE : "DELETE_EXPANCE"
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -363,6 +379,9 @@ const MUTATIONS = {
     SET_MEMORIZATIONS: "SET_MEMORIZATIONS",
     SET_SCHEDUALS : "SET_SCHEDUALS",
     SET_MEMORIZATION: "SET_MEMORIZATION",
+    SET_MEETINGS : "SET_MEETINGS",
+    SET_REPEATED_EXPENCE : "SET_REPEATED_EXPENCE",
+    SET_EXPENCE : "SET_EXPENCE"
   },
   STUDNETS: {
     SET_STUDENTS: "SET_STUDENTS",
@@ -406,6 +425,7 @@ const MESSAGES = {
     STUDENT_ANSWERS_SUBMITTED: "database/student-answers-submitted",
     GROUP_ADDED: "database/group-added",
     GROUP_UPDATED: "database/group-updated",
+    MEETING_UPDATED: "database/meeting-updated",
     GROUP_DELETED: "database/group-deleted",
     STUDENT_GROUP_JOINED: "database/student-group-joined",
     MEMORIZATION_ADDED: "database/memorization-added",
@@ -417,7 +437,11 @@ const MESSAGES = {
     TEACHER_UPDATED: "database/teacher-updated",
     TEACHER_DELETED: "database/teacher-deleted",
     GROUP_MEMORIZATIONS_ADDED: "database/group-memorizations-added",
-    GROUP_MEMORIZATIONS_DELETED: "database/group-memorization-deleted"
+    GROUP_MEMORIZATIONS_DELETED: "database/group-memorization-deleted",
+    MEETINGS_ADDED : "database/menute-added-successfully",
+    MEETINGS_DELETED : "database/menute-deleted-successfully",
+    REPEATED_EXPANCE_ADDED : "database/REPEATED-expance-added-successfully",
+    EXPANCE_ADDED : "database/expance-added-successfully",
   }
 };
 
@@ -435,6 +459,9 @@ const ERRORS = {
     OTP_NOT_VERIFIED: "auth/otp-not-verified"
   },
   DATABASE: {
+    ADD_PEXPANCE_ERROR  : "database/add-pexpense-error",
+    ADD_EXPANCE_ERROR : "database/add-expense-error",
+    SET_MEETINGS_ERROR : "database/add-mintue-error",
     ADD_SUBJECT_FAIL : "database/register-subject-error",
     ADD_EXECUSE_FAIL : "database/add-execuse-fail",
     FETCH_SUBJECTS_FAIL : "database/fetch-subjects-error",
@@ -460,7 +487,9 @@ const ERRORS = {
       "database/fetch-student-answers-by-id-error",
     ADD_GROUP_ERROR: "database/add-group-error",
     EDIT_GROUP_ERROR: "database/edit-group-error",
+    EDIT_MEETING_ERROR: "database/edit-meeting-error",
     DELETE_GROUP_ERROR: "database/delete-group-error",
+    DELETE_MEETING_ERROR: "database/delete-meeting-error",
     JOIN_STUDENT_TO_GROUP_ERROR: "database/join-student-to-group-error",
     ADD_MEMORIZATION_ERROR: "database/add-memorization-error",
     EDIT_MEMORIZATION_ERROR: "database/edit-memorization-error",
