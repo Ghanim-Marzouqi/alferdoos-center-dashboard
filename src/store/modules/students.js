@@ -16,15 +16,21 @@ const state = {
   studentMarks: [],
   studentAnswers: {},
   studentsAndMarks: [],
-  studentGroup: {}
+  studentGroup: {},
+  attendance : [],
+  attendanceRange : [],
+  execuses : [],
 };
 
 // Getters
 const getters = {
   GET_STUDENTS: state => state.students,
+  GET_ATTENDANCE: state => state.attendance,
+  GET_ATTENDANCE_RANGE_DATE: state => state.attendanceRange,
   GET_STUDENTS_MARKS: state => state.studentMarks,
   GET_STUDENT_ANSWERS: state => state.studentAnswers,
-  GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks
+  GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks,
+  GET_EXECUSES : state => state.execuses,
 };
 
 // Actions
@@ -526,14 +532,188 @@ const actions = {
 
   RESET_STUDENTS({ commit }) {
     commit(MUTATIONS.STUDNETS.SET_STUDENTS, []);
-  }
+  },
+  async SAVE_ATTENDEANCE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    console.log(payload);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.ATTENDANCE)
+        .doc()
+        .set(payload);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, "تم الحفظ بنجاح");
+
+      Dialog.create({
+        title: "تنبيه",
+        message: "تم الحفظ بنجاح"
+      });
+    } catch (error) {
+      console.log("SAVE_ATTENDENACE", error);
+      Dialog.create({
+        title: "تنبيه",
+        message: "حدث خطأ اثناء الحفظ"
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async FETCH_ATTENDANCE({ commit }, payload) {
+    console.log(payload.year);
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let snapshot = null;
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.ATTENDANCE)
+          .where("date", "==", payload.year)
+          .get();
+
+      let docs = snapshot.docs;
+      let attendance = docs.map(doc => ({
+        id : doc.id,
+        attendance: doc.data().attendance,
+        date: doc.data().date,
+        group: doc.data().group,
+        session: doc.data().session,
+      }));
+      // type == 1 means only one date fetch , otherwise its many dates fetching
+      if (payload.type == 1)
+          commit(MUTATIONS.STUDNETS.SET_ATTENDANCE, attendance);
+      else 
+        commit(MUTATIONS.STUDNETS.SET_ATTENDANCE_RANGE_DATE, attendance);
+    } catch (error) {
+      console.log("FETCH_ATTENDANCE", error);
+      commit(MUTATIONS.UI.SET_ERROR, error);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
+  
+  async UPDATE_ATTENDANCE({ commit }, payload) {
+
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.ATTENDANCE)
+        .doc(payload.id)
+        .get();
+
+      if (doc.exists) {
+        await FirebaseDatabase.collection(COLLECTIONS.ATTENDANCE)
+          .doc(payload.id)
+          .update({
+            attendance : payload.attendance
+          });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.STUDENT_ATTENDANCE_UPDATED
+        });
+      } else {
+        commit(MUTATIONS.UI.SET_ERROR, {
+          code: ERRORS.DATABASE.ATTENDANCE_RECORD_NOT_FOUND
+        });
+      }
+    } catch (error) {
+      console.log("EDIT_APPLICATION_STATUS ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.UPDATE_ATTENDANCE_STATUS_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
+  async ADD_EXECUSE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let FirebaseStorageRef = FirebaseStorage.ref();
+     
+
+    
+      if (payload.files.length > 0) {
+        let cerArr = await payload.files.map(async file => {
+          let fileRef = FirebaseStorageRef.child(
+            `EXecuses/${file.name}_${Date.now()}`
+          );
+
+          let snapshot = await fileRef.put(file);
+          return await snapshot.ref.getDownloadURL();
+        });
+
+        payload.files = await Promise.all(cerArr);
+      }
+
+      await FirebaseDatabase.collection(COLLECTIONS.EXECUSES)
+        .doc()
+        .set(payload);
+        commit(MUTATIONS.UI.SET_MESSAGE, { code:  MESSAGES.DATABASE.EXECUSE_ADDED});
+
+      
+    } catch (error) {
+      console.log("ADD_EXECUSE", { code : ERRORS.DATABASE.ADD_EXECUSE_FAIL});
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  RESET_ATTENDANCE_RANGE_DATE({ commit }){
+    commit(MUTATIONS.STUDNETS.RESET_ATTENDANCE_RANGE_DATE);
+  },
+  async FETCH_EXECUSES({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let snapshot = null;
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.EXECUSES)
+          .where("date", "==", payload.year)
+          .get();
+
+      let docs = snapshot.docs;
+      let execuses = docs.map(doc => ({
+        id : doc.id,
+        date : doc.data().date,
+        student: doc.data().student,
+        files :doc.data().files,
+        title: doc.data().title,
+        description: doc.data().description,
+        group: doc.data().group,
+        session: doc.data().session,
+      }));
+
+      
+      commit(MUTATIONS.STUDNETS.SET_EXECUSES, execuses);
+      
+    } catch (error) {
+      console.log("FETCH_ATTENDANCE", error);
+      commit(MUTATIONS.UI.SET_ERROR, error);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
+
 };
 
-// Mutations
+// Mutations 
 const mutations = {
   SET_STUDENTS: (state, students) => (state.students = students),
-  SET_STUDENTS_MARKS: (state, studentMarks) =>
-    (state.studentMarks = studentMarks),
+  SET_ATTENDANCE: (state, attendance) => state.attendance = attendance,
+  RESET_ATTENDANCE_RANGE_DATE : (state) => state.attendanceRange = [],
+  SET_ATTENDANCE_RANGE_DATE(state, records){
+
+    records.forEach((c) =>
+    c.attendance.forEach((a) => {
+      a.session = c.session;
+      a.date = c.date;
+      a.docId = c.id
+    })
+  );
+    state.attendanceRange.push(records.map(c=> c.attendance))
+  },
+  SET_EXECUSES : (state, execuses) => (state.execuses = execuses),
+  SET_STUDENTS_MARKS: (state, studentMarks) => (state.studentMarks = studentMarks),
   SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers),
   SET_STUDENTS_AND_MARKS: (state, updatedStudents) =>
     (state.studentsAndMarks = updatedStudents)

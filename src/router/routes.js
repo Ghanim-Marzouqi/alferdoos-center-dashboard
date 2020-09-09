@@ -60,6 +60,14 @@ const routes = [
         component: () => import("pages/admin/groups/PageGroupSchedule.vue")
       },
       {
+        path: "absence-records",
+        component: () => import("pages/admin/groups/PageStudentAbsenceRecords.vue")
+      },
+      {
+        path: "absence-records-report",
+        component: () => import("pages/admin/groups/ReportStudentAttendance.vue")
+      },
+      {
         path: "settings-year-info",
         component: () => import("pages/admin/settings/PageYearInfoSettings.vue")
       },
@@ -125,7 +133,11 @@ const routes = [
       {
         path: "home",
         component: () => import("pages/teacher/PageHome.vue")
-      }
+      },
+      {
+        path: "group-attendence",
+        component: () => import("pages/teacher/PageGroupAttendence.vue")
+      },
     ]
   }
 ];

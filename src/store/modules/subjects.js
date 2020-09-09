@@ -27,8 +27,6 @@ const actions = {
 
 
         snapshot = await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
-          //.orderBy("createdAt", "desc")
-          //.where("year", "==", payload.year )
           .get();
       
 
@@ -41,6 +39,7 @@ const actions = {
           id: doc.id,
           name: doc.data().name,
           marks : doc.data().marks,
+          teachers : doc.data().teachers,
           year : doc.data().year,
           description : doc.data().description
         }));
@@ -50,7 +49,7 @@ const actions = {
       
     } catch (error) {
       console.log("FETCH_SUBJECTS", error);
-      commit(MUTATIONS.UI.SET_ERROR, error);
+      commit(MUTATIONS.UI.SET_ERROR, ERRORS.DATABASE.FETCH_SUBJECTS_FAIL);
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
@@ -80,6 +79,7 @@ const actions = {
         files : payload.filesUrl,
         description : payload.description,
         createdAt : payload.createdAt,
+        teachers : payload.teachers,
         createdBy : payload.createdBy,
         marks : payload.marks,
       }
@@ -89,16 +89,9 @@ const actions = {
         .set(subject);
         commit(MUTATIONS.UI.SET_MESSAGE, "تم تسجيل المادة بنجاح");
 
-      Dialog.create({
-        title: "تنبيه",
-        message: "تم تسجيل المادة بنجاح"
-      });
+      
     } catch (error) {
-      console.log("REGISTER_SUBJECT", error);
-      Dialog.create({
-        title: "تنبيه",
-        message: "حدث خطأ اثناء التسجيل"
-      });
+      console.log("REGISTER_SUBJECT", ERRORS.DATABASE.ADD_SUBJECT_FAIL);
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
