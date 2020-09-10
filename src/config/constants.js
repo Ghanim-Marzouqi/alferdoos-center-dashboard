@@ -17,7 +17,7 @@ const COLLECTIONS = {
   SCHEDUALS : "Schedules",
   MEETINGS : "meetings",
   EXPANCE : "expense",
-  REPEATED_EXPANCE : "REPEATED_expense"
+  REPEATED_EXPANCE : "repeated_expense"
 };
 
 const STUDENT_GRADE = {
@@ -303,8 +303,10 @@ const ACTIONS = {
     FETCH_EXAM_TOTAL_MARKS: "FETCH_EXAM_TOTAL_MARKS",
     ADD_MEMORIZATION: "ADD_MEMORIZATION",
     EDIT_MEMORIZATION: "EDIT_MEMORIZATION",
+    EDIT_REPEATED_EXPANCE: "EDIT_REPEATED_EXPANCE",
     FETCH_MEMORIZATIONS: "FETCH_MEMORIZATIONS",
     DELETE_MEMORIZATION: "DELETE_MEMORIZATION",
+    DELETE_REPEATED_EXPANCE :"DELETE_REPEATED_EXPANCE",
     ADD_MEMORIZATION_DETAILS: "ADD_MEMORIZATION_DETAILS",
     DELETE_MEMORIZATION_DETAILS: "DELETE_MEMORIZATION_DETAILS",
     ADD_REPEATED_EXPANCE : "ADD_REPEATED_EXPANCE",
@@ -321,7 +323,8 @@ const ACTIONS = {
     DELETE_MEETINGS : "DELETE_MEETINGS",
     FETCH_EXPANCE : "FETCH_EXPANCE",
     FETCH_REPEATED_EXPANCE : "FETCH_REPEATED_EXPANCE",
-    DELETE_EXPANCE : "DELETE_EXPANCE"
+    DELETE_EXPANCE : "DELETE_EXPANCE",
+    EDIT_EXPANCE : "EDIT_EXPANCE",
   },
   STUDNETS: {
     FETCH_STUDENTS: "FETCH_STUDENTS",
@@ -409,6 +412,7 @@ const MUTATIONS = {
 const MESSAGES = {
   AUTH: {},
   DATABASE: {
+    EXPANCE_DELETED : "database/expance-added",
     EXECUSE_ADDED : "database/execuse-added",
     STUDENT_FORM_RECORD_DELETED: "database/student-form-record-deleted",
     STUDENT_STATUS_UPDATED: "database/student-status-updated",
@@ -441,7 +445,9 @@ const MESSAGES = {
     MEETINGS_ADDED : "database/menute-added-successfully",
     MEETINGS_DELETED : "database/menute-deleted-successfully",
     REPEATED_EXPANCE_ADDED : "database/REPEATED-expance-added-successfully",
+    REPEATED_EXPANCE_UPDATED : "database/REPEATED-expance-updated-successfully",
     EXPANCE_ADDED : "database/expance-added-successfully",
+    EXPANCE_UPDATED : "database/expance-updated-successfully",
   }
 };
 
@@ -459,6 +465,9 @@ const ERRORS = {
     OTP_NOT_VERIFIED: "auth/otp-not-verified"
   },
   DATABASE: {
+    DELETE_EXPANCE_ERROR : "database/delete-pexpense-error",
+    EDIT_PEXPANCE_ERROR  : "database/edit-pexpense-error",
+    EDIT_EXPANCE_ERROR  : "database/edit-expense-error",
     ADD_PEXPANCE_ERROR  : "database/add-pexpense-error",
     ADD_EXPANCE_ERROR : "database/add-expense-error",
     SET_MEETINGS_ERROR : "database/add-mintue-error",

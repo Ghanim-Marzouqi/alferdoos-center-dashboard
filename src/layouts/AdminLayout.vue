@@ -148,6 +148,14 @@
                 <q-item-label>محاضر الإجتماعات</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/edit-expance">
+              <q-item-section avatar>
+                <q-icon name="o_menu_book" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>إدارة المصروفات</q-item-label>
+              </q-item-section>
+            </q-item>
             <q-item class="q-ma-xs" clickable exact to="/admin/settings-edit-subjects">
               <q-item-section avatar>
                 <q-icon name="o_book" />

@@ -27,6 +27,11 @@ const routes = [
           import("pages/admin/students/PageRegistrationForms.vue")
       },
       {
+        path: "edit-expance",
+        component: () =>
+          import("pages/admin/settings/PageEditExpanse.vue")
+      },
+      {
         name: "edit-meetings",
         path: "edit-meetings",
         component: () =>
