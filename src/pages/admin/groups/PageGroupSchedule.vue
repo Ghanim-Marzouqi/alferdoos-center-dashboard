@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    {{ schedual }}
+
     <div class="row justify-center q-pa-lg">
       <div class="col-12 col-md-4">
         <q-select

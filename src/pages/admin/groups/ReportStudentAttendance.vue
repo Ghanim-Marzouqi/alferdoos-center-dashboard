@@ -1,16 +1,15 @@
 <template>
   <q-page padding>
-    <p class="text-h6 text-weight-bold">المجموعات</p>
+    <p class="text-h6 text-weight-bold">تقارير الحضور و الإنصراف</p>
     <div class="row q-pa-md">
       <div class="fit row wrap justify-between items-center content-start">
-        <div class="col-12 col-md-2">
-          <q-select v-model="group" filled :options="groups" label="إختر مجموعة" />
+        <div class="col-12 col-md-3">
+          <q-select v-model="group" :options="groups" label="إختر مجموعة" />
         </div>
 
-        <div class="col-12 col-md-2">
+        <div class="col-12 col-md-3">
           <q-input
             ref="date"
-            filled
             :disable="group == ''"
             v-model="fromDate"
             label="إختر تاريخ"
@@ -31,10 +30,9 @@
             </template>
           </q-input>
         </div>
-        <div class="col-12 col-md-2">
+        <div class="col-12 col-md-3">
           <q-input
             ref="date"
-            filled
             :disable="fromDate == ''"
             v-model="toDate"
             label="إختر تاريخ"

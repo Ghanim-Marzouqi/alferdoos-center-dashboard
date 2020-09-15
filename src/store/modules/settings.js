@@ -1,7 +1,7 @@
 // Import Needed Modules
 import { Dialog } from "quasar";
 import { date } from "quasar";
-import { FirebaseDatabase } from "boot/firebase";
+import { FirebaseDatabase , FirebaseStorage } from "boot/firebase";
 import {
   COLLECTIONS,
   MUTATIONS,
@@ -17,7 +17,10 @@ const state = {
   examMarks: [],
   memorizations: [],
   schaduals : [],
-  memorization: {}
+  memorization: {},
+  meetings : [],
+  repeatedExpense : [],
+  expense : [],
 };
 
 // Getters
@@ -28,11 +31,38 @@ const getters = {
   GET_EXAM_MARKS: state => state.examMarks,
   GET_MEMORIZATIONS: state => state.memorizations,
   GET_SCHADUALS : state => state.schaduals,
-  GET_MEMORIZATION: state => state.memorization
+  GET_MEMORIZATION: state => state.memorization,
+  GET_METTINGS : state => state.meetings,
+  GET_REPEATED_EXPENCE : state => state.repeatedExpense,
+  GET_EXPENCE : state => state.expense
 };
 
 // Actions
 const actions = {
+  async FETCH_MEETINGS({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(COLLECTIONS.MEETINGS)
+        .get();
+
+      let docs = snapshot.docs;
+
+      let meetings = docs.map(m => ({
+        id : m.id,
+        date: m.data().date,
+        description: m.data().description,
+        title : m.data().title
+      }));
+
+      if (MEETINGS.length > 0) {
+        commit(MUTATIONS.SETTINGS.SET_MEETINGS, meetings);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_MEETINGS, []);
+      }
+    } catch (error) {
+      console.log("FETCH_MEETINGS ERROR", error);
+    }
+  },
+
   async FETCH_YEAR_INFO({ commit }) {
     // Get Date
     let date = new Date();
@@ -445,6 +475,48 @@ const actions = {
     }
   },
 
+  async DELETE_EXPANCE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.EXPANCE)
+        .doc(payload)
+        .delete();
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.EXPANCE_DELETED
+      });
+    } catch (error) {
+      console.log("DELETE_EXPANCE ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.DELETE_EXPANCE_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async DELETE_REPEATED_EXPANCE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.REPEATED_EXPANCE)
+        .doc(payload)
+        .delete();
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.EXPANCE_DELETED
+      });
+    } catch (error) {
+      console.log("DELETE_EXPANCE ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.DELETE_EXPANCE_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
   async FETCH_MEMORIZATIONS({ commit }) {
     try {
       let snapshot = await FirebaseDatabase.collection(
@@ -649,7 +721,303 @@ const actions = {
     } catch (error) {
       console.log("FETCH_MEMORIZATIONS_BY_ID ERROR");
     }
-  }
+  },
+  async FETCH_MEETINGS({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(COLLECTIONS.MEETINGS)
+        .get();
+
+      let docs = snapshot.docs;
+      console.log(docs);
+
+
+      let MEETINGS = docs.map(m => ({
+        id : m.id,
+        date: m.data().date,
+        description: m.data().description,
+        title : m.data().title
+      }));
+
+      if (MEETINGS.length > 0) {
+        commit(MUTATIONS.SETTINGS.SET_MEETINGS, MEETINGS);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_MEETINGS, []);
+      }
+    } catch (error) {
+      console.log("FETCH_MEETINGS ERROR", error);
+    }
+  },
+  async SET_MEETINGS({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.MEETINGS)
+        .doc()
+        .set(payload);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.MEETINGS_ADDED
+      });
+    } catch (error) {
+      console.log("SET_MEETINGS ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.SET_MEETINGS_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async DELETE_MEETINGS({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.MEETINGS)
+        .doc(payload)
+        .delete();
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.MEETINGS_DELETED
+      });
+    } catch (error) {
+      console.log("DELETE_QUESTION ERROR", error);
+
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.DELETE_MEETING_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async EDIT_MEETING({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+
+
+      
+        await FirebaseDatabase.collection(COLLECTIONS.MEETINGS)
+          .doc(payload.id)
+          .update(payload);
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.MEETING_UPDATED
+        });
+      
+    } catch (error) {
+      console.log("EDIT_MEETING ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.EDIT_GROUP_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async ADD_REPEATED_EXPANCE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+    console.log(payload);
+
+    if (payload.files.length > 0) {
+      let FirebaseStorageRef = FirebaseStorage.ref();
+      let cerArr = await payload.files.map(async file => {
+        let fileRef = FirebaseStorageRef.child(
+          `Payments/${file.name}_${Date.now()}`
+        );
+
+        let snapshot = await fileRef.put(file);
+        return await snapshot.ref.getDownloadURL();
+      });
+
+      payload.files = await Promise.all(cerArr);
+    }
+
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.REPEATED_EXPANCE)
+        .doc()
+        .set(payload);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.REPEATED_EXPANCE_ADDED
+      });
+    } catch (error) {
+      console.log("ADD_REPEATED ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ADD_PEXPANCE_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async EDIT_REPEATED_EXPANCE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+    console.log(payload);
+
+    if (payload.files.length > 0) {
+      let FirebaseStorageRef = FirebaseStorage.ref();
+      let cerArr = await payload.files.map(async file => {
+        let fileRef = FirebaseStorageRef.child(
+          `Payments/${file.name}_${Date.now()}`
+        );
+
+        let snapshot = await fileRef.put(file);
+        return await snapshot.ref.getDownloadURL();
+      });
+      let arFiles = await Promise.all(cerArr)
+      payload.data.files = payload.data.files.concat(arFiles);
+    }
+
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.REPEATED_EXPANCE)
+        .doc(payload.id)
+        .update(payload.data);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.EDIT_REPEATED_EXPANCE
+      });
+    } catch (error) {
+      console.log("SET_MEETINGS ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.EDIT_PEXPANCE_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async ADD_EXPANCE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    if (payload.files.length > 0) {
+      let FirebaseStorageRef = FirebaseStorage.ref();
+      let cerArr = await payload.files.map(async file => {
+        let fileRef = FirebaseStorageRef.child(
+          `Payments/${file.name}_${Date.now()}`
+        );
+
+        let snapshot = await fileRef.put(file);
+        return await snapshot.ref.getDownloadURL();
+      });
+
+      payload.files = await Promise.all(cerArr);
+    }
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.EXPANCE)
+        .doc()
+        .set(payload);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.EXPANCE_ADDED
+      });
+    } catch (error) {
+      console.log("SET_MEETINGS ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ADD_EXPANCE_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async EDIT_EXPANCE({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    if (payload.files.length > 0) {
+      let FirebaseStorageRef = FirebaseStorage.ref();
+      let cerArr = await payload.files.map(async file => {
+        let fileRef = FirebaseStorageRef.child(
+          `Payments/${file.name}_${Date.now()}`
+        );
+
+        let snapshot = await fileRef.put(file);
+        return await snapshot.ref.getDownloadURL();
+      });
+      let arFiles = await Promise.all(cerArr)
+      payload.data.files = payload.data.files.concat(arFiles);
+    }
+
+    console.log(payload)
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.EXPANCE)
+        .doc(payload.id)
+        .update(payload.data);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.EXPANCE_UPDATED
+      });
+    } catch (error) {
+      console.log("EDIT_EXPANEC ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.EDIT_EXPANCE_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async FETCH_EXPANCE({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(
+        COLLECTIONS.EXPANCE
+      )
+      .get();
+      let docs = snapshot.docs;
+
+      if (docs.length > 0) {
+        let expense = docs.map(doc => ({
+          id: doc.id,
+          ref : doc.data().ref,
+          title: doc.data().title,
+          date: doc.data().date,
+          amount : doc.data().amount,
+          description : doc.data().description,
+          isCredit : doc.data().isCredit,
+          isDebit : doc.data().isDebit,
+          filesUrl : doc.data().files
+        }));
+
+        commit(MUTATIONS.SETTINGS.SET_EXPENCE, expense);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_EXPENCE, []);
+      }
+    } catch (error) {
+      console.log("FETCH_EXPANCE ERROR", error);
+    }
+  },
+  async FETCH_REPEATED_EXPANCE({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(
+        COLLECTIONS.REPEATED_EXPANCE
+      )
+      .get();
+      let docs = snapshot.docs;
+
+
+      if (docs.length > 0) {
+        let expense = docs.map(doc => ({
+          id: doc.id,
+          ref : '',
+          isReapted : true,
+          amount : doc.data().amount,
+          repeatation : doc.data().repeatation,
+          filesUrl : doc.data().files,
+          title : doc.data().title,
+          months : doc.data().months,
+          description :doc.data().description,
+          startDate : doc.data().startDate,
+          isCredit : true,
+          isDebit : false,
+          lastPayment : doc.data().lastPayment,
+        }));
+
+
+        commit(MUTATIONS.SETTINGS.SET_REPEATED_EXPENCE, expense);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_REPEATED_EXPENCE, []);
+      }
+    } catch (error) {
+      console.log("FETCH_REPEATED_EXPANCE ERROR", error);
+    }
+  },
 };
 
 // Mutations
@@ -662,7 +1030,10 @@ const mutations = {
   SET_MEMORIZATIONS: (state, memorizations) =>
     (state.memorizations = memorizations),
     SET_SCHEDUALS : (state,schaduals) => state.schaduals = schaduals,
-  SET_MEMORIZATION: (state, memorization) => (state.memorization = memorization)
+    SET_MEETINGS : (state,meetings) => state.meetings = meetings,
+  SET_MEMORIZATION: (state, memorization) => (state.memorization = memorization),
+  SET_REPEATED_EXPENCE : (state, pexpance) => (state.repeatedExpense = pexpance),
+  SET_EXPENCE : (state, expance) => (state.expense = expance),
 };
 
 // Export
