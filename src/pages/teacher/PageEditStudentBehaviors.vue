@@ -17,20 +17,8 @@
     </div>
 
         <div class="row">
-      <div v-for="ses in sessions" :key="ses.id" class="col-1">
-
-     <q-chip clickable @click="changeSession(ses)" square :outline="!ses.selected" :color="ses.selected ? 'red' : 'green'" text-color="white" icon="event">
-      {{ ses.name }}
-    </q-chip>
-      </div>
-    </div>
-
-    <div class="row justify-center">
-      <h5 v-if="isGroupSelected && sessions.length == 0">لا توجد حصص مسجلة لهذه المجموعة</h5>
-    </div>
-        <div class="row">
-      <div v-for="student in  attendanceRecords" :key="student.id" class="col-2">
-          <q-card v-if="isGroupSelected && sessions.length > 0 && isSessoinSelected" class="my-card" style="margin:10px;">
+      <div v-for="student in  students" :key="student.id" class="col-2">
+          <q-card v-if="isGroupSelecte" class="my-card" style="margin:10px;">
       <div class="row justify-center" style="marjin-top:-20px;">
         <p style="font-size:15px; margin-top:10px">
           {{ student.name }} <br>
@@ -80,7 +68,7 @@ export default {
       isGroupSelected: false,
       teacherId : "",
       allStudents : [],
-      attendanceRecords : [],
+      students : [],
       selectedDate: new Date(),
       sessions : [],  
       group: "",
@@ -93,63 +81,14 @@ export default {
       FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
       FETCH_SCHEDUAL: ACTIONS.SETTINGS.FETCH_SCHEDUAL,
       FETCH_STUDENTS : ACTIONS.STUDNETS.FETCH_STUDENTS,
-      FETCH_ATTENDANCE : ACTIONS.STUDNETS.FETCH_ATTENDANCE,
-      SAVE_ATTENDEANCE : ACTIONS.STUDNETS.SAVE_ATTENDEANCE,
-      UPDATE_ATTENDANCE : ACTIONS.STUDNETS.UPDATE_ATTENDANCE
     }),
-    changeSession(ses){
-      this.isSessoinSelected = true;
-      this.changeHappen = false;
-      let selected = {};
-      this.sessions.forEach(session => {
-        ses.id == session.id ? session.selected = true  : session.selected = false; 
-        });
 
-      if (this.GET_ATTENDANCE.some(record => record.session.id == ses.id)){
-            let record = this.GET_ATTENDANCE.find( rec => rec.session.id == ses.id && rec.date == this.date);
-            this.updatedRecordId = record.id;
-            this.attendanceRecords = record.attendance;
-            this.isEdit = true;
-          } else{
-            this.updatedRecordId = 0;
-           this.isEdit = false;
-           this.attendanceRecords = this.allStudents.filter(student => student.groupId == this.group.value)
-    }
-    },
     changeGroup() {
-      this.isSessoinSelected = false;
-      this.isGroupSelected = true;
-      let schedual = this.GET_SCHADUALS.find((s) => s.group.value == this.group.value);
-      if (schedual != undefined) {
-        let day = new Date().getDay();
-        this.sessions = schedual[day]
-        .filter(session => session.teacher.id == this.GET_USER.id)
-        .map(session => ({ id : session.id , name : session.subject.name ,day : day , selected : false}));
-        this.attendanceRecords = this.allStudents.filter(student => student.groupId == this.group.value);
-      }
+        this.students = this.allStudents.filter(student => student.groupId == this.group.value);
     },
-    saveSchedual() {
-      if (this.isEdit)
-        this.updateAttendance();
-      else{
-      let doc = { session : this.sessions.find(x => x.selected) , 
-        date  :  this.date,
-        group : this.group.value,
-        takingBy : { id : this.GET_USER.id, name : this.GET_USER.name },
-        attendance : this.attendanceRecords }
-      this.SAVE_ATTENDEANCE(doc)
-      }
-      this.changeHappen = false;
+    saveBehavior() {
+     
     },
-    updateAttendance(){
-      let doc = {
-        id : this.updatedRecordId,
-        attendance : this.attendanceRecords
-      }
-      this.UPDATE_ATTENDANCE(doc);
-      this.changeHappen = false;
-    }
-
   },
   computed: {
     ...mapGetters({
@@ -158,11 +97,7 @@ export default {
       GET_STUDENTS : GETTERS.STUDNETS.GET_STUDENTS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_SCHADUALS: GETTERS.SETTINGS.GET_SCHADUALS,
-      GET_ATTENDANCE : GETTERS.STUDNETS.GET_ATTENDANCE
     }),
-    getDay() {
-      return [this.selectedDate.getDay()];
-    },
   },
   watch : {
     GET_STUDENTS : function(oldState,newState) {
@@ -180,7 +115,7 @@ export default {
       }));
     },
     GET_SCHADUALS : function(oldState,newState) {
-      this.schedual = newState;
+      Object.values(newState)
     }
   },
   async created() {

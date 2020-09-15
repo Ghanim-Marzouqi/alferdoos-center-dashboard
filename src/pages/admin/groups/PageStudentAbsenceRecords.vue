@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <p class="text-h6 text-weight-bold">المجموعات</p>
+    <p class="text-h6 text-weight-bold">سجلات الغياب</p>
     <div class="row q-pa-md">
       <div class="fit row wrap justify-between items-center content-start">
         <div class="col-12 col-md-3">

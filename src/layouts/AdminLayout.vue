@@ -139,12 +139,21 @@
                 <q-item-label>إعداد الإختبارات</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item class="q-ma-xs" clickable exact to="/admin/settings-edit-memorizations">
+            
+            <q-item class="q-ma-xs" clickable exact to="/admin/edit-meetings">
               <q-item-section avatar>
                 <q-icon name="o_menu_book" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>إعداد المحفوظات</q-item-label>
+                <q-item-label>محاضر الإجتماعات</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/edit-expance">
+              <q-item-section avatar>
+                <q-icon name="o_menu_book" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>إدارة المصروفات</q-item-label>
               </q-item-section>
             </q-item>
             <q-item class="q-ma-xs" clickable exact to="/admin/settings-edit-subjects">
