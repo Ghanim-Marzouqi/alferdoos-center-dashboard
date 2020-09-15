@@ -4,7 +4,7 @@
     <q-form ref="hStudentInfoForm">
       <div class="text-weight-bold">عنوان المحضر :</div>
       <div class="row">
-        <div class="col-3">
+        <div class="col-6">
           <q-input
             class="q-ma-sm"
             dense
@@ -20,9 +20,10 @@
                   ]"
           />
         </div>
-        <div class="col-3">
+        <div class="col-5">
           <q-input
             ref="date"
+            class="q-ma-sm"
             dense
             square
             outlined
@@ -46,11 +47,11 @@
             </template>
           </q-input>
         </div>
-        <div class="col-3">
+        <div class="col-1 q-mr-xs">
           <q-btn
             :disable="action == 'view'"
             outline
-            style="primary"
+            color="primary"
             label="حفظ"
             @click="saveMeetings"
           />
@@ -88,11 +89,12 @@ export default {
     action: { type: String, required: true },
     isEdit: { type: Boolean, required: true },
   },
-  data() {
+    data() {
     return {
       meeting: { title: "", date: "", description: "" },
     };
   },
+
   created() {},
   computed: {
     ...mapGetters({
@@ -115,7 +117,9 @@ export default {
         : this.SET_MEETINGS(this.meeting);
     },
     updateMeeting() {
-      this.meeting = this.GET_METTINGS.find((m) => m.id == this.id);
+      console.log(this.id);
+      if (this.id != undefined)
+       { this.meeting = this.GET_METTINGS.find((m) => m.id == this.id); }
     },
   },
   watch: {
