@@ -105,18 +105,21 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="sem in semesters" :key="sem.id">
+            <tr v-for="(sem,i) in semesters" :key="sem.id">
               <td class="text-left">
                 {{ sem.name }}
               </td>
               <td class="text-right">
+                <q-btn :disable="sem.isCurrent" @click="updateCurrent(sem.id)" class="q-ma-xs"> 
+                   <q-icon :color="sem.isCurrent ? 'red' : 'black'" size="xs" name="fas fa-snowflake" />
+                </q-btn>
                 <q-btn dense flat @click="
                 isAddSemesterDialogOpen = true , 
                 selectedSemId = sem.id,
                 semesterTitle = sem.name">
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
-                <q-btn dense flat color="red" @click="onDeleteSemeter(sem.id)">
+                <q-btn dense flat color="red" @click="onDeleteSemeter(i)">
                   <q-icon name="o_delete"></q-icon>
                 </q-btn>
               </td>
@@ -306,6 +309,11 @@ export default {
       SET_YEAR_SEMESTERS : ACTIONS.SETTINGS.SET_YEAR_SEMESTERS,
       SET_SESSION_SETTINGS : ACTIONS.SETTINGS.SET_SESSION_SETTINGS,
     }),
+    updateCurrent(id)
+    {
+      this.semesters.forEach(sem => sem.id == id ? sem.isCurrent = true : sem.isCurrent = false);
+      this.saveSemestersIntoDb();
+    },
     updateSessionSettings(){
       console.log(this.SET_SESSION_SETTINGS);
       this.SET_SESSION_SETTINGS({ session : this.session});
@@ -314,8 +322,11 @@ export default {
     {
       this.SET_YEAR_SEMESTERS(this.semesters);
     },
-    onDeleteSemeter(id){
-      this.semesters.splice(id-1,1);
+
+    // TODO add validation not allowing to delte while there is subjects using that semester
+    onDeleteSemeter(index){
+      this.semesters.splice(index,1);
+      this.saveSemestersIntoDb();
     },
     addNewSemester() {
       if (this.selectedSemId > -1)
@@ -326,6 +337,7 @@ export default {
         this.selectedSemId = -1;
       }else{
         this.semesters.push({
+        isCurrent : false,
         id : this.semesters.length + 1,
         name : this.semesterTitle,
       });
@@ -333,6 +345,8 @@ export default {
       
       this.semesterTitle = "";
       this.isAddSemesterDialogOpen = false;
+
+      this.saveSemestersIntoDb();
     },
     saveCurrentYear() {
       if (this.currentYear === "") return;

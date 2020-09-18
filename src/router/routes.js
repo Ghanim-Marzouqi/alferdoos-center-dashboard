@@ -132,6 +132,11 @@ const routes = [
         path: "registration-applications",
         component: () =>
           import("pages/parent/students/PageRegistrationApplications.vue")
+      },
+      {
+        path: "students-list",
+        component: () =>
+          import("pages/parent/students/PageParentStudentsList.vue")
       }
     ]
   },
@@ -156,6 +161,14 @@ const routes = [
         path: "group-attendence",
         component: () => import("pages/teacher/PageGroupAttendence.vue")
       },
+      {
+        path: "student-behaviors",
+        component: () => import("pages/teacher/PageEditStudentBehaviors.vue")
+      },
+      {
+        path: "subject-marks",
+        component: () => import("pages/teacher/PageSetSubjectMarks.vue")
+      }
     ]
   }
 ];

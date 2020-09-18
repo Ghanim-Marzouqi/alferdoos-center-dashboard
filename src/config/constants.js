@@ -1,5 +1,6 @@
 // Firestore Collections
 const COLLECTIONS = {
+  MARKS: "marks",
   ADMINS: "admins",
   EXECUSES : "execuses",
   SUBJECTS : "subjects",
@@ -17,7 +18,8 @@ const COLLECTIONS = {
   SCHEDUALS : "Schedules",
   MEETINGS : "meetings",
   EXPANCE : "expense",
-  REPEATED_EXPANCE : "repeated_expense"
+  REPEATED_EXPANCE : "repeated_expense",
+  BEHAVIORS : "behaviors"
 };
 
 const STUDENT_GRADE = {
@@ -244,6 +246,7 @@ const GETTERS = {
     GET_EXPENCE : "GET_EXPENCE",
   },
   STUDNETS: {
+    GET_BEHAVIORS : "GET_BEHAVIORS",
     GET_STUDENTS: "GET_STUDENTS",
     GET_STUDENTS_MARKS: "GET_STUDENTS_MARKS",
     GET_STUDENT_ANSWERS: "GET_STUDENT_ANSWERS",
@@ -253,7 +256,8 @@ const GETTERS = {
     GET_EXECUSES : "GET_EXECUSES"
   },
   SUBJECTS :{
-    GET_SUBJECTS : "GET_SUBJECTS"
+    GET_SUBJECTS : "GET_SUBJECTS",
+    GET_MARKS : "GET_MARKS"
   },
   TEACHERS: {
     GET_TEACHERS: "GET_TEACHERS",
@@ -288,7 +292,10 @@ const ACTIONS = {
   SUBJECTS: {
     REGISTER_SUBJECT : "REGISTER_SUBJECT",
     UPDATE_SUBJECT : "UPDATE_SUBJECT",
-    FETCH_SUBJECTS : "FETCH_SUBJECTS"
+    FETCH_SUBJECTS : "FETCH_SUBJECTS",
+    UPDATE_MARKS : "UPDATE_MARKS",
+    SAVE_MARKS : "SAVE_MARKS",
+    FETCH_MARKS : "FETCH_MARKS"
   },
 
   SETTINGS: {
@@ -327,6 +334,7 @@ const ACTIONS = {
     EDIT_EXPANCE : "EDIT_EXPANCE",
   },
   STUDNETS: {
+    FETCH_BEHAVIOR : "FETCH_BEHAVIOR",
     FETCH_STUDENTS: "FETCH_STUDENTS",
     FETCH_STUDENTS_BY_PARENT_ID: "FETCH_STUDENTS_BY_PARENT_ID",
     REGISTER_STUDENT: "REGISTER_STUDENT",
@@ -344,7 +352,9 @@ const ACTIONS = {
     UPDATE_ATTENDANCE : "UPDATE_ATTENDANCE",
     ADD_EXECUSE : "ADD_EXECUSE",
     FETCH_EXECUSES : "FETCH_EXECUSES",
-    RESET_ATTENDANCE_RANGE_DATE : "RESET_ATTENDANCE_RANGE_DATE"
+    RESET_ATTENDANCE_RANGE_DATE : "RESET_ATTENDANCE_RANGE_DATE",
+    ADD_BEHAVIOR : "ADD_BEHAVIOR",
+    UPDATE_BEHAVIOR : "UPDATE_BEHAVIOR"
   },
   TEACHERS: {
     ADD_TEACHER: "ADD_TEACHER",
@@ -372,6 +382,7 @@ const MUTATIONS = {
     SET_STUDENT_GROUP: "SET_STUDENT_GROUP"
   },
   SUBJECTS : {
+    SET_MARKS : "SET_MARKS",
     SET_SUBJECTS : "SET_SUBJECTS",
   },
   SETTINGS: {
@@ -394,7 +405,8 @@ const MUTATIONS = {
     SET_ATTENDANCE : "SET_ATTENDANCE",
     SET_ATTENDANCE_RANGE_DATE : "SET_ATTENDANCE_RANGE_DATE",
     RESET_ATTENDANCE_RANGE_DATE : "RESET_ATTENDANCE_RANGE_DATE",
-    SET_EXECUSES : "SET_EXECUSES"
+    SET_EXECUSES : "SET_EXECUSES",
+    SET_BEHAVIORS : "SET_BEHAVIORS"
   },
   TEACHERS: {
     SET_TEACHERS: "SET_TEACHERS",
@@ -412,6 +424,8 @@ const MUTATIONS = {
 const MESSAGES = {
   AUTH: {},
   DATABASE: {
+    MARKS_UPDATED : "database/marks-updated",
+    MARKS_SAVED : "database/marks-saved",
     EXPANCE_DELETED : "database/expance-added",
     EXECUSE_ADDED : "database/execuse-added",
     STUDENT_FORM_RECORD_DELETED: "database/student-form-record-deleted",
@@ -448,6 +462,8 @@ const MESSAGES = {
     REPEATED_EXPANCE_UPDATED : "database/REPEATED-expance-updated-successfully",
     EXPANCE_ADDED : "database/expance-added-successfully",
     EXPANCE_UPDATED : "database/expance-updated-successfully",
+    BEHAVIOR_UPDATED : "database/behavior-updated-successfully",
+    BEHAVIOR_ADDED : "database/behavior-added-successfully",
   }
 };
 
@@ -465,6 +481,10 @@ const ERRORS = {
     OTP_NOT_VERIFIED: "auth/otp-not-verified"
   },
   DATABASE: {
+    MARKS_UPDATE_FAIL :  "database/update-marks-error",
+    MARKS_SAVING_FAIL : "database/add-marks-error",
+    ADD_BEHAVIOR_FAIL : "database/add-behavior-error",
+    UPDATE_BEHAVIOR_FAIL : "database/update-behavior-error",
     DELETE_EXPANCE_ERROR : "database/delete-pexpense-error",
     EDIT_PEXPANCE_ERROR  : "database/edit-pexpense-error",
     EDIT_EXPANCE_ERROR  : "database/edit-expense-error",

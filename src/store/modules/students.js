@@ -20,10 +20,12 @@ const state = {
   attendance : [],
   attendanceRange : [],
   execuses : [],
+  behaviors : [],
 };
 
 // Getters
 const getters = {
+  GET_BEHAVIORS : state => state.behaviors,
   GET_STUDENTS: state => state.students,
   GET_ATTENDANCE: state => state.attendance,
   GET_ATTENDANCE_RANGE_DATE: state => state.attendanceRange,
@@ -625,6 +627,33 @@ const actions = {
     }
 
   },
+  async UPDATE_BEHAVIOR({ commit }, payload) {
+
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+
+
+    
+        await FirebaseDatabase.collection(COLLECTIONS.BEHAVIORS)
+          .doc(payload.id)
+          .update(payload);
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.BEHAVIOR_UPDATED
+        });
+
+      
+    } catch (error) {
+      console.log("EDIT_APPLICATION_STATUS ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.UPDATE_BEHAVIOR_FAIL
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
   async ADD_EXECUSE({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -653,7 +682,26 @@ const actions = {
 
       
     } catch (error) {
-      console.log("ADD_EXECUSE", { code : ERRORS.DATABASE.ADD_EXECUSE_FAIL});
+      commit(MUTATIONS.UI.SET_ERROR, { code : ERRORS.DATABASE.ADD_EXECUSE_FAIL});
+      console.log("ADD_EXECUSE", error);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async ADD_BEHAVIOR({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {   
+
+      await FirebaseDatabase.collection(COLLECTIONS.BEHAVIORS)
+        .doc()
+        .set(payload);
+        commit(MUTATIONS.UI.SET_MESSAGE, { code:  MESSAGES.DATABASE.BEHAVIOR_ADDED});
+
+      
+    } catch (error) {
+      commit(MUTATIONS.UI.SET_ERROR,  { code : ERRORS.DATABASE.ADD_BEHAVIOR_FAIL});
+      console.log("ADD_BEHAVIOR", error);
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
@@ -693,11 +741,48 @@ const actions = {
     }
 
   },
+  async FETCH_BEHAVIOR({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+
+      // TODO after adding active semester , add it here
+      let snapshot = null;
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.BEHAVIORS)
+          .where("year", "==", payload.year)
+          //.where("semester","==",payload.semester)
+          .get();
+
+      let docs = snapshot.docs;
+      let behavior = docs.map(doc => ({
+        id : doc.id,
+        date : doc.data().date,
+        behaviorType : doc.data().type,
+        year: doc.data().year,
+        semester :doc.data().semester,
+        title: doc.data().title,
+        description: doc.data().description,
+        student: doc.data().student,
+        createdBy : doc.data().createdBy,
+      }));
+
+      
+      commit(MUTATIONS.STUDNETS.SET_BEHAVIORS, behavior);
+      
+    } catch (error) {
+      console.log("FETCH_BEHAVIOR", error);
+      commit(MUTATIONS.UI.SET_ERROR, error);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
 
 };
 
 // Mutations 
 const mutations = {
+  SET_BEHAVIORS : (state, behaviors) => (state.behaviors = behaviors),
   SET_STUDENTS: (state, students) => (state.students = students),
   SET_ATTENDANCE: (state, attendance) => state.attendance = attendance,
   RESET_ATTENDANCE_RANGE_DATE : (state) => state.attendanceRange = [],

@@ -11,11 +11,13 @@ import {
 // State
 const state = {
   subjects: [],
+  marks : [],
 };
 
 // Getters
 const getters = {
-  GET_SUBJECTS: state => state.subjects
+  GET_SUBJECTS: state => state.subjects,
+  GET_MARKS: state => state.marks
 };
 
 // Actions
@@ -24,8 +26,6 @@ const actions = {
     commit(MUTATIONS.UI.SET_LOADING, true);
     try {
       let snapshot = null;
-
-
         snapshot = await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
           .get();
       
@@ -96,7 +96,6 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
-
   async DELETE_SUBJECT({ commit }, payload) {
     try {
       await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
@@ -146,6 +145,83 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+  async UPDATE_MARKS({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+
+      console.log(payload);  
+
+      await FirebaseDatabase.collection(COLLECTIONS.MARKS)
+        .doc(payload.id)
+        .update(payload.object);
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.MARKS_UPDATED
+        });
+
+        
+    } catch (error) {
+      console.log("UPDATE_MARKS", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.MARKS_UPDATE_FAIL
+      });
+
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async SAVE_MARKS({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+     
+      await FirebaseDatabase.collection(COLLECTIONS.MARKS)
+        .doc()
+        .set(payload);
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.MARKS_SAVED
+        });
+
+      
+    } catch (error) {
+      console.log("SAEV_MARKS", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.MARKS_SAVING_FAIL
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async FETCH_MARKS({ commit }) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+    try {
+      let snapshot = null;
+
+
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.MARKS)
+          .get();
+      let docs = snapshot.docs;
+
+      if (docs.length > 0) {
+        let marks = docs.map(doc => ({
+          id: doc.id,
+          students : doc.data().students,
+          subject : doc.data().subject,
+          group : doc.data().group
+        }));
+
+        commit(MUTATIONS.SUBJECTS.SET_MARKS, marks);
+      }
+      
+    } catch (error) {
+      console.log("FETCH_MARKS", error);
+      commit(MUTATIONS.UI.SET_ERROR, ERRORS.DATABASE.FETCH_SUBJECTS_FAIL);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
 
 
 };
@@ -153,7 +229,7 @@ const actions = {
 // Mutations
 const mutations = {
   SET_SUBJECTS: (state, subjects) => (state.subjects = subjects),
-
+  SET_MARKS : (state,marks) => state.marks = marks,
 };
 
 // Export
