@@ -2,6 +2,19 @@
   <q-page padding>
     <p class="text-h6">المصروفات و الإيرادات</p>
 
+    
+
+    <table>
+      <tr>
+        <td><p style="margin-top:50px; color:red" class="text-h6 red">الإيرادات:</p></td>
+        <td><p style="margin-top:50px;" class="text-h6 red">{{getTotalExp('c')}} ر.ع</p></td>
+      </tr>
+      <tr>
+        <td><p style="color:red" class="text-h6 red">المصاريف:</p></td>
+        <td><p class="text-h6 red">{{getTotalExp('d')}} ر.ع</p></td>
+      </tr>
+    </table>
+
     <!-- Memorization Table -->
     <div class="row q-pa-md">
       <div class="fit row wrap justify-end items-center content-start">
@@ -466,6 +479,11 @@ export default {
       DELETE_EXPANCE: ACTIONS.SETTINGS.DELETE_EXPANCE,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
+    getTotalExp(s){
+      let filter = s == 'c' ? (x) => x.isCredit : (x) => x.isDebit
+      return this.GET_EXPANCE.filter(filter)
+      .reduce((a,b)=>({ amount : parseInt(a.amount) + parseInt(b.amount)})).amount;
+    },
     deleteExpanse(type, id) {
       console.log('ffffff');
       if (type == 1) {

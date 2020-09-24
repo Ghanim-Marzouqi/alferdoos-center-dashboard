@@ -3,10 +3,10 @@
     {{ updateMeeting() }}
     <q-form ref="hStudentInfoForm">
       <div class="text-weight-bold">عنوان المحضر :</div>
+      
       <div class="row">
-        <div class="col-6">
+        <div class="col-5 q-ml-xs">
           <q-input
-            class="q-ma-sm"
             dense
             square
             outlined
@@ -20,10 +20,9 @@
                   ]"
           />
         </div>
-        <div class="col-5">
+        <div class="col-4 q-ml-xs">
           <q-input
             ref="date"
-            class="q-ma-sm"
             dense
             square
             outlined
@@ -47,7 +46,7 @@
             </template>
           </q-input>
         </div>
-        <div class="col-1 q-mr-xs">
+        <div class="col-1 q-ml-xs">
           <q-btn
             :disable="action == 'view'"
             outline
@@ -57,6 +56,26 @@
           />
         </div>
         <div class="col-3"></div>
+      </div>
+       <div class="text-weight-bold">المرفقات :</div>
+      <div class="row">
+        <div class="col-10">
+       
+                <q-file
+                v-if="action != 'view'"
+            v-model="meeting.files"
+            label="المرفقات"
+            dense
+            outlined
+            use-chips
+            multiple
+            accept=".pdf"
+          >
+            <template v-slot:prepend>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+        </div>
       </div>
       <div class="text-weight-bold q-mt-md">ملخص المحضر</div>
       <div class="row">
@@ -91,7 +110,11 @@ export default {
   },
     data() {
     return {
-      meeting: { title: "", date: "", description: "" },
+      meeting: { 
+        title: "", 
+        date: "", 
+        description: "",
+        files : [] },
     };
   },
 
@@ -123,8 +146,10 @@ export default {
     },
   },
   watch: {
+    GET_LOADING : function (newState) {
+     newState ? this.$q.loading.show() : this.$q.loading.hide();
+  },
     id: function (newState) {
-      console.log("here");
       this.meeting = this.GET_METTINGS.find((m) => m.id == newState);
     },
     GET_MESSAGES: function (newState, oldState) {

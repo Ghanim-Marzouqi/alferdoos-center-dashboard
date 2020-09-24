@@ -1,15 +1,14 @@
 <template>
   <q-page padding>
-    {{ btype }}
-    <p class="text-h6 text-weight-bold">المجموعات</p>
+    <p class="text-h6 text-weight-bold">الطلاب</p>
 
     <div class="row q-pa-md">
       <div class="fit row wrap justify-between items-center content-start">
-        <p class="text-body1 text-weight-bold">قائمة المجموعات</p>
+        <p class="text-body1 text-weight-bold">قائمة الطلاب</p>
 
       </div>
       <div class="col-12">
-        <q-table :data="getStudents" :columns="columns" row-key="id" :loading="GET_LOADING">
+        <!-- <q-table :data="getStudents" :columns="columns" row-key="id" :loading="GET_LOADING">
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td key="name" :props="props">{{ props.row.name }}</q-td>
@@ -31,14 +30,45 @@
                   </q-chip>
               </q-td>
               <q-td key="activities" :props="props">
-                <q-btn dense flat >
+                <q-btn dense flat @click="selectedStudent=props.row.id, isActivitiesDialogOpen = true" >
                   <q-icon color="teal" name="o_note_add" />
                 </q-btn>
               </q-td>
             </q-tr>
          
           </template>
-        </q-table>
+        </q-table> -->
+
+        <div v-for="student in  getStudents" :key="student.id" class="col-md-3">
+        <q-card class="my-card q-ma-md" style="margin-top:10px;">
+          <div class="row justify-center q-ma-md">
+            <p style="font-size:15px; margin-top:10px">
+              {{ student.name }}
+              <br />
+            </p>
+          </div>
+          <q-card-actions align="center">
+            <q-btn dense flat @click="selectedStudent=student.id, isMarksPageOpened = true" >
+                  <q-icon color="teal" name="fas fa-poll" />
+                </q-btn>
+            <q-chip @click="selectedStudent=student.id, isBehaviorDialogOpened = true , btype=Good" clickable>
+                    <q-avatar color="green" icon="fas fa-thumbs-up" text-color="white"> </q-avatar>
+                   {{ student.goodBehaviors }}
+                  </q-chip>
+            <q-chip clickable @click="btype=Bad, selectedStudent=student.id, isBehaviorDialogOpened = true">
+                    <q-avatar color="red" icon="fas fa-thumbs-down" text-color="white"> </q-avatar>
+                    {{ student.badBehaviors }}
+                  </q-chip>
+            <q-btn dense flat @click="selectedStudent=student.id,isPending = true , isActivitiesDialogOpen=true" >
+                  <q-icon color="teal" name="o_note_add" />
+                </q-btn>
+              <q-btn dense flat @click="selectedStudent=student.id,isPending = false , isActivitiesDialogOpen=true" >
+                  <q-icon color="red" name="o_note_add" />
+                </q-btn>
+          </q-card-actions>
+        </q-card>
+      </div>
+
       </div>
     </div>
 
@@ -53,6 +83,12 @@
     :btype="btype"
     @close="isBehaviorDialogOpened = false,selectedStudent = ''"/>
 
+    <ActivitiesDialog
+    :isOpen="isActivitiesDialogOpen"
+    :studentId="selectedStudent"
+    :isPending="isPending"
+    @close="isActivitiesDialogOpen = false,selectedStudent = ''"/>
+
 
   </q-page>
 </template>
@@ -65,16 +101,19 @@ export default {
   name: "PageStudentsList",
   components : {
     MarksDialog : ()=> import('components/StudentSubjectMarksDialog'),
-    BehaviorDialog : ()=> import('components/StudentShowBehaviorsDialog')
+    BehaviorDialog : ()=> import('components/StudentShowBehaviorsDialog'),
+    ActivitiesDialog : ()=> import('components/ParentShowActivitesDialog'),
   },
   data() {
     return {
       Good: "P",
       Bad: "N",
+      isPending : false,
       selectedStudent : "",
       isMarksPageOpened : false,
       btype : '',
       isBehaviorDialogOpened : false,
+      isActivitiesDialogOpen : false,
       columns: [
         {
           name: "name",
@@ -118,6 +157,7 @@ export default {
   created() {
     this.FETCH_STUDENTS({ status: "" });
     this.FETCH_BEHAVIOR({ year : "2020"});
+    this.FETCH_ACTIVITIES({ year : "2020"})
   },
   computed: {
     ...mapGetters({
@@ -141,6 +181,7 @@ export default {
     ...mapActions({
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
       FETCH_BEHAVIOR: ACTIONS.STUDNETS.FETCH_BEHAVIOR,
+      FETCH_ACTIVITIES: ACTIONS.STUDNETS.FETCH_ACTIVITIES,
     }),
     getTotal(type,sid){
      let behs =  this.GET_BEHAVIORS.filter(b => b.behaviorType == type && b.student.id == sid)

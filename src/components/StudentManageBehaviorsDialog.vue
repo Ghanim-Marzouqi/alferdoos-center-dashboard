@@ -48,7 +48,15 @@
               <q-td key="title" :props="props">{{ props.row.title }}</q-td>
               <q-td key="date" :props="props">{{ props.row.date }}</q-td>
               <q-td key="semester" :props="props">{{ props.row.semester.name }}</q-td>
-              <q-td key="teacher" :props="props">{{ props.row.createdBy.name }}</q-td>
+              <q-td key="edit" :props="props">               
+                 <q-btn dense flat @click.stop="onEditClick(props.row)">
+                  <q-icon color="teal" name="o_edit" />
+                </q-btn></q-td>
+              <q-td key="delete" :props="props">
+                <q-btn dense flat @click.stop="onDeleteClick(props.row.id)">
+                  <q-icon color="red" name="o_delete" />
+                </q-btn>
+              </q-td>
             </q-tr>
             <q-tr v-show="props.expand" :props="props">
               <q-td colspan="100%">
@@ -76,7 +84,14 @@
     </div>
         </q-card-section>
       </q-card>
-
+      
+      <BehaviorDialog
+      :isOpen="isBehaviorDialogOpen"
+      :behavior="behavior"
+      :isEdit="isEdit"
+      :title="title"
+      @close="isBehaviorDialogOpen = false"
+    />
 
     </q-dialog>
 </template>
@@ -88,6 +103,9 @@ import groups from "src/store/modules/groups";
 import { storage } from 'firebase';
 export default {
   name: "PageStudentMarksDetails",
+    components: {
+    BehaviorDialog: () => import("components/StudentAddPosBehaviorDialog.vue")
+  },
   props : {
     studentId : {
       type : String,
@@ -103,6 +121,10 @@ export default {
   },
   data() {
     return {
+      isEdit: true,
+      behavior : {},
+      isBehaviorDialogOpen : false,
+      title : "تعديل سلوك",
       maximizedToggle: true,
       columns: [
         {
@@ -127,17 +149,23 @@ export default {
           align: "center",
         },
         {
-          name: "teacher",
+          name: "edit",
           required: true,
-          label: "الاستاذ",
-          field: "teacher",
+          label: "تعديل",
+          field: "edit",
+          align: "center",
+        },
+        {
+          name: "delete",
+          required: true,
+          label: "حذف",
+          field: "delete",
           align: "center",
         },
       ],
     };
   },
   created() {
-
   },
   computed: {
     ...mapGetters({
@@ -150,8 +178,17 @@ export default {
   },
   methods: {
      ...mapActions({
-      
+      FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
+      DELETE_BEHAVIOR : ACTIONS.STUDNETS.DELETE_BEHAVIOR
     }),
+    onEditClick(behavior){
+      behavior.type = this.btype;
+      this.behavior = behavior;
+      this.isBehaviorDialogOpen = true;
+    },
+    onDeleteClick(id){
+      this.DELETE_BEHAVIOR(id)
+    },
   },
 
 };

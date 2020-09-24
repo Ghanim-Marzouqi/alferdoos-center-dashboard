@@ -16,11 +16,13 @@
       <div v-for="student in  students" :key="student.id" class="col-md-3">
         <q-card class="my-card q-ma-md" style="margin-top:10px;">
           <div class="row justify-center q-mt-md" >
-            <q-chip :clickable="getTotal(Good,student.id) > 0" @click="selectedStudent = student.id,isShowBehaviorDialogOpened = true , btype=Good">
-              <q-avatar color="green" text-color="white" />{{ getTotal(Good,student.id)}}
+            <q-chip :clickable="getPendingTotal(student.id,false) > 0" 
+              @click="isPending=true,selectedStudent = student.id,isShowActivitDialogOpened = true">
+              <q-avatar color="green" text-color="white" />{{ getPendingTotal(student.id,false)}}
             </q-chip>
-            <q-chip :clickable="getTotal(Bad,student.id) > 0" @click="selectedStudent = student.id,isShowBehaviorDialogOpened = true , btype=Bad">
-              <q-avatar color="red" text-color="white" />{{ getTotal(Bad,student.id)}}
+            <q-chip :clickable="getTotal(student.id,true) > 0" 
+              @click="isPending = false,selectedStudent = student.id,isShowActivitDialogOpened = true">
+              <q-avatar color="red" text-color="white" />{{ getTotal(student.id,true)}}
             </q-chip>
           </div>
           <div class="row justify-center q-ma-md">
@@ -32,30 +34,27 @@
           <q-card-actions align="right">
             <q-btn
               flat
-              @click="openDialog(Good,false,student)"
+              @click="openDialog(false,student)"
               round
               color="green"
-              icon="fas fa-thumbs-up"
-            />
-            <q-btn @click="openDialog(Bad,false,student)" flat round color="red" icon="fas fa-thumbs-down" />
-          </q-card-actions>
+              icon="fas fa-folder-plus"
+            /></q-card-actions>
         </q-card>
       </div>
     </div>
 
-    <BehaviorDialog
-      :isOpen="isBehaviorDialogOpen"
-      :behavior="behavior"
+    <ActivityDialog
+      :isOpen="isActivityDialogOpen"
+      :activity="activity"
       :isEdit="isEdit"
-      :title="title"
-      @close="isBehaviorDialogOpen = false"
+      @close="isActivityDialogOpen = false"
     />
 
-    <ShowBehaviorDialog
-    :isOpen="isShowBehaviorDialogOpened"
+    <ShowActivitesDialog
+    :isOpen="isShowActivitDialogOpened"
     :studentId="selectedStudent"
-    :btype="btype"
-    @close="isShowBehaviorDialogOpened = false,selectedStudent = ''"/>
+    :isPending="isPending"
+    @close="isShowActivitDialogOpened = false,selectedStudent = ''"/>
 
   </q-page>
 </template>
@@ -69,29 +68,25 @@ const moment = require("moment");
 
 export default {
   components: {
-    BehaviorDialog: () => import("components/StudentAddPosBehaviorDialog.vue"),
-    ShowBehaviorDialog : ()=> import('components/StudentManageBehaviorsDialog')
+    ActivityDialog : () => import("components/StudentAddActivityDialog.vue"),
+    ShowActivitesDialog : ()=> import('components/StudentManageActivitesDialog')
   },
   data() {
     return {
       groups: [],
-      Good: "P",
-      Bad: "N",
-      title : "",
-      btype : '',
       selectedStudent : "",
-      date: moment(new Date()).format("DD/MM/YYYY"),
       isEdit: false,
-      isBehaviorDialogOpen: false,
-      isShowBehaviorDialogOpened : false,
+      isActivityDialogOpen: false,
+      isShowActivitDialogOpened : false,
       allStudents: [],
       students: [],
+      isPending : false,
       group: "",
-      behavior: {
-        type: "",
-        date: "",
-        reportingDate: "",
-        year: "",
+      activity: {
+        year : "",
+        isDone : false,
+        endDate: "",
+        startDate: "",
         semester: "",
         title: "",
         description: "",
@@ -101,45 +96,38 @@ export default {
     };
   },
   async created() {
+    await this.FETCH_STUDENTS({ status: "" });
     await this.FETCH_SCHEDUAL();
-    await this.FETCH_BEHAVIOR({ year : "2020"})
-    this.FETCH_STUDENTS({ status: "" });
+    await this.FETCH_ACTIVITIES({ year : "2020"})
     this.FETCH_YRAT_INFO();
   },
   methods: {
     ...mapActions({
-      FETCH_BEHAVIOR: ACTIONS.STUDNETS.FETCH_BEHAVIOR,
+      FETCH_ACTIVITIES: ACTIONS.STUDNETS.FETCH_ACTIVITIES,
       FETCH_SCHEDUAL: ACTIONS.SETTINGS.FETCH_SCHEDUAL,
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
       FETCH_YRAT_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
-    showBehaviors(type,sid){},
-    getTotal(type,sid){
-     let behavior = this.GET_BEHAVIORS.filter(b => b.behaviorType == type && b.student.id == sid);
-     return behavior.length;
+    getTotal(sid,status){
+     let activites = this.GET_ACTIVITIES.filter(b => b.student.id == sid && b.isDone );
+     return activites.length;
     },
-    openDialog(beh, isEdit, student) {
-      // TODO add active semester and handle it here
-      this.title =
-        beh == "P"
-          ? isEdit
-            ? "تعديل سلوك إيجابي"
-            : "إضافة أسلوب إيجابي"
-          : isEdit
-          ? "تعديل سلوك سلبي"
-          : "إضافة سلوك سلبي";
+    getPendingTotal(sid,status){
+     let activites = this.GET_ACTIVITIES.filter(b => b.student.id == sid && !b.isDone );
+     return activites.length;
+    },
+    openDialog(isEdit, student) {
 
       let sem = this.GET_YEAR_INFO.semesters[0];
-      this.behavior.createdBy = {
+      this.activity.createdBy = {
         id: this.GET_USER.id,
         name: this.GET_USER.name,
       };
-      this.behavior.semester = sem;
-      this.behavior.student = {id : student.id, name :student.name} ;
-      (this.behavior.type = beh), (this.behavior.year = this.GET_YEAR_INFO.id);
-      this.behavior.reportingDate = this.date;
-      this.isBehaviorDialogOpen = true;
+      this.activity.semester = sem;
+      this.activity.student = {id : student.id, name : student.name} ;
+      this.activity.year = this.GET_YEAR_INFO.id;
+      this.isActivityDialogOpen = true;
     },
     changeGroup() {
       this.students = this.allStudents.filter(
@@ -150,7 +138,7 @@ export default {
   computed: {
     ...mapGetters({
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
-      GET_BEHAVIORS: GETTERS.STUDNETS.GET_BEHAVIORS,
+      GET_ACTIVITIES: GETTERS.STUDNETS.GET_ACTIVITIES,
       GET_USER: GETTERS.AUTH.GET_USER,
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
@@ -188,44 +176,33 @@ export default {
       if (newState.length > 0) {
         let messageCode = newState[0].code;
 
-        if (messageCode === MESSAGES.DATABASE.BEHAVIOR_UPDATED) {
+        if (messageCode === MESSAGES.DATABASE.ACTIVITY_UPDATED) {
           this.CLEAR_ERRORS_AND_MESSAGES();
 
-          this.FETCH_BEHAVIOR({year : "2020"});
+          this.FETCH_ACTIVITIES({year : "2020"});
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تمت تحديث السلوك بنجاح",
+            message: "تمت تحديث النشاط بنجاح",
           });
         }
 
-                if (messageCode === MESSAGES.DATABASE.STUDENT_BEHAVIOR_DELETED) {
+                if (messageCode === MESSAGES.DATABASE.STUDENT_ACTIVITY_DELETED) {
           this.CLEAR_ERRORS_AND_MESSAGES();
-
-          this.FETCH_BEHAVIOR({year : "2020"});
+          this.FETCH_ACTIVITIES({year : "2020"});
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم حذف السلوك بنجاح",
+            message: "تم حذف النشاط بنجاح",
           });
         }
 
         
 
-        if (messageCode === MESSAGES.DATABASE.BEHAVIOR_ADDED) {
+        if (messageCode === MESSAGES.DATABASE.ACTIVITY_ADDED) {
           this.CLEAR_ERRORS_AND_MESSAGES();
-          this.FETCH_BEHAVIOR({year : "2020"});
+          this.FETCH_ACTIVITIES({year : "2020"});
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم إضافة السلوك بنجاح",
-          });
-        }
-
-        if (messageCode === MESSAGES.DATABASE.TEACHER_DELETED) {
-          this.CLEAR_ERRORS_AND_MESSAGES();
-          this.FETCH_TEACHERS();
-          this.isDeleteTeacherDialogOpen = false;
-          this.$q.dialog({
-            title: "تمت العملية بنجاح",
-            message: "تم حذف بيانات المعلم بنجاح",
+            message: "تم إضافة النشاط بنجاح",
           });
         }
       }
@@ -234,28 +211,28 @@ export default {
       if (newState.length > 0) {
         let errorCode = newState[0].code;
 
-        if (errorCode === ERRORS.DATABASE.UPDATE_BEHAVIOR_FAIL) {
+        if (errorCode === ERRORS.DATABASE.UPDATE_ACTIVITY_FAIL) {
           this.$q.dialog({
             title: "فشلت العملية",
-            message: "حدث خطأ أثناء محاولة تحديث سلوك",
+            message: "حدث خطأ أثناء محاولة تحديث النشاط",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
 
-        if (errorCode === ERRORS.DATABASE.STUDENT_DELETE_BEHAVIOER_ERROR) {
+        if (errorCode === ERRORS.DATABASE.STUDENT_DELETE_ACTIVITY_ERROR) {
           this.$q.dialog({
             title: "فشلت العملية",
-            message: "حدث خطأ أثناء محاولة حذف سلوك",
+            message: "حدث خطأ أثناء محاولة حذف النشاط",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
 
         
 
-        if (errorCode === ERRORS.DATABASE.ADD_BEHAVIOR_FAIL) {
+        if (errorCode === ERRORS.DATABASE.ADD_ACTIVITY_FAIL) {
           this.$q.dialog({
             title: "فشلت العملية",
-            message: "حدث خطأ أثناء إضافة سلوك جديد",
+            message: "حدث خطأ أثناء إضافة نشاط جديد",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }

@@ -21,9 +21,11 @@
         />
       </div>
 
-            <div class="col-12 col-md-2 q-ma-xs">
-        <q-btn color="primary" icon="save" @click="saveMarks" label="حفظ" />
+            <div class="col-12 col-md-3 q-ma-xs">
+        <q-btn color="primary" icon="save" @click="saveMarks('')" label="حفظ" />
+         <q-btn color="primary" class="q-ml-xs" icon="save" @click="saveMarks('final')" label="تسليم الدرجات" />
       </div>
+
 
       
     </div>
@@ -37,7 +39,7 @@
               <br />
             </p>
           </div>
-          <q-item v-for="(option, i) in getMarks(student.semesters)" :key="i">
+          <q-item v-for="(option, i) in getSemester(student.semesters).criteria" :key="i">
      
             <q-item-section><p class="red" style="font-size:10px; margin-top:10px">
               {{ option.text }}/{{ option.max }}
@@ -49,7 +51,7 @@
                             style="width: 80px"
                             type="number"
                             v-model="option.mark"
-                            
+                            :disable="getSemester(student.semesters).isSubmited"
                             dense
                             filled
                             :rules="[val => val && val > 0  || 'ادخل الدرجة',
@@ -107,15 +109,22 @@ export default {
       FETCH_YRAT_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
-    getMarks(marks){
-      return marks.find(m => m.semester == this.semesterId).criteria
+    getSemester(marks){
+      return marks.find(m => m.semester == this.semesterId)
     },
-    saveMarks(){
+    saveMarks(status){
+
+      if (status == 'final')
+      {
+        this.students.forEach(s => {
+          s.semesters.find(m => m.semester == this.semesterId).isSubmited = true;})
+      }
       let marks = {
         subject : this.subject,
         group : this.group,
         students : this.students
       }
+
       if (this.isEdit){
         this.UPDATE_MARKS({ id : this.documentId , object : marks})
       }else{
@@ -125,8 +134,6 @@ export default {
     },
     changeSubject() {
 
-      
-    
     let marks  = this.GET_MARKS.find(m => m.group.value == this.group.value 
     && m.subject.value == this.subject.value);
 
@@ -155,7 +162,7 @@ export default {
      
     },
     resetForm(){
-                this.isEdit = false;
+          this.isEdit = false;
           this.students = [],
           this.group = "",
           this.isGroupSelected = false;

@@ -50,7 +50,8 @@ const actions = {
         id : m.id,
         date: m.data().date,
         description: m.data().description,
-        title : m.data().title
+        title : m.data().title,
+        files :  m.data().files,
       }));
 
       if (MEETINGS.length > 0) {
@@ -751,6 +752,26 @@ const actions = {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
+
+      let FirebaseStorageRef = FirebaseStorage.ref();
+      
+
+    
+      if (payload.files.length > 0) {
+        let cerArr = await payload.files.map(async file => {
+          let fileRef = FirebaseStorageRef.child(
+            `MEETINGS/${file.name}_${Date.now()}`
+          );
+
+          let snapshot = await fileRef.put(file);
+          return await snapshot.ref.getDownloadURL();
+        });
+
+        payload.files = await Promise.all(cerArr);
+      }
+
+      console.log('meeting',payload);
+
       await FirebaseDatabase.collection(COLLECTIONS.MEETINGS)
         .doc()
         .set(payload);

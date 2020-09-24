@@ -1,5 +1,6 @@
 // Firestore Collections
 const COLLECTIONS = {
+  ACTIVITIES : "activities",
   MARKS: "marks",
   ADMINS: "admins",
   EXECUSES : "execuses",
@@ -246,6 +247,7 @@ const GETTERS = {
     GET_EXPENCE : "GET_EXPENCE",
   },
   STUDNETS: {
+    GET_ACTIVITIES: "GET_ACTIVITIES",
     GET_BEHAVIORS : "GET_BEHAVIORS",
     GET_STUDENTS: "GET_STUDENTS",
     GET_STUDENTS_MARKS: "GET_STUDENTS_MARKS",
@@ -334,6 +336,11 @@ const ACTIONS = {
     EDIT_EXPANCE : "EDIT_EXPANCE",
   },
   STUDNETS: {
+    FETCH_ACTIVITIES : "FETCH_ACTIVITIES",
+    DELETE_ACTIVITY : "DELETE_ACTIVITY",
+    ADD_ACTIVITY : "ADD_ACTIVITY",
+    UPDATE_ACTIVITY : "UPDATE_ACTIVITY",
+    DELETE_BEHAVIOR : "DELETE_BEHAVIOR",
     FETCH_BEHAVIOR : "FETCH_BEHAVIOR",
     FETCH_STUDENTS: "FETCH_STUDENTS",
     FETCH_STUDENTS_BY_PARENT_ID: "FETCH_STUDENTS_BY_PARENT_ID",
@@ -398,6 +405,7 @@ const MUTATIONS = {
     SET_EXPENCE : "SET_EXPENCE"
   },
   STUDNETS: {
+    SET_ACTIVITIES : "SET_ACTIVITIES",
     SET_STUDENTS: "SET_STUDENTS",
     SET_STUDENTS_MARKS: "SET_STUDENTS_MARKS",
     SET_STUDENT_ANSWERS: "SET_STUDENT_ANSWERS",
@@ -424,6 +432,10 @@ const MUTATIONS = {
 const MESSAGES = {
   AUTH: {},
   DATABASE: {
+    ACTIVITY_UPDATED : "database/activity-updated",
+    ACTIVITY_ADDED : "database/activity-added",
+    STUDENT_BEHAVIOR_DELETED : "database/behavior-deleted",
+    STUDENT_ACTIVITY_DELETED : "database/activity-deleted",
     MARKS_UPDATED : "database/marks-updated",
     MARKS_SAVED : "database/marks-saved",
     EXPANCE_DELETED : "database/expance-added",
@@ -481,6 +493,10 @@ const ERRORS = {
     OTP_NOT_VERIFIED: "auth/otp-not-verified"
   },
   DATABASE: {
+    UPDATE_ACTIVITY_FAIL : "database/update-activity-error",
+    STUDENT_DELETE_ACTIVITY_ERROR : "database/delete-activity-error",
+    ADD_ACTIVITY_ERROR : "database/add-activity-error",
+    STUDENT_DELETE_BEHAVIOER_ERROR: "database/delete-behavior-error",
     MARKS_UPDATE_FAIL :  "database/update-marks-error",
     MARKS_SAVING_FAIL : "database/add-marks-error",
     ADD_BEHAVIOR_FAIL : "database/add-behavior-error",

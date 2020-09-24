@@ -54,6 +54,14 @@
                 <q-item-label>سلوكيات الطلاب</q-item-label>
               </q-item-section>
             </q-item>
+                        <q-item class="q-ma-xs" clickable exact to="student-activities">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>الأنشطة</q-item-label>
+              </q-item-section>
+            </q-item>
             <q-item class="q-ma-xs" clickable exact to="subject-marks">
               <q-item-section avatar>
                 <q-icon name="o_today" />

@@ -1,8 +1,8 @@
 <template>
-  <q-dialog v-model="isOpen" width="400px" persistent>
+  <q-dialog v-model="isOpen" width="600px" persistent>
     <q-card>
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">{{ title }}</div>
+        <div class="text-h6">إضافة نشاط</div>
         <q-space />
         <q-btn icon="close" flat round dense @click="$emit('close')" />
       </q-card-section>
@@ -13,7 +13,7 @@
             <q-card style="margin:10px;" class="full-height">
               <q-card-section>
                 <q-form ref="subjectForm">
-                  <div class="text-weight-bold">نوع السلوك:</div>
+                  <div class="text-weight-bold">نوع النشاط:</div>
                   <div class="row">
                     <div v-for="beh in getTitles" :key="beh.name">
                       <q-chip
@@ -36,21 +36,21 @@
                     outlined
                     :autogrow="false"
                     clearable
-                    v-model="behavior.description"
-                    :rules="[ val => (val && val.length > 0) || 'أضف أضف توصيفا للسلوك']"
+                    v-model="activity.description"
+                    :rules="[ val => (val && val.length > 0) || 'أضف أضف توصيفا للنشاط']"
                     type="textarea"
-                    label="توصيف السلوك"
+                    label="توصيف النشاط"
                   />
 
                       <div class="col-6">
-                      <div class="text-weight-bold">تاريخ السلوك</div>
+                      <div class="text-weight-bold">تاريخ بدء النشاط</div>
                       <q-input
                         ref="date"
                         dense
                         square
                         outlined
                         clearable
-                        v-model="behavior.date"
+                        v-model="activity.startDate"
                         label="إختر تاريخ"
                         lazy-rules
                         :rules="[ val => val !== null && val !== '' || 'الرجاء إختيار تاريخ']"
@@ -59,9 +59,35 @@
                           <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy ref="qDateProxy">
                               <q-date
-                                v-model="behavior.date"
+                                v-model="activity.startDate"
                                 mask="DD/MM/YYYY"
                                 @input="() => $refs.qDateProxy.hide()"
+                              />
+                            </q-popup-proxy>
+                          </q-icon>
+                        </template>
+                      </q-input>
+                    </div>
+                                          <div class="col-6">
+                      <div class="text-weight-bold">تاريخ إنتهاء النشاط</div>
+                      <q-input
+                        ref="date"
+                        dense
+                        square
+                        outlined
+                        clearable
+                        v-model="activity.endDate"
+                        label="إختر تاريخ"
+                        lazy-rules
+                        :rules="[ val => val !== null && val !== '' || 'الرجاء إختيار تاريخ']"
+                        @click="$refs.qDateProxy2.show()">
+                        <template v-slot:append>
+                          <q-icon name="event" class="cursor-pointer">
+                            <q-popup-proxy ref="qDateProxy2">
+                              <q-date
+                                v-model="activity.endDate"
+                                mask="DD/MM/YYYY"
+                                @input="() => $refs.qDateProxy2.hide()"
                               />
                             </q-popup-proxy>
                           </q-icon>
@@ -93,30 +119,22 @@ export default {
       type: Boolean,
       default: false,
     },
-    title: {
-      type: String,
-      required : true,
-    },
+
     isEdit :  {
       type: Boolean,
       default: false,
     },
-    behavior: {
+    activity: {
       type: Object,
       required : true
     },
   },
   data() {
     return {
-      behaviors : [
+      titles : [
         {name : "تميز", selected : false, icon : "event"},
         {name : "حل للأنشطة", selected : false, icon : "event"},
         {name : "إلتزام", selected : false, icon : "event"},
-      ],
-      BadBehaviors: [
-        {name : "عراك", selected : false, icon : "event"},
-        {name : "إهممال", selected : false, icon : "event"},
-        {name : "كثير التغيب", selected : false, icon : "event"},
       ],
     };
   },
@@ -128,51 +146,39 @@ export default {
     }),
       getTitles(){
       // TODO let behaviors to be added from different dialog
-     let behaviors =  this.behavior.type == "P" ? 
-      this.behaviors : this.BadBehaviors;
-
       if (this.isEdit){
-        behaviors.forEach(b => b.name == this.behavior.title ? b.selected = true : b.selected = false)
+        this.titles.forEach(b => b.name == this.activity.title ? b.selected = true : b.selected = false)
       }
 
-      return behaviors;
+      return this.titles;
     },
   },
   methods: {
     ...mapActions({
-      ADD_BEHAVIOR: ACTIONS.STUDNETS.ADD_BEHAVIOR,
-      UPDATE_BEHAVIOR: ACTIONS.STUDNETS.UPDATE_BEHAVIOR,
+      ADD_ACTIVITY: ACTIONS.STUDNETS.ADD_ACTIVITY,
+      UPDATE_ACTIVITY: ACTIONS.STUDNETS.UPDATE_ACTIVITY,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
-
-
-    changeType(behavior){
-      this.behavior.type == "P" ?
-      this.behaviors.forEach( beh => beh.name == behavior.name ? beh.selected = true : beh.selected = false) :
-      this.BadBehaviors.forEach( beh => beh.name == behavior.name ? beh.selected = true : beh.selected = false);
+    changeType(title){
+      this.titles.forEach( beh => beh.name == title.name ? beh.selected = true : beh.selected = false);
     },
 
     async onSubmit() {
     
 
-    if (!this.behaviors.some(beh => beh.selected) && !this.BadBehaviors.some(beh => beh.selected))
+    if (!this.titles.some(beh => beh.selected))
     {
       console.log('invalid')
       return
     }
 
-    console.log(this.behavior);
-
-      this.behavior.title = this.behavior.type == "P" ?
-      this.behaviors.find(beh => beh.selected).name :
-      this.BadBehaviors.find(beh => beh.selected).name;;
+      this.activity.title =  this.titles.find(beh => beh.selected).name;
       if (this.isEdit)
       {
-        this.UPDATE_BEHAVIOR(this.behavior);
+        this.UPDATE_ACTIVITY(this.activity);
       }else{
-        this.ADD_BEHAVIOR(this.behavior);
+        this.ADD_ACTIVITY(this.activity);
       }  
-
       this.$emit("close");
     },
   },

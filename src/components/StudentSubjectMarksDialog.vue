@@ -47,7 +47,11 @@
               </q-td>
               <q-td key="name" :props="props">{{ props.row.subject.label }}</q-td>
               <q-td key="result" :props="props">
-                100
+                100 / {{ getTotal(props.row.result)}}
+                <q-chip text-color="white" :color="isAllSubmited(props.row.result) ? 'green' : 'red'"  large>
+                                
+                                {{  isAllSubmited(props.row.result) ? 'تم إعتماد الدرجات  ' : 'لم يتم إكمال الدرجات' }}
+                              </q-chip>
               </q-td>
             </q-tr>
             <q-tr v-show="props.expand" :props="props">
@@ -68,11 +72,16 @@
                       <tr v-for="(semester, i) in props.row.result" :key="i">
                         <td class="text-left">{{ getSemesterName(semester.semester) }}</td>
                         <td class="text-left">
+                          <q-chip text-color="white" :color="semester.isSubmited ? 'green' : 'red'"  large>
+                                
+                                {{  semester.isSubmited ? 'تم إعتماد الدرجات  ' : 'لم يتم إكمال الدرجات' }}
+                              </q-chip>
 
                                 <q-chip  v-for="(cri, j) in semester.criteria" :key="j" large>
                                 <q-avatar color="green" text-color="white">{{ cri.mark}}</q-avatar>
                                 {{ cri.text }}/{{ cri.max}}
                               </q-chip>
+                                
                           
                         </td>
                       </tr>
@@ -98,7 +107,7 @@ import { GETTERS, ACTIONS, MESSAGES, ERRORS } from "../config/constants";
 import groups from "src/store/modules/groups";
 import { storage } from 'firebase';
 export default {
-  name: "PageStudentMarksDetails",
+  name: "StudentSubjectMarksDialog",
   props : {
     studentId : {
       type : String,
@@ -160,8 +169,27 @@ export default {
       FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       FETCH_MARKS: ACTIONS.SUBJECTS.FETCH_MARKS,
     }),
+    isAllSubmited(semesters){
+      let submit = true;
+      semesters.forEach(sem => {
+        console.log('isSubmited',sem.isSubmited)
+        if (!sem.isSubmited)
+        {
+          submit = false;
+        }
+      })
+
+      return submit;
+    },
+    getTotal(semesters){
+      let total = 0;
+      semesters.forEach(sem =>{
+        total += sem.isSubmited ? parseInt(sem.criteria.reduce((a,b) => ({mark : a.mark+b.mark})).mark) : 0;
+      })
+
+      return total
+    },
     getSemesterName(id){
-      console.log('id',id)
      return this.GET_YEAR_INFO.semesters.find(s => s.id == id).name;
     }
   },

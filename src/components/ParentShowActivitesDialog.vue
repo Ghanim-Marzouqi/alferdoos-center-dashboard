@@ -22,11 +22,11 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-           <p class="text-h6 text-weight-bold">السلوكيات</p>
+           <p class="text-h6 text-weight-bold">الأنشطة</p>
 
     <div class="row q-pa-md">
       <div class="col-12">
-        <q-table :data="getBehaviors" :columns="columns" row-key="id" :loading="GET_LOADING">
+        <q-table :data="getActivites" :columns="columns" row-key="id" :loading="GET_LOADING">
           <template v-slot:header="props">
             <q-tr :props="props">
               <q-th auto-width />
@@ -38,7 +38,7 @@
               <q-td auto-width>
                 <q-btn
                   size="sm"
-                  :color="btype == 'P' ?  'green' : 'red'"
+                  color="green"
                   round
                   dense
                   @click="props.expand = !props.expand"
@@ -46,9 +46,9 @@
                 />
               </q-td>
               <q-td key="title" :props="props">{{ props.row.title }}</q-td>
-              <q-td key="date" :props="props">{{ props.row.date }}</q-td>
+              <q-td key="startDate" :props="props">{{ props.row.startDate }}</q-td>
+              <q-td key="endDate" :props="props">{{ props.row.endDate }}</q-td>
               <q-td key="semester" :props="props">{{ props.row.semester.name }}</q-td>
-              <q-td key="teacher" :props="props">{{ props.row.createdBy.name }}</q-td>
             </q-tr>
             <q-tr v-show="props.expand" :props="props">
               <q-td colspan="100%">
@@ -62,8 +62,14 @@
                       </tr>
                     </thead>
                     <tbody>
+                      <tr> 
+                        <td class="text-left"><p style="color:red; font-size:22px">توصيف:</p>
+                        {{ props.row.description }}</td>
+                      </tr>
                       <tr>
-                        <td class="text-left">{{ props.row.description }}</td>
+                        <td class="text-left">
+                          <p style="color:red; font-size:22px">تقرير الآداء:</p>
+                          {{ props.row.feedback }}</td>
                       </tr>
                     </tbody>
                   </q-markup-table>
@@ -76,7 +82,7 @@
     </div>
         </q-card-section>
       </q-card>
-
+      
 
     </q-dialog>
 </template>
@@ -87,7 +93,8 @@ import { GETTERS, ACTIONS, MESSAGES, ERRORS } from "../config/constants";
 import groups from "src/store/modules/groups";
 import { storage } from 'firebase';
 export default {
-  name: "PageStudentMarksDetails",
+  name: "ParentShowActivitesDialog",
+
   props : {
     studentId : {
       type : String,
@@ -96,13 +103,18 @@ export default {
       type : Boolean,
       default : false,
     },
-    btype : {
-      type : String,
-      required : true 
-    }
+    isPending:{
+      type : Boolean,
+      default : false,
+    },
   },
   data() {
     return {
+      isEdit: true,
+      activity : {},
+      isCloseActivityDialogOpen : false,
+      isActivityDialogOpen : false,
+      title : "تعديل نشاط",
       maximizedToggle: true,
       columns: [
         {
@@ -113,10 +125,17 @@ export default {
           align: "left",
         },
         {
-          name: "date",
+          name: "startDate",
           required: true,
-          label: "التاريخ",
-          field: "date",
+          label: "بدء النشاط",
+          field: "startDate",
+          align: "center",
+        },
+        {
+          name: "endDate",
+          required: true,
+          label: "نهاية النشاط",
+          field: "endDate",
           align: "center",
         },
         {
@@ -126,32 +145,28 @@ export default {
           field: "semester",
           align: "center",
         },
-        {
-          name: "teacher",
-          required: true,
-          label: "الاستاذ",
-          field: "teacher",
-          align: "center",
-        },
       ],
     };
   },
   created() {
-
   },
   computed: {
     ...mapGetters({
       GET_LOADING: GETTERS.UI.GET_LOADING,
-      GET_BEHAVIORS : GETTERS.STUDNETS.GET_BEHAVIORS,
+      GET_ACTIVITIES : GETTERS.STUDNETS.GET_ACTIVITIES,
     }),
-    getBehaviors(){
-     return this.GET_BEHAVIORS.filter(b => b.behaviorType == this.btype && b.student.id == this.studentId)
+    getActivites(){
+      console.log('Pending',this.studentId);
+     return this.isPending ? 
+     this.GET_ACTIVITIES.filter(b => b.student.id == this.studentId && b.isDone) : 
+     this.GET_ACTIVITIES.filter(b => b.student.id == this.studentId && !b.isDone)
     }
   },
   methods: {
      ...mapActions({
-      
+      FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
     }),
+
   },
 
 };

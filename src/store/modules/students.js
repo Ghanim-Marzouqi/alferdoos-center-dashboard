@@ -21,6 +21,7 @@ const state = {
   attendanceRange : [],
   execuses : [],
   behaviors : [],
+  activities :[],
 };
 
 // Getters
@@ -33,6 +34,7 @@ const getters = {
   GET_STUDENT_ANSWERS: state => state.studentAnswers,
   GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks,
   GET_EXECUSES : state => state.execuses,
+  GET_ACTIVITIES : state => state.activities,
 };
 
 // Actions
@@ -238,7 +240,38 @@ const actions = {
       });
     }
   },
+  async DELETE_BEHAVIOR({ commit }, payload) {
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.BEHAVIORS)
+        .doc(payload)
+        .delete();
 
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.STUDENT_BEHAVIOR_DELETED
+      });
+    } catch (error) {
+      console.log("DELETE_STUDENT", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.STUDENT_DELETE_BEHAVIOER_ERROR
+      });
+    }
+  },
+  async STUDENT_ACTIVITY_DELETED({ commit }, payload) {
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.ACTIVITIES)
+        .doc(payload)
+        .delete();
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.STUDENT_ACTIVITY_DELETED
+      });
+    } catch (error) {
+      console.log("DELETE_STUDENT", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.STUDENT_DELETE_ACTIVITY_ERROR
+      });
+    }
+  },
   async EDIT_STUDENT_STATUS({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -654,6 +687,31 @@ const actions = {
     }
 
   },
+  async UPDATE_ACTIVITY({ commit }, payload) {
+
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+
+        await FirebaseDatabase.collection(COLLECTIONS.ACTIVITIES)
+          .doc(payload.id)
+          .update(payload);
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.ACTIVITY_UPDATED
+        });
+
+      
+    } catch (error) {
+      console.log("EDIT_ACTIVITY ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.UPDATE_ACTIVITY_FAIL
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
   async ADD_EXECUSE({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -702,6 +760,24 @@ const actions = {
     } catch (error) {
       commit(MUTATIONS.UI.SET_ERROR,  { code : ERRORS.DATABASE.ADD_BEHAVIOR_FAIL});
       console.log("ADD_BEHAVIOR", error);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async ADD_ACTIVITY({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {   
+
+      await FirebaseDatabase.collection(COLLECTIONS.ACTIVITIES)
+        .doc()
+        .set(payload);
+        commit(MUTATIONS.UI.SET_MESSAGE, { code:  MESSAGES.DATABASE.ACTIVITY_ADDED});
+
+      
+    } catch (error) {
+      commit(MUTATIONS.UI.SET_ERROR,  { code : ERRORS.DATABASE.ADD_ACTIVITY_ERROR});
+      console.log("ADD_ACTIVITY", error);
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
@@ -777,6 +853,41 @@ const actions = {
     }
 
   },
+  async FETCH_ACTIVITIES({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+
+      let snapshot = null;
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.ACTIVITIES)
+          .where("year", "==", payload.year)
+          //.where("semester","==",payload.semester)
+          .get();
+
+      let docs = snapshot.docs;
+      let activities = docs.map(doc => ({
+        id : doc.id,
+        isDone : doc.data().isDone,
+        startDate : doc.data().startDate,
+        endDate : doc.data().endDate,
+        year: doc.data().year,
+        feedback  : doc.data().feedback,
+        semester :doc.data().semester,
+        title: doc.data().title,
+        description: doc.data().description,
+        student: doc.data().student,
+        createdBy : doc.data().createdBy,
+      }));
+      commit(MUTATIONS.STUDNETS.SET_ACTIVITIES, activities);
+      
+    } catch (error) {
+      console.log("FETCH_ACTIVITIES", error);
+      commit(MUTATIONS.UI.SET_ERROR, error);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
 
 };
 
@@ -787,7 +898,6 @@ const mutations = {
   SET_ATTENDANCE: (state, attendance) => state.attendance = attendance,
   RESET_ATTENDANCE_RANGE_DATE : (state) => state.attendanceRange = [],
   SET_ATTENDANCE_RANGE_DATE(state, records){
-
     records.forEach((c) =>
     c.attendance.forEach((a) => {
       a.session = c.session;
@@ -797,6 +907,7 @@ const mutations = {
   );
     state.attendanceRange.push(records.map(c=> c.attendance))
   },
+  SET_ACTIVITIES: (state, acts) => (state.activities = acts),
   SET_EXECUSES : (state, execuses) => (state.execuses = execuses),
   SET_STUDENTS_MARKS: (state, studentMarks) => (state.studentMarks = studentMarks),
   SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers),

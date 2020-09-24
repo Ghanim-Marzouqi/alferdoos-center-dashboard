@@ -166,6 +166,10 @@ const routes = [
         component: () => import("pages/teacher/PageEditStudentBehaviors.vue")
       },
       {
+        path: "student-activities",
+        component: () => import("pages/teacher/PageEditStudentActivities.vue")
+      },
+      {
         path: "subject-marks",
         component: () => import("pages/teacher/PageSetSubjectMarks.vue")
       }
