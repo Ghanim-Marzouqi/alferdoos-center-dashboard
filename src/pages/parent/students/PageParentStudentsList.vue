@@ -48,6 +48,9 @@
             </p>
           </div>
           <q-card-actions align="center">
+                <q-btn dense flat @click="showScheduale(student)" >
+                  <q-icon color="teal" name="fas fa-calendar-alt" />
+                </q-btn>
             <q-btn dense flat @click="selectedStudent=student.id, isMarksPageOpened = true" >
                   <q-icon color="teal" name="fas fa-poll" />
                 </q-btn>
@@ -97,6 +100,7 @@
 import { mapGetters, mapActions } from "vuex";
 import { GETTERS, ACTIONS, MESSAGES, ERRORS } from "../../../config/constants";
 import groups from "src/store/modules/groups";
+import students from 'src/store/modules/students';
 export default {
   name: "PageStudentsList",
   components : {
@@ -171,6 +175,7 @@ export default {
         s => ({
           id : s.id,
           name : s.name,
+          group : s.groupId,
           goodBehaviors : this.getTotal(this.Good,s.id),
           badBehaviors : this.getTotal(this.Bad,s.id)
         })
@@ -183,6 +188,9 @@ export default {
       FETCH_BEHAVIOR: ACTIONS.STUDNETS.FETCH_BEHAVIOR,
       FETCH_ACTIVITIES: ACTIONS.STUDNETS.FETCH_ACTIVITIES,
     }),
+    showScheduale(student){
+       this.$router.push({ name: "student-sheduale", params : { group : student.group }});
+    },
     getTotal(type,sid){
      let behs =  this.GET_BEHAVIORS.filter(b => b.behaviorType == type && b.student.id == sid)
      return behs.length;

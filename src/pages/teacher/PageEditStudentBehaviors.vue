@@ -101,10 +101,25 @@ export default {
     };
   },
   async created() {
-    await this.FETCH_SCHEDUAL();
-    await this.FETCH_BEHAVIOR({ year : "2020"})
     this.FETCH_STUDENTS({ status: "" });
     this.FETCH_YRAT_INFO();
+    await this.FETCH_SCHEDUAL();
+    await this.FETCH_BEHAVIOR({ year : "2020"})
+
+        this.GET_SCHADUALS.forEach((sch) => {
+        Object.values(sch).forEach((day) => {
+          if (Array.isArray(day)) {
+            !day.some((session) => session.teacher.id == this.GET_USER.id)
+              ? ""
+              : !this.groups.some(g => g.value == sch.group.value) ?
+               this.groups.push(sch.group) : "";
+          }
+        });
+      });
+
+
+
+
   },
   methods: {
     ...mapActions({
@@ -168,22 +183,7 @@ export default {
         (student) => student.groupId != undefined
       );
     },
-    GET_SCHADUALS: function (oldState, newState) {
-      newState.forEach((sch) => {
-        Object.values(sch).forEach((day) => {
-          if (Array.isArray(day)) {
-            day.some((session) => session.teacher.id == this.GET_USER.id)
-              ? this.groups.push(sch.group)
-              : "";
-          }
-        });
-      });
-
-      this.groups = this.groups.filter((value, index, self) => {
-        return self.indexOf(value) === index;
-      });
-    },
-    GET_MESSAGES: function (newState, oldState) {
+     GET_MESSAGES: function (newState, oldState) {
       
       if (newState.length > 0) {
         let messageCode = newState[0].code;

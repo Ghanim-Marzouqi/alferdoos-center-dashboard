@@ -125,6 +125,12 @@ const routes = [
         redirect: "/parent/register-student"
       },
       {
+        name: "student-sheduale",
+        path: "student-sheduale",
+        props: true,
+        component: () => import("pages/parent/students/PageStudentSchedule.vue")
+      },
+      {
         path: "register-student",
         component: () => import("pages/parent/students/PageStudentRegister.vue")
       },
@@ -156,6 +162,12 @@ const routes = [
       {
         path: "home",
         component: () => import("pages/teacher/PageHome.vue")
+      },
+      {
+        name: "teacher-sheduale",
+        path: "teacher-sheduale",
+        props: true,
+        component: () => import("pages/teacher/PageTeacherSchedule.vue")
       },
       {
         path: "group-attendence",

@@ -38,6 +38,14 @@
               <q-item-label>الرئيسية</q-item-label>
             </q-item-section>
           </q-item>
+          <q-item class="q-ma-xs" clickable exact to="teacher-sheduale">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>جدول الحصص</q-item-label>
+              </q-item-section>
+            </q-item>
           <q-item class="q-ma-xs" clickable exact to="group-attendence">
               <q-item-section avatar>
                 <q-icon name="o_today" />

@@ -16,7 +16,7 @@
           :disable="!isGroupSelected"
           @input="changeSubject"
           v-model="subject"
-          :options="subjects"
+          :options="groupSubjects"
           label="إختر مادة"
         />
       </div>
@@ -81,6 +81,7 @@ export default {
       semesterId : -1,
       documentId : "",
       isEdit : false,
+      groupSubjects : [],
       groups: [],
       allStudents: [],
       students: [],
@@ -92,11 +93,26 @@ export default {
     };
   },
   async created() {
-    await this.FETCH_SCHEDUAL();
     this.FETCH_SUBJECTS();
     this.FETCH_MARKS();
     this.FETCH_STUDENTS({ status: "" });
     this.FETCH_YRAT_INFO();
+    await this.FETCH_SCHEDUAL();
+    this.GET_SCHADUALS.forEach((sch) => {
+        Object.values(sch).forEach((sessions) => {
+          if (
+            Array.isArray(sessions) &&
+            sessions.some((session) => session.teacher.id == this.GET_USER.id)
+          ) {
+            !this.groups.some(g => g.value == sch.group.value) ? this.groups.push(sch.group) : "";
+            sessions.forEach((d) =>
+              !this.subjects.some(s => s.value == d.subject.id && s.group == sch.group.value) ?
+              this.subjects.push({ group : sch.group.value, value: d.subject.id, label: d.subject.name }) : ""
+            );
+          }
+        });
+      });
+
   },
   methods: {
     ...mapActions({
@@ -170,6 +186,7 @@ export default {
     },
     changeGroup() {
       this.isGroupSelected = true;
+      this.groupSubjects = this.subjects.filter(s => s.group == this.group.value)
       this.students = [];
       this.subject = "";
     },
@@ -204,34 +221,6 @@ export default {
           group: s.groupId,
           semesters: [],
         }));
-    },
-    GET_SCHADUALS: function (oldState, newState) {
-      newState.forEach((sch) => {
-        console.log(Object.values(sch));
-        Object.values(sch).forEach((day) => {
-          if (
-            Array.isArray(day) &&
-            day.some((session) => session.teacher.id == this.GET_USER.id)
-          ) {
-            console.log("day", day);
-            this.groups.push(sch.group);
-            day.forEach((d) =>
-              this.subjects.push({ value: d.subject.id, label: d.subject.name })
-            );
-          }
-        });
-      });
-
-      this.groups = this.groups.filter((value, index, self) => {
-        return self.indexOf(value) === index;
-      });
-
-      // i have repeated values, so just mapped them to the string and then filtered them
-      // after that returen them back
-      this.subjects = this.subjects
-        .map((g) => g.label)
-        .filter((value, index, self) => self.indexOf(value) === index)
-        .map((c) => this.subjects.find((ss) => ss.label == c));
     },
     GET_MESSAGES: function (newState, oldState) {
       

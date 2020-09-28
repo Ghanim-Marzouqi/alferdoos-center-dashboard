@@ -99,6 +99,17 @@ export default {
     await this.FETCH_STUDENTS({ status: "" });
     await this.FETCH_SCHEDUAL();
     await this.FETCH_ACTIVITIES({ year : "2020"})
+    this.GET_SCHADUALS.forEach((sch) => {
+        Object.values(sch).forEach((day) => {
+          if (Array.isArray(day)) {
+            !day.some((session) => session.teacher.id == this.GET_USER.id)
+              ? ""
+              : !this.groups.some(g => g.value == sch.group.value) ?
+               this.groups.push(sch.group) : "";
+          }
+        });
+      });
+
     this.FETCH_YRAT_INFO();
   },
   methods: {
@@ -155,21 +166,6 @@ export default {
       this.allStudents = newState.filter(
         (student) => student.groupId != undefined
       );
-    },
-    GET_SCHADUALS: function (oldState, newState) {
-      newState.forEach((sch) => {
-        Object.values(sch).forEach((day) => {
-          if (Array.isArray(day)) {
-            day.some((session) => session.teacher.id == this.GET_USER.id)
-              ? this.groups.push(sch.group)
-              : "";
-          }
-        });
-      });
-
-      this.groups = this.groups.filter((value, index, self) => {
-        return self.indexOf(value) === index;
-      });
     },
     GET_MESSAGES: function (newState, oldState) {
       
