@@ -12,6 +12,7 @@
             outlined
             clearable
             v-model="meeting.title"
+            :disable="action == 'view'"
             type="text"
             label="عنوان المحضر"
             lazy-rules
@@ -23,6 +24,7 @@
         <div class="col-4 q-ml-xs">
           <q-input
             ref="date"
+            :disable="action == 'view'"
             dense
             square
             outlined
@@ -48,7 +50,7 @@
         </div>
         <div class="col-1 q-ml-xs">
           <q-btn
-            :disable="action == 'view'"
+            v-if="action != 'view'"
             outline
             color="primary"
             label="حفظ"
@@ -60,14 +62,13 @@
        <div class="text-weight-bold">المرفقات :</div>
       <div class="row">
         <div class="col-10">
-       
                 <q-file
                 v-if="action != 'view'"
             v-model="meeting.files"
             label="المرفقات"
             dense
-            outlined
             use-chips
+            outlined
             multiple
             accept=".pdf"
           >
@@ -75,6 +76,15 @@
               <q-icon name="attach_file" />
             </template>
           </q-file>
+          
+          <q-chip
+            v-for="(file, i) in meeting.uplodedFiles"
+            :key="i"
+            clickable
+            :icon-right="action == 'view' ? 'o_get_app' : 'delete'"
+            @click="action == 'view' ? downloadFile(file) : removeFile(i)"
+          >{{ file.name }}</q-chip>
+          
         </div>
       </div>
       <div class="text-weight-bold q-mt-md">ملخص المحضر</div>
@@ -84,6 +94,7 @@
             dense
             square
             outlined
+            :disable="action == 'view'"
             :autogrow="false"
             clearable
             v-model="meeting.description"
@@ -100,6 +111,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { MESSAGES, ERRORS, GETTERS, ACTIONS } from "../../../config/constants";
+import { date } from "quasar";
 
 export default {
   name: "PageEditMemorizations",
@@ -134,13 +146,46 @@ export default {
       EDIT_MEETING: ACTIONS.SETTINGS.EDIT_MEETING,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
+    removeFile(index){
+      this.meeting.files.splice(index,1);
+    },
+    downloadFile(file) {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = "blob";
+        xhr.onload = function (event) {
+          var blob = xhr.response;
+          let link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = file.name;
+          link.click();
+        };
+        xhr.open("GET", file.fileUrl);
+        xhr.send();
+      } catch (error) {
+        switch (error.code) {
+          case ERRORS.STORAGE.OBJECT_NOT_FOUND:
+            this.SET_ERROR(ERRORS.STORAGE.OBJECT_NOT_FOUND);
+            break;
+          case ERRORS.STORAGE.UNAUTHORIZED:
+            this.SET_ERROR(ERRORS.STORAGE.UNAUTHORIZED);
+            break;
+          case ERRORS.STORAGE.CANCELED:
+            this.SET_ERROR(ERRORS.STORAGE.CANCELED);
+            break;
+          case ERRORS.STORAGE.UNKNOWN:
+            this.SET_ERROR(ERRORS.STORAGE.UNKNOWN);
+            break;
+        }
+      }
+    },
+    
     saveMeetings() {
       this.action == "edit"
         ? this.EDIT_MEETING(this.meeting)
         : this.SET_MEETINGS(this.meeting);
     },
     updateMeeting() {
-      console.log(this.id);
       if (this.id != undefined)
        { this.meeting = this.GET_METTINGS.find((m) => m.id == this.id); }
     },

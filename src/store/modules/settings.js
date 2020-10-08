@@ -39,31 +39,6 @@ const getters = {
 
 // Actions
 const actions = {
-  async FETCH_MEETINGS({ commit }) {
-    try {
-      let snapshot = await FirebaseDatabase.collection(COLLECTIONS.MEETINGS)
-        .get();
-
-      let docs = snapshot.docs;
-
-      let meetings = docs.map(m => ({
-        id : m.id,
-        date: m.data().date,
-        description: m.data().description,
-        title : m.data().title,
-        files :  m.data().files,
-      }));
-
-      if (MEETINGS.length > 0) {
-        commit(MUTATIONS.SETTINGS.SET_MEETINGS, meetings);
-      } else {
-        commit(MUTATIONS.SETTINGS.SET_MEETINGS, []);
-      }
-    } catch (error) {
-      console.log("FETCH_MEETINGS ERROR", error);
-    }
-  },
-
   async FETCH_YEAR_INFO({ commit }) {
     // Get Date
     let date = new Date();
@@ -227,6 +202,7 @@ const actions = {
           code: ERRORS.DATABASE.YEAR_INFO_NOT_FOUND
         });
       } else {
+        console.log('session',payload.session)
         await FirebaseDatabase.collection(COLLECTIONS.YEARS)
           .doc(date.getFullYear().toString())
           .update({
@@ -736,7 +712,9 @@ const actions = {
         id : m.id,
         date: m.data().date,
         description: m.data().description,
-        title : m.data().title
+        title : m.data().title,
+        files : [],
+        uplodedFiles : m.data().files,
       }));
 
       if (MEETINGS.length > 0) {
@@ -755,22 +733,19 @@ const actions = {
 
       let FirebaseStorageRef = FirebaseStorage.ref();
       
-
-    
       if (payload.files.length > 0) {
         let cerArr = await payload.files.map(async file => {
           let fileRef = FirebaseStorageRef.child(
-            `MEETINGS/${file.name}_${Date.now()}`
+            `meetings/${file.name}_${Date.now()}`
           );
 
           let snapshot = await fileRef.put(file);
-          return await snapshot.ref.getDownloadURL();
+          return {fileUrl : await snapshot.ref.getDownloadURL() , name : file.name }
         });
 
         payload.files = await Promise.all(cerArr);
       }
 
-      console.log('meeting',payload);
 
       await FirebaseDatabase.collection(COLLECTIONS.MEETINGS)
         .doc()
@@ -814,8 +789,25 @@ const actions = {
 
     try {
 
+      let FirebaseStorageRef = FirebaseStorage.ref();
+      let files = [];
 
-      
+      if (payload.files.length > 0) {
+        let cerArr = await payload.files.map(async file => {
+          let fileRef = FirebaseStorageRef.child(
+            `meetings/${file.name}_${Date.now()}`
+          );
+
+          let snapshot = await fileRef.put(file);
+          return {fileUrl : await snapshot.ref.getDownloadURL() , name : file.name }
+        });
+
+        files = await Promise.all(cerArr);
+      }
+
+      payload.files = files.concat(payload.uplodedFiles);
+      delete payload.uplodedFiles;
+
         await FirebaseDatabase.collection(COLLECTIONS.MEETINGS)
           .doc(payload.id)
           .update(payload);
@@ -835,7 +827,6 @@ const actions = {
   },
   async ADD_REPEATED_EXPANCE({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
-    console.log(payload);
 
     if (payload.files.length > 0) {
       let FirebaseStorageRef = FirebaseStorage.ref();
@@ -871,7 +862,6 @@ const actions = {
   },
   async EDIT_REPEATED_EXPANCE({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
-    console.log(payload);
 
     if (payload.files.length > 0) {
       let FirebaseStorageRef = FirebaseStorage.ref();
@@ -916,7 +906,7 @@ const actions = {
         );
 
         let snapshot = await fileRef.put(file);
-        return await snapshot.ref.getDownloadURL();
+        return {fileUrl : await snapshot.ref.getDownloadURL() , name : file.name }
       });
 
       payload.files = await Promise.all(cerArr);
@@ -956,8 +946,6 @@ const actions = {
       payload.data.files = payload.data.files.concat(arFiles);
     }
 
-    console.log(payload)
-
     try {
       await FirebaseDatabase.collection(COLLECTIONS.EXPANCE)
         .doc(payload.id)
@@ -993,7 +981,8 @@ const actions = {
           description : doc.data().description,
           isCredit : doc.data().isCredit,
           isDebit : doc.data().isDebit,
-          filesUrl : doc.data().files
+          uplodedFiles : doc.data().files,
+          files : [],
         }));
 
         commit(MUTATIONS.SETTINGS.SET_EXPENCE, expense);

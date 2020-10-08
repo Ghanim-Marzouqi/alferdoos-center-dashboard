@@ -168,7 +168,6 @@ export default {
 
     if (!this.titles.some(beh => beh.selected))
     {
-      console.log('invalid')
       return
     }
 

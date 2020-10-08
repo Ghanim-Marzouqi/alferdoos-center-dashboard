@@ -246,7 +246,8 @@
       </q-card>
     </q-dialog>
 
-    <TimePicker :isOpen="isTimeDialogOpen" :time="session.start"
+    <TimePicker :isOpen="isTimeDialogOpen" 
+    :time="session.start"
      @cancel="isTimeDialogOpen = false"
      @saveTime="updateSessionSettings" />
   </q-page>
@@ -269,7 +270,7 @@ export default {
     return {
       isTimeDialogOpen : false,
       isBreakDialogOpen  :false,
-      session : { break : 0 , start : "8:00"},
+      session : { break : 0 , start : ""},
       yearInfo: {},
       currentYear: "",
       semesterTitle : "",
@@ -314,8 +315,10 @@ export default {
       this.semesters.forEach(sem => sem.id == id ? sem.isCurrent = true : sem.isCurrent = false);
       this.saveSemestersIntoDb();
     },
-    updateSessionSettings(){
+    updateSessionSettings(time){
       console.log(this.SET_SESSION_SETTINGS);
+      this.session.start = time;
+      console.log(this.session);
       this.SET_SESSION_SETTINGS({ session : this.session});
     },
     saveSemestersIntoDb()
@@ -387,6 +390,9 @@ export default {
         this.currentYear = newState.name;
         this.semesters = newState.semesters;
         this.session = newState.session;
+        let time = this.session.start.split(':');
+        if (time[0].length == 1)
+        { this.session.start = '0'+time[0]+':'+time[1]}
         (this.startPeriodDate = date.formatDate(
           newState.startPeriodDate,
           "YYYY/MM/DD"

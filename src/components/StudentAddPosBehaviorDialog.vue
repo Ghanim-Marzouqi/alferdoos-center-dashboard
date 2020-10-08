@@ -157,7 +157,7 @@ export default {
 
     if (!this.behaviors.some(beh => beh.selected) && !this.BadBehaviors.some(beh => beh.selected))
     {
-      console.log('invalid')
+      
       return
     }
 

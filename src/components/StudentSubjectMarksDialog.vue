@@ -159,7 +159,6 @@ export default {
          studentMarks.push({ subject : marks.subject , result : s.semesters})
        }
      });
-     console.log(studentMarks);
      return studentMarks;
 
     }

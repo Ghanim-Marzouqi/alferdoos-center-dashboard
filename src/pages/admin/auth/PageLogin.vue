@@ -285,7 +285,7 @@ export default {
 
       this.CLEAR_ERRORS_AND_MESSAGES();
 
-      console.log(valid);
+      
 
       if (valid) {
         // Activate Loading

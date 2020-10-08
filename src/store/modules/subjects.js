@@ -32,8 +32,6 @@ const actions = {
 
       let docs = snapshot.docs;
 
-      console.log(docs);
-
       if (docs.length > 0) {
         let subjects = docs.map(doc => ({
           id: doc.id,
@@ -41,7 +39,9 @@ const actions = {
           marks : doc.data().marks,
           teachers : doc.data().teachers,
           year : doc.data().year,
-          description : doc.data().description
+          description : doc.data().description,
+          uplodedFiles : doc.data().files,
+          files : [],
         }));
 
         commit(MUTATIONS.SUBJECTS.SET_SUBJECTS, subjects);
@@ -65,11 +65,11 @@ const actions = {
       if (payload.files.length > 0) {
         let cerArr = await payload.files.map(async file => {
           let fileRef = FirebaseStorageRef.child(
-            `Subjects/${file.name}_${Date.now()}`
+            `subjects/${file.name}_${Date.now()}`
           );
 
           let snapshot = await fileRef.put(file);
-          return await snapshot.ref.getDownloadURL();
+          return {fileUrl : await snapshot.ref.getDownloadURL() , name : file.name }
         });
 
         payload.filesUrl = await Promise.all(cerArr);
@@ -82,65 +82,99 @@ const actions = {
         teachers : payload.teachers,
         createdBy : payload.createdBy,
         marks : payload.marks,
+        year : payload.year
       }
 
       await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
         .doc()
         .set(subject);
-        commit(MUTATIONS.UI.SET_MESSAGE, "تم تسجيل المادة بنجاح");
+        
+        
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.SUBJECT_SAVED
+        });
 
       
     } catch (error) {
-      console.log("REGISTER_SUBJECT", ERRORS.DATABASE.ADD_SUBJECT_FAIL);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ADD_SUBJECT_FAIL
+      });
+      console.log("REGISTER_SUBJECT", error);
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
   async DELETE_SUBJECT({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
     try {
       await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
         .doc(payload)
         .delete();
 
       commit(MUTATIONS.UI.SET_MESSAGE, {
-        code: MESSAGES.DATABASE.STUDENT_FORM_RECORD_DELETED
+        code: MESSAGES.DATABASE.SUBJECT_DELETED
       });
     } catch (error) {
       console.log("DELETE_STUDENT", error);
       commit(MUTATIONS.UI.SET_ERROR, {
-        code: ERRORS.DATABASE.STUDENT_FORM_RECORD_NOT_DELETED
+        code: ERRORS.DATABASE.DELETE_SUBJECT_ERROR
       });
     }
+
+    commit(MUTATIONS.UI.SET_LOADING, false);
   },
 
   async UPDATE_SUBJECT({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
+
+      let FirebaseStorageRef = FirebaseStorage.ref();
+      let files = [];
+
+      if (payload.files.length > 0) {
+        let cerArr = await payload.files.map(async file => {
+          let fileRef = FirebaseStorageRef.child(
+            `subjects/${file.name}_${Date.now()}`
+          );
+
+          let snapshot = await fileRef.put(file);
+          return {fileUrl : await snapshot.ref.getDownloadURL() , name : file.name }
+        });
+
+        files = await Promise.all(cerArr);
+      }
+
+      payload.files = files.concat(payload.uplodedFiles);
   
       let subject = {
+        id : payload.id,
         name : payload.name,
         description : payload.description,
         createdAt : payload.createdAt,
         createdBy : payload.createdBy,
         marks : payload.marks,
+        files : payload.files
       }
+
+      console.log(payload);
 
       await FirebaseDatabase.collection(COLLECTIONS.SUBJECTS)
         .doc(payload.id)
         .update(subject);
-        commit(MUTATIONS.UI.SET_MESSAGE, "تم تعديل المادة بنجاح");
 
-      Dialog.create({
-        title: "تنبيه",
-        message: "تم تعديل المادة بنجاح"
-      });
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.SUBJECT_UPDATED
+        });
+
+    
     } catch (error) {
       console.log("UPDATE_SUBJECT", error);
-      Dialog.create({
-        title: "تنبيه",
-        message: "حدث خطأ اثناء التعديل"
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.UPDATE_SUBJECT_FAIL
       });
+     
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
@@ -150,7 +184,7 @@ const actions = {
 
     try {
 
-      console.log(payload);  
+
 
       await FirebaseDatabase.collection(COLLECTIONS.MARKS)
         .doc(payload.id)

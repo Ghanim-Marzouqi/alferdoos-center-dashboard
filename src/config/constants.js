@@ -292,6 +292,7 @@ const ACTIONS = {
     DELETE_MEMORIZATION_FROM_GROUP: "DELETE_MEMORIZATION_FROM_GROUP"
   },
   SUBJECTS: {
+    DELETE_SUBJECT : "DELETE_SUBJECT",
     REGISTER_SUBJECT : "REGISTER_SUBJECT",
     UPDATE_SUBJECT : "UPDATE_SUBJECT",
     FETCH_SUBJECTS : "FETCH_SUBJECTS",
@@ -432,6 +433,9 @@ const MUTATIONS = {
 const MESSAGES = {
   AUTH: {},
   DATABASE: {
+    SUBJECT_UPDATED :  "database/subject_updated",
+    SUBJECT_SAVED : "database/subject_saved",
+    SUBJECT_DELETED : "database/subject_deleted",
     ACTIVITY_UPDATED : "database/activity-updated",
     ACTIVITY_ADDED : "database/activity-added",
     STUDENT_BEHAVIOR_DELETED : "database/behavior-deleted",
@@ -493,6 +497,8 @@ const ERRORS = {
     OTP_NOT_VERIFIED: "auth/otp-not-verified"
   },
   DATABASE: {
+    UPDATE_SUBJECT_FAIL : "database/update-subject-error",
+    DELETE_SUBJECT_ERROR : "database/delete-subject-error",
     UPDATE_ACTIVITY_FAIL : "database/update-activity-error",
     STUDENT_DELETE_ACTIVITY_ERROR : "database/delete-activity-error",
     ADD_ACTIVITY_ERROR : "database/add-activity-error",

@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <p class="text-h6">المصروفات و الإيرادات</p>
+    <p class="text-h6">الإنفاق و الإيرادات</p>
 
     
 
@@ -10,7 +10,7 @@
         <td><p style="margin-top:50px;" class="text-h6 red">{{getTotalExp('c')}} ر.ع</p></td>
       </tr>
       <tr>
-        <td><p style="color:red" class="text-h6 red">المصاريف:</p></td>
+        <td><p style="color:red" class="text-h6 red">الإنفاق:</p></td>
         <td><p class="text-h6 red">{{getTotalExp('d')}} ر.ع</p></td>
       </tr>
     </table>
@@ -269,7 +269,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { MESSAGES, ERRORS, GETTERS, ACTIONS } from "../../../config/constants";
-
+import { date } from "quasar";
 export default {
   name: "PageEditExpance",
   components: {
@@ -437,7 +437,7 @@ export default {
         {
           name: "debit",
           required: true,
-          label: "مصروف",
+          label: "إنفاق",
           field: (row) => row.amount,
           align: "left",
         },

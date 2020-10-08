@@ -723,7 +723,7 @@ const actions = {
       if (payload.files.length > 0) {
         let cerArr = await payload.files.map(async file => {
           let fileRef = FirebaseStorageRef.child(
-            `EXecuses/${file.name}_${Date.now()}`
+            `execuses/${file.name}_${Date.now()}`
           );
 
           let snapshot = await fileRef.put(file);
