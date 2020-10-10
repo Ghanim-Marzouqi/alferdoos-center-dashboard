@@ -171,7 +171,7 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn flat label="حفظ" @click="updateSessionSettings" :loading="GET_LOADING" />
+          <q-btn flat label="حفظ" @click="updateSessionBreak" :loading="GET_LOADING" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -316,10 +316,13 @@ export default {
       this.saveSemestersIntoDb();
     },
     updateSessionSettings(time){
-      console.log(this.SET_SESSION_SETTINGS);
       this.session.start = time;
-      console.log(this.session);
       this.SET_SESSION_SETTINGS({ session : this.session});
+    },
+    updateSessionBreak(){
+      console.log('session',this.session);
+      this.SET_SESSION_SETTINGS({ session : this.session});
+      this.isBreakDialogOpen = false;
     },
     saveSemestersIntoDb()
     {
