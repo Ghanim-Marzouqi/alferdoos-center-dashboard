@@ -101,9 +101,10 @@ export default {
     };
   },
   async created() {
-    this.FETCH_STUDENTS({ status: "" });
+    this.FETCH_ENTRIES();
     this.FETCH_YRAT_INFO();
     await this.FETCH_SCHEDUAL();
+    await this.FETCH_STUDENTS({ status: "" });
     await this.FETCH_BEHAVIOR({ year : "2020"})
 
         this.GET_SCHADUALS.forEach((sch) => {
@@ -126,6 +127,7 @@ export default {
       FETCH_BEHAVIOR: ACTIONS.STUDNETS.FETCH_BEHAVIOR,
       FETCH_SCHEDUAL: ACTIONS.SETTINGS.FETCH_SCHEDUAL,
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
+      FETCH_ENTRIES: ACTIONS.SETTINGS.FETCH_ENTRIES,
       FETCH_YRAT_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),

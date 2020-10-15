@@ -21,6 +21,8 @@ const state = {
   meetings : [],
   repeatedExpense : [],
   expense : [],
+  entries : [],
+  emails: [],
 };
 
 // Getters
@@ -34,7 +36,9 @@ const getters = {
   GET_MEMORIZATION: state => state.memorization,
   GET_METTINGS : state => state.meetings,
   GET_REPEATED_EXPENCE : state => state.repeatedExpense,
-  GET_EXPENCE : state => state.expense
+  GET_EXPENCE : state => state.expense,
+  GET_ENTRIES : state => state.entries,
+  GET_EMAILS : state => state.emails
 };
 
 // Actions
@@ -628,23 +632,33 @@ const actions = {
         .doc(payload.group.value)
         .set(payload);
 
-        Dialog.create({
-          title: "تنبيه",
-          message: "تم حفظ بنجاح"
-        });
 
       commit(MUTATIONS.UI.SET_MESSAGE, {
         code: MESSAGES.DATABASE.SCHEDUAL_ADDED
       });
     } catch (error) {
       console.log("ADD_SCHEDUAL ERROR", error);
-      Dialog.create({
-        title: "تنبيه",
-        message: "حدثت مشكلة أثناء الحفظ"
-      });
+
       commit(MUTATIONS.UI.SET_ERROR, {
         code: ERRORS.DATABASE.ADD_SCHEDUAL_ERROR
       });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
+  async UPDATE_SETTINGS({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.SCHEDUALS)
+        .doc(payload.group.value)
+        .set(payload);
+
+       
+    } catch (error) {
+      console.log("ADD_SETTINGS ERROR", error);
+      
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
@@ -659,6 +673,7 @@ const actions = {
 
       let schaduals = docs.map(schadual => ({
         group: schadual.data().group,
+        settings : schadual.data().settings,
         0: schadual.data()[0],
         1: schadual.data()[1],
         2: schadual.data()[2],
@@ -993,6 +1008,35 @@ const actions = {
       console.log("FETCH_EXPANCE ERROR", error);
     }
   },
+  async FETCH_EMAILS({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(
+        COLLECTIONS.MESSAGES
+      )
+      .get();
+      let docs = snapshot.docs;
+
+      if (docs.length > 0) {
+        let emails = docs.map(doc => ({
+          id: doc.id,
+          title: doc.data().title,
+          date: doc.data().date,
+          content : doc.data().content,
+          recipients : doc.data().recipients,
+          groups : doc.data().groups,
+          sender : doc.data().sender,
+          uplodedFiles : doc.data().files,
+          files : [],
+        }));
+
+        commit(MUTATIONS.SETTINGS.SET_EMAILS, emails);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_EXPENCE, []);
+      }
+    } catch (error) {
+      console.log("FETCH_EMAILS ERROR", error);
+    }
+  },
   async FETCH_REPEATED_EXPANCE({ commit }) {
     try {
       let snapshot = await FirebaseDatabase.collection(
@@ -1028,6 +1072,126 @@ const actions = {
       console.log("FETCH_REPEATED_EXPANCE ERROR", error);
     }
   },
+  async REGISTER_ENTRY({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.ENTRIES)
+        .doc()
+        .set(payload);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.ENTRY_ADDED
+      });
+    } catch (error) {
+      console.log("REGISTER_ENTRY ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ADD_ENTRY_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async UPDATE_ENTRY({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.ENTRIES)
+        .doc(payload.id)
+        .update(payload.data);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.ENTRY_UPDATED
+      });
+    } catch (error) {
+      console.log("UPDATE_ENTRY ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ENTRY_UPDATE_RROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async FETCH_ENTRIES({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(
+        COLLECTIONS.ENTRIES
+      )
+      .get();
+      let docs = snapshot.docs;
+
+
+      if (docs.length > 0) {
+        let entries = docs.map(doc => ({
+          id: doc.id,
+          name : doc.data().name,
+          type : doc.data().type,
+          year : doc.data.year
+        }));
+
+
+        commit(MUTATIONS.SETTINGS.SET_ENTRIES, entries);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_ENTRIES, []);
+      }
+    } catch (error) {
+      console.log("FETCH_ENTRIES ERROR", error);
+    }
+  },
+  async DELETE_ENTRY({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.ENTRIES)
+        .doc(payload)
+        .delete();
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.ENTRY_DELETED
+      });
+    } catch (error) {
+      console.log("DELETE_ENTRY ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ENTRY_DELETE_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+  async ADD_MESSAGE ({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    if (payload.files.length > 0) {
+      let FirebaseStorageRef = FirebaseStorage.ref();
+      let cerArr = await payload.files.map(async file => {
+        let fileRef = FirebaseStorageRef.child(
+          `messages/${file.name}_${Date.now()}`
+        );
+
+        let snapshot = await fileRef.put(file);
+        return {fileUrl : await snapshot.ref.getDownloadURL() , name : file.name }
+      });
+
+      payload.files = await Promise.all(cerArr);
+    }
+
+    try {
+      await FirebaseDatabase.collection(COLLECTIONS.MESSAGES)
+        .doc()
+        .set(payload);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.MESSAGE_ADDED
+      });
+    } catch (error) {
+      console.log("ADD_MESSAGE ERROR", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ADD_MESSAGE_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
 };
 
 // Mutations
@@ -1044,6 +1208,8 @@ const mutations = {
   SET_MEMORIZATION: (state, memorization) => (state.memorization = memorization),
   SET_REPEATED_EXPENCE : (state, pexpance) => (state.repeatedExpense = pexpance),
   SET_EXPENCE : (state, expance) => (state.expense = expance),
+  SET_ENTRIES : (state, entries) => (state.entries = entries),
+  SET_EMAILS : (state, emails) => (state.emails = emails),
 };
 
 // Export

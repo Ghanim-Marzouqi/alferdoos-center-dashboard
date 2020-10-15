@@ -1,10 +1,12 @@
 // Firestore Collections
 const COLLECTIONS = {
+  MESSAGES : "messages",
   ACTIVITIES : "activities",
   MARKS: "marks",
   ADMINS: "admins",
   EXECUSES : "execuses",
   SUBJECTS : "subjects",
+  ENTRIES : "entries",
   PARENTS: "parents",
   TEACHERS: "teachers",
   STUDENTS: "students",
@@ -245,6 +247,8 @@ const GETTERS = {
     GET_METTINGS : "GET_METTINGS",
     GET_REPEATED_EXPENCE : "GET_REPEATED_EXPENCE",
     GET_EXPENCE : "GET_EXPENCE",
+    GET_ENTRIES : "GET_ENTRIES",
+    GET_EMAILS : "GET_EMAILS"
   },
   STUDNETS: {
     GET_ACTIVITIES: "GET_ACTIVITIES",
@@ -335,6 +339,13 @@ const ACTIONS = {
     FETCH_REPEATED_EXPANCE : "FETCH_REPEATED_EXPANCE",
     DELETE_EXPANCE : "DELETE_EXPANCE",
     EDIT_EXPANCE : "EDIT_EXPANCE",
+    UPDATE_SETTINGS : "UPDATE_SETTINGS",
+    REGISTER_ENTRY : "REGISTER_ENTRY",
+    UPDATE_ENTRY : "UPDATE_ENTRY",
+    FETCH_ENTRIES : "FETCH_ENTRIES",
+    DELETE_ENTRY : "DELETE_ENTRY",
+    FETCH_EMAILS : "FETCH_EMAILS",
+    ADD_MESSAGE : "ADD_MESSAGE"
   },
   STUDNETS: {
     FETCH_ACTIVITIES : "FETCH_ACTIVITIES",
@@ -394,6 +405,7 @@ const MUTATIONS = {
     SET_SUBJECTS : "SET_SUBJECTS",
   },
   SETTINGS: {
+    SET_EMAILS : "SET_EMAILS",
     SET_YEAR_INFO: "SET_YEAR_INFO",
     SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
     SET_QUESTIONS: "SET_QUESTIONS",
@@ -403,8 +415,9 @@ const MUTATIONS = {
     SET_MEMORIZATION: "SET_MEMORIZATION",
     SET_MEETINGS : "SET_MEETINGS",
     SET_REPEATED_EXPENCE : "SET_REPEATED_EXPENCE",
-    SET_EXPENCE : "SET_EXPENCE"
-  },
+    SET_EXPENCE : "SET_EXPENCE",
+    SET_ENTRIES : "SET_ENTRIES"
+   },
   STUDNETS: {
     SET_ACTIVITIES : "SET_ACTIVITIES",
     SET_STUDENTS: "SET_STUDENTS",
@@ -433,9 +446,13 @@ const MUTATIONS = {
 const MESSAGES = {
   AUTH: {},
   DATABASE: {
-    SUBJECT_UPDATED :  "database/subject_updated",
-    SUBJECT_SAVED : "database/subject_saved",
-    SUBJECT_DELETED : "database/subject_deleted",
+    MESSAGE_ADDED : "database/message-added",
+    ENTRY_DELETED : "database/entry-deleted",
+    ENTRY_UPDATED : "database/entry-updated",
+    ENTRY_ADDED : "database/entry-added",
+    SUBJECT_UPDATED :  "database/subject-updated",
+    SUBJECT_SAVED : "database/subject-saved",
+    SUBJECT_DELETED : "database/subject-deleted",
     ACTIVITY_UPDATED : "database/activity-updated",
     ACTIVITY_ADDED : "database/activity-added",
     STUDENT_BEHAVIOR_DELETED : "database/behavior-deleted",
@@ -497,6 +514,10 @@ const ERRORS = {
     OTP_NOT_VERIFIED: "auth/otp-not-verified"
   },
   DATABASE: {
+    ADD_MESSAGE_ERROR : "database/add-message-error",
+    ENTRY_DELETE_ERROR  : "database/delete-entry-error",
+    ENTRY_UPDATE_RROR : "database/update-entry-error",
+    ADD_ENTRY_ERROR : "database/add-entry-error",
     UPDATE_SUBJECT_FAIL : "database/update-subject-error",
     DELETE_SUBJECT_ERROR : "database/delete-subject-error",
     UPDATE_ACTIVITY_FAIL : "database/update-activity-error",

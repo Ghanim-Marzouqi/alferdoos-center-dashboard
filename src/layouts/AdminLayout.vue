@@ -139,6 +139,22 @@
                 <q-item-label>إعداد الإختبارات</q-item-label>
               </q-item-section>
             </q-item>
+                        <q-item class="q-ma-xs" clickable exact to="/admin/admin-message-page">
+              <q-item-section avatar>
+                <q-icon name="o_description" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>الرسائل</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/add-entries-page">
+              <q-item-section avatar>
+                <q-icon name="o_menu_book" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>إعدادات المدخلات</q-item-label>
+              </q-item-section>
+            </q-item>
             
             <q-item class="q-ma-xs" clickable exact to="/admin/edit-meetings">
               <q-item-section avatar>

@@ -15,7 +15,7 @@
                 <q-form ref="subjectForm">
                   <div class="text-weight-bold">نوع النشاط:</div>
                   <div class="row">
-                    <div v-for="beh in getTitles" :key="beh.name">
+                    <div v-for="beh in titles" :key="beh.name">
                       <q-chip
                         clickable
                         @click="changeType(beh)"
@@ -131,11 +131,7 @@ export default {
   },
   data() {
     return {
-      titles : [
-        {name : "تميز", selected : false, icon : "event"},
-        {name : "حل للأنشطة", selected : false, icon : "event"},
-        {name : "إلتزام", selected : false, icon : "event"},
-      ],
+      titles : [],
     };
   },
   computed: {
@@ -143,20 +139,24 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
+      GET_ENTRIES : GETTERS.SETTINGS.GET_ENTRIES,
     }),
       getTitles(){
       // TODO let behaviors to be added from different dialog
       if (this.isEdit){
-        this.titles.forEach(b => b.name == this.activity.title ? b.selected = true : b.selected = false)
+        this.titles.forEach(b => b.val == this.activity.title ? b.selected = true : b.selected = false)
       }
-
       return this.titles;
     },
+  },
+    created() {
+    this.FETCH_ENTRIES();
   },
   methods: {
     ...mapActions({
       ADD_ACTIVITY: ACTIONS.STUDNETS.ADD_ACTIVITY,
       UPDATE_ACTIVITY: ACTIONS.STUDNETS.UPDATE_ACTIVITY,
+      FETCH_ENTRIES : ACTIONS.SETTINGS.FETCH_ENTRIES,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     changeType(title){
@@ -164,7 +164,6 @@ export default {
     },
 
     async onSubmit() {
-    
 
     if (!this.titles.some(beh => beh.selected))
     {
@@ -181,5 +180,14 @@ export default {
       this.$emit("close");
     },
   },
+
+     watch:{
+       GET_ENTRIES : function(newState){
+         this.titles = newState.filter(s => s.type.val == 'نشاط').map(s => ({
+           selected : false,
+           name : s.name
+         }))
+       }
+     }
 };
 </script>

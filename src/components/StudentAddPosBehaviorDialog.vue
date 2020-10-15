@@ -1,6 +1,7 @@
 <template>
   <q-dialog v-model="isOpen" width="400px" persistent>
     <q-card>
+      {{ behaviors }}
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">{{ title }}</div>
         <q-space />
@@ -10,7 +11,7 @@
       <q-card-section class="q-pt-none">
         <div class="row">
           <div class="col">
-            <q-card style="margin:10px;" class="full-height">
+            <q-card style="margin: 10px" class="full-height">
               <q-card-section>
                 <q-form ref="subjectForm">
                   <div class="text-weight-bold">نوع السلوك:</div>
@@ -24,7 +25,8 @@
                         :color="beh.selected ? 'red' : 'green'"
                         text-color="white"
                         :icon="beh.icon"
-                      >{{ beh.name }}</q-chip>
+                        >{{ beh.name }}</q-chip
+                      >
                     </div>
                   </div>
 
@@ -37,37 +39,44 @@
                     :autogrow="false"
                     clearable
                     v-model="behavior.description"
-                    :rules="[ val => (val && val.length > 0) || 'أضف أضف توصيفا للسلوك']"
+                    :rules="[
+                      (val) =>
+                        (val && val.length > 0) || 'أضف أضف توصيفا للسلوك',
+                    ]"
                     type="textarea"
                     label="توصيف السلوك"
                   />
 
-                      <div class="col-6">
-                      <div class="text-weight-bold">تاريخ السلوك</div>
-                      <q-input
-                        ref="date"
-                        dense
-                        square
-                        outlined
-                        clearable
-                        v-model="behavior.date"
-                        label="إختر تاريخ"
-                        lazy-rules
-                        :rules="[ val => val !== null && val !== '' || 'الرجاء إختيار تاريخ']"
-                        @click="$refs.qDateProxy.show()">
-                        <template v-slot:append>
-                          <q-icon name="event" class="cursor-pointer">
-                            <q-popup-proxy ref="qDateProxy">
-                              <q-date
-                                v-model="behavior.date"
-                                mask="DD/MM/YYYY"
-                                @input="() => $refs.qDateProxy.hide()"
-                              />
-                            </q-popup-proxy>
-                          </q-icon>
-                        </template>
-                      </q-input>
-                    </div>
+                  <div class="col-6">
+                    <div class="text-weight-bold">تاريخ السلوك</div>
+                    <q-input
+                      ref="date"
+                      dense
+                      square
+                      outlined
+                      clearable
+                      v-model="behavior.date"
+                      label="إختر تاريخ"
+                      lazy-rules
+                      :rules="[
+                        (val) =>
+                          (val !== null && val !== '') || 'الرجاء إختيار تاريخ',
+                      ]"
+                      @click="$refs.qDateProxy.show()"
+                    >
+                      <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                          <q-popup-proxy ref="qDateProxy">
+                            <q-date
+                              v-model="behavior.date"
+                              mask="DD/MM/YYYY"
+                              @input="() => $refs.qDateProxy.hide()"
+                            />
+                          </q-popup-proxy>
+                        </q-icon>
+                      </template>
+                    </q-input>
+                  </div>
                 </q-form>
               </q-card-section>
             </q-card>
@@ -95,29 +104,21 @@ export default {
     },
     title: {
       type: String,
-      required : true,
+      required: true,
     },
-    isEdit :  {
+    isEdit: {
       type: Boolean,
       default: false,
     },
     behavior: {
       type: Object,
-      required : true
+      required: true,
     },
   },
   data() {
     return {
-      behaviors : [
-        {name : "تميز", selected : false, icon : "event"},
-        {name : "حل للأنشطة", selected : false, icon : "event"},
-        {name : "إلتزام", selected : false, icon : "event"},
-      ],
-      BadBehaviors: [
-        {name : "عراك", selected : false, icon : "event"},
-        {name : "إهممال", selected : false, icon : "event"},
-        {name : "كثير التغيب", selected : false, icon : "event"},
-      ],
+      behaviors: [],
+      BadBehaviors: [],
     };
   },
   computed: {
@@ -125,19 +126,38 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_ERRORS: GETTERS.UI.GET_ERRORS,
+      GET_ENTRIES: GETTERS.SETTINGS.GET_ENTRIES,
     }),
-      getTitles(){
-      // TODO let behaviors to be added from different dialog
-     let behaviors =  this.behavior.type == "P" ? 
-      this.behaviors : this.BadBehaviors;
+    getTitles() {
+      this.behaviors = this.GET_ENTRIES
+        .filter((s) => s.type.val == "سلوك إيجابي")
+        .map((s) => ({
+          selected: false,
+          name: s.name,
+        }));
 
-      if (this.isEdit){
-        behaviors.forEach(b => b.name == this.behavior.title ? b.selected = true : b.selected = false)
+      this.BadBehaviors = this.GET_ENTRIES
+        .filter((s) => s.type.val == "سلوك سلبي")
+        .map((s) => ({
+          selected: false,
+          name : s.name,
+        }));
+
+      let behaviors =
+        this.behavior.type == "P" ? this.behaviors : this.BadBehaviors;
+
+      if (this.isEdit) {
+        behaviors.forEach((b) =>
+          b.name  == this.behavior.title
+            ? (b.selected = true)
+            : (b.selected = false)
+        );
       }
 
       return behaviors;
     },
   },
+
   methods: {
     ...mapActions({
       ADD_BEHAVIOR: ACTIONS.STUDNETS.ADD_BEHAVIOR,
@@ -145,33 +165,39 @@ export default {
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
 
-
-    changeType(behavior){
-      this.behavior.type == "P" ?
-      this.behaviors.forEach( beh => beh.name == behavior.name ? beh.selected = true : beh.selected = false) :
-      this.BadBehaviors.forEach( beh => beh.name == behavior.name ? beh.selected = true : beh.selected = false);
+    changeType(behavior) {
+      this.behavior.type == "P"
+        ? this.behaviors.forEach((beh) =>
+            beh.name == behavior.name
+              ? (beh.selected = true)
+              : (beh.selected = false)
+          )
+        : this.BadBehaviors.forEach((beh) =>
+            beh.name == behavior.name
+              ? (beh.selected = true)
+              : (beh.selected = false)
+          );
     },
 
     async onSubmit() {
-    
+      if (
+        !this.behaviors.some((beh) => beh.selected) &&
+        !this.BadBehaviors.some((beh) => beh.selected)
+      ) {
+        return;
+      }
 
-    if (!this.behaviors.some(beh => beh.selected) && !this.BadBehaviors.some(beh => beh.selected))
-    {
-      
-      return
-    }
+      console.log(this.behavior);
 
-    console.log(this.behavior);
-
-      this.behavior.title = this.behavior.type == "P" ?
-      this.behaviors.find(beh => beh.selected).name :
-      this.BadBehaviors.find(beh => beh.selected).name;;
-      if (this.isEdit)
-      {
+      this.behavior.title =
+        this.behavior.type == "P"
+          ? this.behaviors.find((beh) => beh.selected).name
+          : this.BadBehaviors.find((beh) => beh.selected).name;
+      if (this.isEdit) {
         this.UPDATE_BEHAVIOR(this.behavior);
-      }else{
+      } else {
         this.ADD_BEHAVIOR(this.behavior);
-      }  
+      }
 
       this.$emit("close");
     },

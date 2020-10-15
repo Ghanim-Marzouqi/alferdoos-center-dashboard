@@ -38,11 +38,28 @@ const routes = [
           import("pages/admin/settings/PageEditMeetings.vue")
       },
       {
+        path:  "add-entries-page",
+        component: () =>
+          import("pages/admin/settings/PageEditEntries.vue")
+      },
+      {
         name : "add-meetings-page",
         path: "add-meetings-page",
         props: true,
         component: () =>
           import("pages/admin/settings/PageAddMeetingsDetails.vue")
+      },
+      {
+        name : "add-message-page",
+        path: "add-message-page",
+        props: true,
+        component: () =>
+          import("pages/admin/PageAddMessage.vue")
+      },
+      {
+        path: "admin-message-page",
+        component: () =>
+          import("pages/admin/PageAdminMessages.vue")
       },
       {
         path: "exams-dashboard",
@@ -168,6 +185,11 @@ const routes = [
         path: "teacher-sheduale",
         props: true,
         component: () => import("pages/teacher/PageTeacherSchedule.vue")
+      },
+      
+      {
+        path: "teacher-inbox",
+        component: () => import("pages/teacher/PageTeacherInbox.vue")
       },
       {
         path: "group-attendence",
