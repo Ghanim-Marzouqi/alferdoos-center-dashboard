@@ -99,7 +99,7 @@
 <script>
 import subjects from "../../../store/modules/subjects";
 import { mapGetters, mapActions } from "vuex";
-import { GETTERS, ACTIONS } from "../../../config/constants";
+import { GETTERS, ACTIONS , MESSAGES, ERRORS } from "../../../config/constants";
 import groups from 'src/store/modules/groups';
 const moment = require("moment");
 
@@ -142,6 +142,7 @@ export default {
       UPDATE_SETTINGS : ACTIONS.SETTINGS.UPDATE_SETTINGS,
       FETCH_SCHEDUAL : ACTIONS.SETTINGS.FETCH_SCHEDUAL,
       FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     getSchedual(day) {
       return this.schedual[parseInt(day.weekday, 10)];
@@ -253,9 +254,16 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_SCHADUALS : GETTERS.SETTINGS.GET_SCHADUALS,
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES, 
+      GET_ERRORS: GETTERS.UI.GET_ERRORS,
     }),
   },
   watch: {
+
+    GET_LOADING : function (newState) {
+     newState ? this.$q.loading.show() : this.$q.loading.hide();
+  },
+
     GET_SCHADUALS : function(newState)
     {
 
@@ -264,7 +272,6 @@ export default {
         if (group.settings.break != this.GET_YEAR_INFO.session.break
             || group.settings.start != this.GET_YEAR_INFO.session.start)
             {
-              console.log("not equal")
               this.group = group.group;
               this.schedual = group;
               for (let i = 0; i < 7; i++) {
@@ -273,7 +280,37 @@ export default {
               this.saveSchedual();
             }
       })
+    },
+    GET_MESSAGES : function(newState){
+
+       if (newState.length > 0) {
+        let messageCode = newState[0].code;
+
+        if (messageCode === MESSAGES.DATABASE.SCHEDUAL_ADDED) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.FETCH_SCHEDUAL();
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تحديث الجدول بنجاح",
+          });
+        }
+       }
+    },
+
+    GET_ERRORS:  function(newState){
+       if (newState.length > 0) {
+        let errorCode = newState[0].code;
+
+        if (errorCode === ERRORS.DATABASE.ADD_EXECUSE_FAIL) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ أثناء تحديث الجدول",
+          });
+        }
+      }
     }
+  
   },
   async created() {
     await this.FETCH_GROUPS();
