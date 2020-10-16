@@ -25,7 +25,13 @@
       </q-card-section>
       <q-card-actions>
         <q-space></q-space>
-        <q-btn dense flat color="primary" @click="closeAddMemorizationToGroupDialog">إلغاء</q-btn>
+        <q-btn
+          dense
+          flat
+          color="primary"
+          @click="closeAddMemorizationToGroupDialog"
+          >إلغاء</q-btn
+        >
         <q-btn
           dense
           flat
@@ -33,7 +39,8 @@
           :disable="selectedOptionDetails.length < 1"
           :loading="GET_LOADING"
           @click="addMemorizationToGroupDialog"
-        >حفظ</q-btn>
+          >حفظ</q-btn
+        >
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -96,7 +103,6 @@ export default {
         label: `${detail.name} (${detail.pageNumberFrom} - ${detail.pageNumberTo})`,
         value: detail.uid,
       }));
-      console.log("memo", this.selectedOption);
     },
     addMemorizationToGroupDialog() {
       if (

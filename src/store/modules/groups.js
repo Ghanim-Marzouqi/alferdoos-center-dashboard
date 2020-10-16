@@ -156,41 +156,118 @@ const actions = {
         .doc(payload.groupId)
         .get();
 
-      if (doc.data().memorizations && doc.data().memorizations > 0) {
-        let memorizations = doc.data().memorizations;
-        let newMemorizations = [
-          {
-            memorizationId: payload.memorizationId,
-            memorizationDetails: payload.memorizationDetails
-          },
-          ...memorizations
-        ];
+      // Check If Group Exists
+      if (doc.exists) {
+        let groupMemorization = doc.data().memorizations;
+        if (groupMemorization && typeof groupMemorization !== "undefined" && groupMemorization.length > 0) {
+          let newMemorizations = [];
 
-        await FirebaseDatabase.collection(COLLECTIONS.GROUPS)
+          // Check if Memorization Exists
+          if (groupMemorization.find(m => m.memorizationId === payload.memorizationId)) {
+            let newMemorizationDetails = [];
+
+            // Get Memorization By Id
+            let memorization = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS).doc(payload.memorizationId).get();
+
+            // Check Sent Memorization Details From List Of Original Memorization Details
+            for (let i = 0; i < memorization.data().details.length; i++) {
+              for (let j = 0; j < payload.memorizationDetails.length; j++) {
+                if (memorization.data().details[i].uid === payload.memorizationDetails[j]) {
+                  newMemorizationDetails.push(memorization.data().details[i]);
+                }
+              }
+            }
+  
+            // Filter Memorizations To Accept New Ones Only
+            let filteredMemorizations = groupMemorization.filter(m => m.memorizationId !== payload.memorizationId);
+
+            newMemorizations = [
+              {
+                memorizationId: payload.memorizationId,
+                memorizationDetails: newMemorizationDetails
+              },
+              ...filteredMemorizations
+            ];
+          } else {
+            let newMemorizationDetails = [];
+
+            // Get Memorization By Id
+            let memorization = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS).doc(payload.memorizationId).get();
+
+            // Check Sent Memorization Details From List Of Original Memorization Details
+            for (let i = 0; i < memorization.data().details.length; i++) {
+              for (let j = 0; j < payload.memorizationDetails.length; j++) {
+                if (memorization.data().details[i].uid === payload.memorizationDetails[j]) {
+                  newMemorizationDetails.push(memorization.data().details[i]);
+                }
+              }
+            }
+  
+            newMemorizations = [
+              {
+                memorizationId: payload.memorizationId,
+                memorizationDetails: newMemorizationDetails
+              },
+              ...groupMemorization
+            ];
+          }
+  
+          // Update Group Memorization
+          await FirebaseDatabase.collection(COLLECTIONS.GROUPS)
           .doc(payload.groupId)
           .update({
             memorizations: newMemorizations
           });
 
-        commit(MUTATIONS.UI.SET_MESSAGE, {
-          code: MESSAGES.DATABASE.GROUP_MEMORIZATIONS_ADDED
-        });
-      } else {
-        let memorizations = [
-          {
-            memorizationId: payload.memorizationId,
-            memorizationDetails: payload.memorizationDetails
-          }
-        ];
-
-        await FirebaseDatabase.collection(COLLECTIONS.GROUPS)
-          .doc(payload.groupId)
-          .update({
-            memorizations: memorizations
+          commit(MUTATIONS.UI.SET_MESSAGE, {
+            code: MESSAGES.DATABASE.GROUP_MEMORIZATIONS_ADDED
           });
+        } else {
+          let newMemorizationDetails = [];
 
-        commit(MUTATIONS.UI.SET_MESSAGE, {
-          code: MESSAGES.DATABASE.GROUP_MEMORIZATIONS_ADDED
+          // Get Memorization By Id
+          let memorization = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS).doc(payload.memorizationId).get();
+
+          if (memorization.exists && memorization.data().details.length > 0) {
+            // Check Sent Memorization Details From List Of Original Memorization Details
+            for (let i = 0; i < memorization.data().details.length; i++) {
+              for (let j = 0; j < payload.memorizationDetails.length; j++) {
+                if (memorization.data().details[i].uid === payload.memorizationDetails[j]) {
+                  newMemorizationDetails.push(memorization.data().details[i]);
+                }
+              }
+            }
+
+            console.log("newMemorizationDetails", newMemorizationDetails);
+  
+            let newMemorizations = [
+              {
+                memorizationId: payload.memorizationId,
+                memorizationDetails: newMemorizationDetails
+              }
+            ];
+    
+            // Update Group Memorization
+            await FirebaseDatabase.collection(COLLECTIONS.GROUPS)
+              .doc(payload.groupId)
+              .update({
+                memorizations: newMemorizations
+              });
+    
+            commit(MUTATIONS.UI.SET_MESSAGE, {
+              code: MESSAGES.DATABASE.GROUP_MEMORIZATIONS_ADDED
+            });
+          } else {
+            console.log("No Memorization Details For This Memorization");
+            commit(MUTATIONS.UI.SET_ERROR, {
+              code: ERRORS.DATABASE.ADD_MEMORIZATION_TO_GROUP_ERROR
+            });
+          }
+        }
+      } else {
+        console.log("Group Doesn't Exist");
+        commit(MUTATIONS.UI.SET_ERROR, {
+          code: ERRORS.DATABASE.ADD_MEMORIZATION_TO_GROUP_ERROR
         });
       }
     } catch (error) {
@@ -234,6 +311,26 @@ const actions = {
       });
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async FETECH_MEMORIZATION_DETAILS_BY_ID({}, payload) {
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS).doc(payload.memorizationId).get();
+      let value = null;
+
+      if (doc.exists) {
+        let details = doc.data().details;
+
+        if (details && details.length > 0) {
+          let detail = details.find(d => d.uid === payload.memorizationDetailId);
+          if (detail) value = detail;
+        }
+      }
+
+      return value;
+    } catch(error) {
+      console.log("GET_MEMORIZATION_DETAILS_BY_ID ERROR", error);
     }
   }
 };

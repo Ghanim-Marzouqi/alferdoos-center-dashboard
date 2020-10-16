@@ -27,7 +27,11 @@
       content-style="background-color: #fff; color: #ccae62"
     >
       <q-scroll-area
-        style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd"
+        style="
+          height: calc(100% - 150px);
+          margin-top: 150px;
+          border-right: 1px solid #ddd;
+        "
       >
         <q-list>
           <q-item class="q-ma-xs" clickable exact to="/admin/home">
@@ -38,8 +42,18 @@
               <q-item-label>الرئيسية</q-item-label>
             </q-item-section>
           </q-item>
-          <q-expansion-item class="q-ma-xs" expand-separator icon="o_school" label="الطلاب">
-            <q-item class="q-ma-xs" clickable exact to="/admin/student-registration-forms">
+          <q-expansion-item
+            class="q-ma-xs"
+            expand-separator
+            icon="o_school"
+            label="الطلاب"
+          >
+            <q-item
+              class="q-ma-xs"
+              clickable
+              exact
+              to="/admin/student-registration-forms"
+            >
               <q-item-section avatar>
                 <q-icon name="o_assignment" />
               </q-item-section>
@@ -73,7 +87,12 @@
                 <q-item-label>سجلات الغياب</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item class="q-ma-xs" clickable exact to="/admin/absence-records-report">
+            <q-item
+              class="q-ma-xs"
+              clickable
+              exact
+              to="/admin/absence-records-report"
+            >
               <q-item-section avatar>
                 <q-icon name="o_today" />
               </q-item-section>
@@ -111,7 +130,7 @@
                 <q-item-label>المجموعات المسجلة</q-item-label>
               </q-item-section>
             </q-item>
-            
+
             <q-item class="q-ma-xs" clickable exact to="/admin/group-schedule">
               <q-item-section avatar>
                 <q-icon name="o_today" />
@@ -120,10 +139,19 @@
                 <q-item-label>جدول الحصص الدراسية</q-item-label>
               </q-item-section>
             </q-item>
-                        
           </q-expansion-item>
-          <q-expansion-item class="q-ma-xs" expand-separator icon="o_settings" label="الإعدادات">
-            <q-item class="q-ma-xs" clickable exact to="/admin/settings-year-info">
+          <q-expansion-item
+            class="q-ma-xs"
+            expand-separator
+            icon="o_settings"
+            label="الإعدادات"
+          >
+            <q-item
+              class="q-ma-xs"
+              clickable
+              exact
+              to="/admin/settings-year-info"
+            >
               <q-item-section avatar>
                 <q-icon name="o_date_range" />
               </q-item-section>
@@ -131,7 +159,12 @@
                 <q-item-label>السنة الدراسية</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item class="q-ma-xs" clickable exact to="/admin/settings-prepare-exams">
+            <q-item
+              class="q-ma-xs"
+              clickable
+              exact
+              to="/admin/settings-prepare-exams"
+            >
               <q-item-section avatar>
                 <q-icon name="o_description" />
               </q-item-section>
@@ -139,10 +172,22 @@
                 <q-item-label>إعداد الإختبارات</q-item-label>
               </q-item-section>
             </q-item>
-            
-            <q-item class="q-ma-xs" clickable exact to="/admin/edit-meetings">
+            <q-item
+              class="q-ma-xs"
+              clickable
+              exact
+              to="/admin/settings-edit-memorizations"
+            >
               <q-item-section avatar>
                 <q-icon name="o_menu_book" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>إعداد المحفوظات</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/edit-meetings">
+              <q-item-section avatar>
+                <q-icon name="o_receipt" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>محاضر الإجتماعات</q-item-label>
@@ -150,13 +195,18 @@
             </q-item>
             <q-item class="q-ma-xs" clickable exact to="/admin/edit-expance">
               <q-item-section avatar>
-                <q-icon name="o_menu_book" />
+                <q-icon name="o_attach_money" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>إدارة المصروفات</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item class="q-ma-xs" clickable exact to="/admin/settings-edit-subjects">
+            <q-item
+              class="q-ma-xs"
+              clickable
+              exact
+              to="/admin/settings-edit-subjects"
+            >
               <q-item-section avatar>
                 <q-icon name="o_book" />
               </q-item-section>

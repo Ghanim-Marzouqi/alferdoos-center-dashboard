@@ -9,14 +9,22 @@
           class="q-mb-md"
           color="primary"
           @click="isAddGroupDialogOpen = true"
-        >إضافة مجموعة جديدة</q-btn>
+          >إضافة مجموعة جديدة</q-btn
+        >
       </div>
       <div class="col-12">
-        <q-table :data="GET_GROUPS" :columns="columns" row-key="id" :loading="GET_LOADING">
+        <q-table
+          :data="GET_GROUPS"
+          :columns="columns"
+          row-key="id"
+          :loading="GET_LOADING"
+        >
           <template v-slot:header="props">
             <q-tr :props="props">
               <q-th auto-width />
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">{{ col.label }}</q-th>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">{{
+                col.label
+              }}</q-th>
             </q-tr>
           </template>
           <template v-slot:body="props">
@@ -28,12 +36,18 @@
                   round
                   dense
                   @click="props.expand = !props.expand"
-                  :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                  :icon="
+                    props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                  "
                 />
               </q-td>
               <q-td key="name" :props="props">{{ props.row.name }}</q-td>
               <q-td key="students" :props="props">
-                <q-btn dense flat @click.stop="goToRegisteredStudents(props.row)">
+                <q-btn
+                  dense
+                  flat
+                  @click.stop="goToRegisteredStudents(props.row)"
+                >
                   <q-icon color="teal" name="o_people" />
                 </q-btn>
               </q-td>
@@ -43,7 +57,11 @@
                 </q-btn>
               </q-td>
               <q-td key="add" :props="props">
-                <q-btn dense flat @click.stop="showAddMemorizationDialog(props.row)">
+                <q-btn
+                  dense
+                  flat
+                  @click.stop="showAddMemorizationDialog(props.row)"
+                >
                   <q-icon color="blue" name="o_note_add" />
                 </q-btn>
               </q-td>
@@ -53,7 +71,11 @@
                 </q-btn>
               </q-td>
               <q-td key="delete" :props="props">
-                <q-btn dense flat @click.stop="showDeleteGroupDialog(props.row)">
+                <q-btn
+                  dense
+                  flat
+                  @click.stop="showDeleteGroupDialog(props.row)"
+                >
                   <q-icon color="red" name="o_delete" />
                 </q-btn>
               </q-td>
@@ -76,19 +98,33 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="(memorization, i) in getGroupMemorization(props.row)" :key="i">
+                      <tr
+                        v-for="(memorization, i) in getGroupMemorization(
+                          props.row
+                        )"
+                        :key="i"
+                      >
                         <td class="text-left">{{ memorization.name }}</td>
                         <td class="text-left">
                           <div
                             v-for="(detail, j) in memorization.details"
                             :key="j"
-                          >{{ `${detail.name} (${detail.pageNumberFrom} - ${detail.pageNumberTo})`}}</div>
+                          >
+                            {{
+                              `${detail.name} (${detail.pageNumberFrom} - ${detail.pageNumberTo})`
+                            }}
+                          </div>
                         </td>
                         <td class="text-center">
                           <q-btn
                             dense
                             flat
-                            @click.stop="showDeleteMemorizationFromGroupDialog(props.row, memorization)"
+                            @click.stop="
+                              showDeleteMemorizationFromGroupDialog(
+                                props.row,
+                                memorization
+                              )
+                            "
                           >
                             <q-icon color="red" name="o_delete" />
                           </q-btn>
@@ -228,6 +264,8 @@ export default {
       FETCH_MEMORIZATIONS: ACTIONS.SETTINGS.FETCH_MEMORIZATIONS,
       DELETE_MEMORIZATION_FROM_GROUP:
         ACTIONS.GROUPS.DELETE_MEMORIZATION_FROM_GROUP,
+      FETECH_MEMORIZATION_DETAILS_BY_ID:
+        ACTIONS.GROUPS.FETECH_MEMORIZATION_DETAILS_BY_ID,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     goToRegisteredStudents(group) {},
@@ -236,13 +274,13 @@ export default {
       let memorizations = [];
       let groupMemorizations = group.memorizations;
 
+      // Get Group Memorization Details Only
       if (groupMemorizations && groupMemorizations.length > 0) {
-        groupMemorizations.forEach((memo) => {
-          let memorization = this.GET_MEMORIZATIONS.find(
-            (m) => m.id === memo.memorizationId
-          );
-          if (memorization) memorizations.push(memorization);
-        });
+        memorizations = groupMemorizations.map((memo) => ({
+          name: this.GET_MEMORIZATIONS.find((m) => m.id === memo.memorizationId)
+            .name,
+          details: memo.memorizationDetails.map((d) => ({ ...d })),
+        }));
         return memorizations;
       } else {
         return [];
