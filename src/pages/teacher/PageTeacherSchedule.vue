@@ -43,12 +43,22 @@
                 </q-avatar>
               </div>
               <div class="row justify-center">
-                <p style="font-size: 20px; margin-bottom:-3px;" v-html="agenda.name"></p>
+                <p style="font-size: 20px; margin-bottom:-3px;" v-html="agenda.subject.name"></p>
               </div>
               <div class="row justify-center">
                 <p style="font-size: 16px; margin-bottom:-3px;" v-html="agenda.group"></p>
               </div>
               <div class="row justify-center">{{ agenda.fromTime }} - {{ agenda.toTime }}</div>
+                            <div>
+                <q-chip
+                  v-for="(file, i) in getFiles(agenda.subject.id)"
+                  :key="i"
+                  clickable
+                  icon-right="o_get_app"
+                  @click="downloadFile(file)"
+                  >{{ file.name }}</q-chip
+                >
+              </div>
    
             </div>
           </template>
@@ -77,6 +87,7 @@ export default {
     ...mapActions({
       FETCH_SCHEDUAL : ACTIONS.SETTINGS.FETCH_SCHEDUAL,
       FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
+       FETCH_SUBJECTS: ACTIONS.SUBJECTS.FETCH_SUBJECTS,
     }),
     // getGroupSchedual(){
     //   console.log('group',this.group);
@@ -84,13 +95,47 @@ export default {
     //    this.schedual = this.GET_SCHADUALS.find((s) => s.group.value == this.group);
     //    console.log('shedual',this.schedual)
     // },
+        getFiles(id) {
+      return this.GET_SUBJECTS.find((x) => x.id == id).uplodedFiles;
+    },
+        downloadFile(file) {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = "blob";
+        xhr.onload = function (event) {
+          var blob = xhr.response;
+          let link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = file.name;
+          link.click();
+        };
+        xhr.open("GET", file.fileUrl);
+        xhr.send();
+      } catch (error) {
+        switch (error.code) {
+          case ERRORS.STORAGE.OBJECT_NOT_FOUND:
+            this.SET_ERROR(ERRORS.STORAGE.OBJECT_NOT_FOUND);
+            break;
+          case ERRORS.STORAGE.UNAUTHORIZED:
+            this.SET_ERROR(ERRORS.STORAGE.UNAUTHORIZED);
+            break;
+          case ERRORS.STORAGE.CANCELED:
+            this.SET_ERROR(ERRORS.STORAGE.CANCELED);
+            break;
+          case ERRORS.STORAGE.UNKNOWN:
+            this.SET_ERROR(ERRORS.STORAGE.UNKNOWN);
+            break;
+        }
+      }
+    },
+
     getSchedual(day) {
       let sessios = [];
       this.GET_SCHADUALS.forEach(s => {
         let ses = s[parseInt(day.weekday, 10)]
        .filter(session => session.teacher.id == this.GET_USER.id)
-        .map(session => ({ group : s.group.label, fromTime : session.fromTime 
-        ,toTime : session.toTime , name : session.subject.name }));
+        .map(session => ({ subject : session.subject, group : s.group.label, fromTime : session.fromTime 
+        ,toTime : session.toTime }));
         console.log('ses',ses)
        Array.prototype.push.apply(sessios ,ses)
       });
@@ -101,6 +146,7 @@ export default {
   computed: {
     ...mapGetters({
       GET_LOADING: GETTERS.UI.GET_LOADING,
+      GET_SUBJECTS: GETTERS.SUBJECTS.GET_SUBJECTS,
       GET_USER : GETTERS.AUTH.GET_USER,
       GET_SCHADUALS : GETTERS.SETTINGS.GET_SCHADUALS,
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
@@ -108,6 +154,7 @@ export default {
   },
 
   async created() {
+    await this.FETCH_SUBJECTS();
     await this.FETCH_SCHEDUAL();
     this.FETCH_YEAR_INFO();
   },

@@ -13,18 +13,36 @@
     </div>
 
     <div class="row">
-      <div v-for="student in  students" :key="student.id" class="col-md-3">
-        <q-card class="my-card q-ma-md" style="margin-top:10px;">
-          <div class="row justify-center q-mt-md" >
-            <q-chip :clickable="getTotal(Good,student.id) > 0" @click="selectedStudent = student.id,isShowBehaviorDialogOpened = true , btype=Good">
-              <q-avatar color="green" text-color="white" />{{ getTotal(Good,student.id)}}
+      <div v-for="student in students" :key="student.id" class="col-md-3">
+        <q-card class="my-card q-ma-md" style="margin-top: 10px">
+          <div class="row justify-center q-mt-md">
+            <q-chip
+              :clickable="getTotal(Good, student.id) > 0"
+              @click="
+                (selectedStudent = student.id),
+                  (isShowBehaviorDialogOpened = true),
+                  (btype = Good)
+              "
+            >
+              <q-avatar color="green" text-color="white" />{{
+                getTotal(Good, student.id)
+              }}
             </q-chip>
-            <q-chip :clickable="getTotal(Bad,student.id) > 0" @click="selectedStudent = student.id,isShowBehaviorDialogOpened = true , btype=Bad">
-              <q-avatar color="red" text-color="white" />{{ getTotal(Bad,student.id)}}
+            <q-chip
+              :clickable="getTotal(Bad, student.id) > 0"
+              @click="
+                (selectedStudent = student.id),
+                  (isShowBehaviorDialogOpened = true),
+                  (btype = Bad)
+              "
+            >
+              <q-avatar color="red" text-color="white" />{{
+                getTotal(Bad, student.id)
+              }}
             </q-chip>
           </div>
           <div class="row justify-center q-ma-md">
-            <p style="font-size:15px; margin-top:10px">
+            <p style="font-size: 15px; margin-top: 10px">
               {{ student.name }}
               <br />
             </p>
@@ -32,12 +50,18 @@
           <q-card-actions align="right">
             <q-btn
               flat
-              @click="openDialog(Good,false,student)"
+              @click="openDialog(Good, false, student)"
               round
               color="green"
               icon="fas fa-thumbs-up"
             />
-            <q-btn @click="openDialog(Bad,false,student)" flat round color="red" icon="fas fa-thumbs-down" />
+            <q-btn
+              @click="openDialog(Bad, false, student)"
+              flat
+              round
+              color="red"
+              icon="fas fa-thumbs-down"
+            />
           </q-card-actions>
         </q-card>
       </div>
@@ -52,11 +76,11 @@
     />
 
     <ShowBehaviorDialog
-    :isOpen="isShowBehaviorDialogOpened"
-    :studentId="selectedStudent"
-    :btype="btype"
-    @close="isShowBehaviorDialogOpened = false,selectedStudent = ''"/>
-
+      :isOpen="isShowBehaviorDialogOpened"
+      :studentId="selectedStudent"
+      :btype="btype"
+      @close="(isShowBehaviorDialogOpened = false), (selectedStudent = '')"
+    />
   </q-page>
 </template>
 
@@ -70,20 +94,20 @@ const moment = require("moment");
 export default {
   components: {
     BehaviorDialog: () => import("components/StudentAddPosBehaviorDialog.vue"),
-    ShowBehaviorDialog : ()=> import('components/StudentManageBehaviorsDialog')
+    ShowBehaviorDialog: () => import("components/StudentManageBehaviorsDialog"),
   },
   data() {
     return {
       groups: [],
       Good: "P",
       Bad: "N",
-      title : "",
-      btype : '',
-      selectedStudent : "",
+      title: "",
+      btype: "",
+      selectedStudent: "",
       date: moment(new Date()).format("DD/MM/YYYY"),
       isEdit: false,
       isBehaviorDialogOpen: false,
-      isShowBehaviorDialogOpened : false,
+      isShowBehaviorDialogOpened: false,
       allStudents: [],
       students: [],
       group: "",
@@ -101,26 +125,23 @@ export default {
     };
   },
   async created() {
+    await this.FETCH_STUDENTS({ status: "" });
     this.FETCH_ENTRIES();
     this.FETCH_YRAT_INFO();
     await this.FETCH_SCHEDUAL();
-    await this.FETCH_STUDENTS({ status: "" });
-    await this.FETCH_BEHAVIOR({ year : "2020"})
+    await this.FETCH_BEHAVIOR({ year: "2020" });
 
-        this.GET_SCHADUALS.forEach((sch) => {
-        Object.values(sch).forEach((day) => {
-          if (Array.isArray(day)) {
-            !day.some((session) => session.teacher.id == this.GET_USER.id)
-              ? ""
-              : !this.groups.some(g => g.value == sch.group.value) ?
-               this.groups.push(sch.group) : "";
-          }
-        });
+    this.GET_SCHADUALS.forEach((sch) => {
+      Object.values(sch).forEach((day) => {
+        if (Array.isArray(day)) {
+          !day.some((session) => session.teacher.id == this.GET_USER.id)
+            ? ""
+            : !this.groups.some((g) => g.value == sch.group.value)
+            ? this.groups.push(sch.group)
+            : "";
+        }
       });
-
-
-
-
+    });
   },
   methods: {
     ...mapActions({
@@ -131,10 +152,12 @@ export default {
       FETCH_YRAT_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
-    showBehaviors(type,sid){},
-    getTotal(type,sid){
-     let behavior = this.GET_BEHAVIORS.filter(b => b.behaviorType == type && b.student.id == sid);
-     return behavior.length;
+    showBehaviors(type, sid) {},
+    getTotal(type, sid) {
+      let behavior = this.GET_BEHAVIORS.filter(
+        (b) => b.behaviorType == type && b.student.id == sid
+      );
+      return behavior.length;
     },
     openDialog(beh, isEdit, student) {
       // TODO add active semester and handle it here
@@ -153,14 +176,15 @@ export default {
         name: this.GET_USER.name,
       };
       this.behavior.semester = sem;
-      this.behavior.student = {id : student.id, name :student.name} ;
+      this.behavior.student = { id: student.id, name: student.name };
       (this.behavior.type = beh), (this.behavior.year = this.GET_YEAR_INFO.id);
       this.behavior.reportingDate = this.date;
       this.isBehaviorDialogOpen = true;
     },
     changeGroup() {
-      this.students = this.allStudents.filter(
-        (student) => student.groupId == this.group.value
+      this.students = this.GET_STUDENTS.filter(
+        (student) =>
+          student.groupId != undefined && student.groupId == this.group.value
       );
     },
   },
@@ -177,44 +201,35 @@ export default {
   },
   watch: {
     GET_LOADING: function (newState) {
-      
       newState ? this.$q.loading.show() : this.$q.loading.hide();
     },
-    GET_STUDENTS: function (oldState, newState) {
-      this.allStudents = newState.filter(
-        (student) => student.groupId != undefined
-      );
-    },
-     GET_MESSAGES: function (newState, oldState) {
-      
+    GET_MESSAGES: function (newState, oldState) {
       if (newState.length > 0) {
         let messageCode = newState[0].code;
 
         if (messageCode === MESSAGES.DATABASE.BEHAVIOR_UPDATED) {
           this.CLEAR_ERRORS_AND_MESSAGES();
 
-          this.FETCH_BEHAVIOR({year : "2020"});
+          this.FETCH_BEHAVIOR({ year: "2020" });
           this.$q.dialog({
             title: "تمت العملية بنجاح",
             message: "تمت تحديث السلوك بنجاح",
           });
         }
 
-                if (messageCode === MESSAGES.DATABASE.STUDENT_BEHAVIOR_DELETED) {
+        if (messageCode === MESSAGES.DATABASE.STUDENT_BEHAVIOR_DELETED) {
           this.CLEAR_ERRORS_AND_MESSAGES();
 
-          this.FETCH_BEHAVIOR({year : "2020"});
+          this.FETCH_BEHAVIOR({ year: "2020" });
           this.$q.dialog({
             title: "تمت العملية بنجاح",
             message: "تم حذف السلوك بنجاح",
           });
         }
 
-        
-
         if (messageCode === MESSAGES.DATABASE.BEHAVIOR_ADDED) {
           this.CLEAR_ERRORS_AND_MESSAGES();
-          this.FETCH_BEHAVIOR({year : "2020"});
+          this.FETCH_BEHAVIOR({ year: "2020" });
           this.$q.dialog({
             title: "تمت العملية بنجاح",
             message: "تم إضافة السلوك بنجاح",
@@ -252,8 +267,6 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
         }
 
-        
-
         if (errorCode === ERRORS.DATABASE.ADD_BEHAVIOR_FAIL) {
           this.$q.dialog({
             title: "فشلت العملية",
@@ -274,7 +287,7 @@ export default {
 <style lang="scss" scoped>
 .q-card {
   height: 200px;
-  width : 95%;
+  width: 95%;
   margin: 10px;
 }
 </style>

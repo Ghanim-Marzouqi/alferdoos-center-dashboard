@@ -91,7 +91,6 @@ export default {
       isEdit : false,
       isGroupSelected: false,
       teacherId : "",
-      allStudents : [],
       attendanceRecords : [],
       selectedDate: new Date(),
       sessions : [],  
@@ -143,8 +142,24 @@ export default {
           } else{
             this.updatedRecordId = 0;
            this.isEdit = false;
-           this.attendanceRecords = this.allStudents.filter(student => student.groupId == this.group.value)
+           this.attendanceRecords = this.getStudents().filter(student => student.groupId == this.group.value)
     }
+    },
+    getStudents(){    
+      return this.GET_STUDENTS.filter(student => student.groupId != undefined).map(student => ({
+        studentId : student.id,
+        name : student.name,
+        groupId : student.groupId,
+        notes : "",
+        validExecuse : false,
+        attend : true,
+        late : 0,
+        leave : 0,
+        arrivalTime : "",
+        leavTime : "",
+        isLate : false,
+        isLeave : false,
+      }));
     },
     changeGroup() {
       this.isSessoinSelected = false;
@@ -155,7 +170,7 @@ export default {
         this.sessions = schedual[day]
         .filter(session => session.teacher.id == this.GET_USER.id)
         .map(session => ({ toTime : session.toTime, fromTime : session.fromTime, id : session.id , name : session.subject.name ,day : day , selected : false}));
-        this.attendanceRecords = this.allStudents.filter(student => student.groupId == this.group.value);
+        this.attendanceRecords = this.getStudents().filter(student => student.groupId == this.group.value);
       }
     },
     saveSchedual() {
@@ -195,31 +210,16 @@ export default {
     },
   },
   watch : {
-    GET_STUDENTS : function(oldState,newState) {
-      this.allStudents = newState.filter(student => student.groupId != undefined).map(student => ({
-        studentId : student.id,
-        name : student.name,
-        groupId : student.groupId,
-        notes : "",
-        validExecuse : false,
-        attend : true,
-        late : 0,
-        leave : 0,
-        arrivalTime : "",
-        leavTime : "",
-        isLate : false,
-        isLeave : false,
-      }));
-    },
     GET_SCHADUALS : function(oldState,newState) {
       this.schedual = newState;
     }
   },
   async created() {
+    await this.FETCH_STUDENTS({ status: "" });
     await this.FETCH_ATTENDANCE({ type : 1, year : moment(new Date()).format("DD/MM/YYYY")});
     await this.FETCH_GROUPS();
     await this.FETCH_SCHEDUAL();
-    this.FETCH_STUDENTS({ status: "" });
+    
     if (this.GET_GROUPS.length > 0) {
       this.groups = this.GET_GROUPS.map((group) => ({
         label: group.name,

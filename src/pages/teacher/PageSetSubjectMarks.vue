@@ -161,7 +161,6 @@ export default {
       return;
     }
 
-
       let studentMarks = this.GET_SUBJECTS.find((s) => s.id == this.subject.value).marks;
       studentMarks = studentMarks.map(mark => ({
         semester : mark.semesterId,

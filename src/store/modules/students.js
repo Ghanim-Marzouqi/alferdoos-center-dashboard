@@ -19,6 +19,7 @@ const state = {
   studentGroup: {},
   attendance : [],
   attendanceRange : [],
+  attendanceByGrp : [],
   execuses : [],
   behaviors : [],
   activities :[],
@@ -30,6 +31,7 @@ const getters = {
   GET_STUDENTS: state => state.students,
   GET_ATTENDANCE: state => state.attendance,
   GET_ATTENDANCE_RANGE_DATE: state => state.attendanceRange,
+  GET_ATTENDANCE_BY_GRP : state => state.attendanceByGrp,
   GET_STUDENTS_MARKS: state => state.studentMarks,
   GET_STUDENT_ANSWERS: state => state.studentAnswers,
   GET_STUDENTS_AND_MARKS: state => state.studentsAndMarks,
@@ -595,7 +597,7 @@ const actions = {
     }
   },
   async FETCH_ATTENDANCE({ commit }, payload) {
-    console.log(payload.year);
+
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
@@ -619,6 +621,35 @@ const actions = {
         commit(MUTATIONS.STUDNETS.SET_ATTENDANCE_RANGE_DATE, attendance);
     } catch (error) {
       console.log("FETCH_ATTENDANCE", error);
+      commit(MUTATIONS.UI.SET_ERROR, error);
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+
+  },
+
+  async FETCH_ATTENDANCE_BY_GROUP({ commit }, payload) {
+
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let snapshot = null;
+        snapshot = await FirebaseDatabase.collection(COLLECTIONS.ATTENDANCE)
+          .where("group", "==", payload.group)
+          .get();
+
+      let docs = snapshot.docs;
+      let attendance = docs.map(doc => ({
+        id : doc.id,
+        attendance: doc.data().attendance,
+        date: doc.data().date,
+        group: doc.data().group,
+        session: doc.data().session,
+      }));
+
+          commit(MUTATIONS.STUDNETS.SET_ATTENDENACE_BY_GRP, attendance);
+    } catch (error) {
+      console.log("FETCH_ATTENDANCE_BY_GROUP", error);
       commit(MUTATIONS.UI.SET_ERROR, error);
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
@@ -821,6 +852,7 @@ const actions = {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
+      console.log('payload',payload)
 
       // TODO after adding active semester , add it here
       let snapshot = null;
@@ -913,6 +945,7 @@ const mutations = {
   SET_EXECUSES : (state, execuses) => (state.execuses = execuses),
   SET_STUDENTS_MARKS: (state, studentMarks) => (state.studentMarks = studentMarks),
   SET_STUDENT_ANSWERS: (state, answers) => (state.studentAnswers = answers),
+  SET_ATTENDENACE_BY_GRP : (state, records) => state.attendanceByGrp = records,
   SET_STUDENTS_AND_MARKS: (state, updatedStudents) =>
     (state.studentsAndMarks = updatedStudents)
 };

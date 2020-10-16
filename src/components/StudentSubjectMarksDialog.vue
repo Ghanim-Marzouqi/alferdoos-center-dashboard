@@ -183,7 +183,7 @@ export default {
     getTotal(semesters){
       let total = 0;
       semesters.forEach(sem =>{
-        total += sem.isSubmited ? parseInt(sem.criteria.reduce((a,b) => ({mark : a.mark+b.mark})).mark) : 0;
+        total += sem.isSubmited ? sem.criteria.length == 0 ? 0 : parseInt(sem.criteria.reduce((a,b) => ({mark : a.mark+b.mark})).mark) : 0;
       })
 
       return total
