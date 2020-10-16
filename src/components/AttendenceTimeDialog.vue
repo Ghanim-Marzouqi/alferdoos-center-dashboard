@@ -60,7 +60,7 @@ export default {
       this.$emit("closeDialog", false);
     },
     save(){
-      console.log(this.type)
+     
       let min = parseInt(this.TimeInMinuts);
       if (this.type == 'late')
       {

@@ -82,6 +82,16 @@ export default {
           icon: "o_assignment",
           link: "/parent/registration-applications",
         },
+        {
+          title: "الوارد",
+          icon: "o_assignment",
+          link: "/parent/parent-inbox",
+        },
+        {
+          title: "الطلاب المسجلين",
+          icon: "o_assignment",
+          link: "/parent/students-list",
+        },
       ],
     };
   },

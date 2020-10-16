@@ -1,6 +1,19 @@
 <template>
   <q-page padding>
-    <p class="text-h6">المصروفات و الإيرادات</p>
+    <p class="text-h6">الإنفاق و الإيرادات</p>
+
+    
+
+    <table>
+      <tr>
+        <td><p style="margin-top:50px; color:red" class="text-h6 red">الإيرادات:</p></td>
+        <td><p style="margin-top:50px;" class="text-h6 red">{{getTotalExp('c')}} ر.ع</p></td>
+      </tr>
+      <tr>
+        <td><p style="color:red" class="text-h6 red">الإنفاق:</p></td>
+        <td><p class="text-h6 red">{{getTotalExp('d')}} ر.ع</p></td>
+      </tr>
+    </table>
 
     <!-- Memorization Table -->
     <div class="row q-pa-md">
@@ -256,7 +269,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { MESSAGES, ERRORS, GETTERS, ACTIONS } from "../../../config/constants";
-
+import { date } from "quasar";
 export default {
   name: "PageEditExpance",
   components: {
@@ -424,7 +437,7 @@ export default {
         {
           name: "debit",
           required: true,
-          label: "مصروف",
+          label: "إنفاق",
           field: (row) => row.amount,
           align: "left",
         },
@@ -466,6 +479,11 @@ export default {
       DELETE_EXPANCE: ACTIONS.SETTINGS.DELETE_EXPANCE,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
+    getTotalExp(s){
+      let filter = s == 'c' ? (x) => x.isCredit : (x) => x.isDebit
+      return this.GET_EXPANCE.filter(filter)
+      .reduce((a,b)=>({ amount : parseInt(a.amount) + parseInt(b.amount)})).amount;
+    },
     deleteExpanse(type, id) {
       console.log('ffffff');
       if (type == 1) {

@@ -162,7 +162,7 @@ export default {
           this.CLEAR_ERRORS_AND_MESSAGES();
           this.$q.dialog({
             title: "خطأ",
-            message: "حدث خطأ أثناء حذف المحضر",
+            message: "حدث خطأ أثناء حذف المادة",
           });
         }
         

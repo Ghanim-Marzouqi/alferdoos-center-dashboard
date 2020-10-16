@@ -38,12 +38,55 @@
               <q-item-label>الرئيسية</q-item-label>
             </q-item-section>
           </q-item>
+          <q-item class="q-ma-xs" clickable exact to="teacher-sheduale">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>جدول الحصص</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item class="q-ma-xs" clickable exact to="teacher-inbox">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>الصندوق الوارد</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            
           <q-item class="q-ma-xs" clickable exact to="group-attendence">
               <q-item-section avatar>
                 <q-icon name="o_today" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>تسجيل الحضور</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item class="q-ma-xs" clickable exact to="student-behaviors">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>سلوكيات الطلاب</q-item-label>
+              </q-item-section>
+            </q-item>
+                        <!-- <q-item class="q-ma-xs" clickable exact to="group-activities student-activities">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>الأنشطة</q-item-label>
+              </q-item-section>
+            </q-item> -->
+            <q-item class="q-ma-xs" clickable exact to="subject-marks">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>درجات الطلاب</q-item-label>
               </q-item-section>
             </q-item>
 

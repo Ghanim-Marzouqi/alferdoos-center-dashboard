@@ -130,7 +130,15 @@
                 <q-item-label>المجموعات المسجلة</q-item-label>
               </q-item-section>
             </q-item>
-
+            <q-item class="q-ma-xs" clickable exact to="group-activities">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>الأنشطة</q-item-label>
+              </q-item-section>
+            </q-item>
+            
             <q-item class="q-ma-xs" clickable exact to="/admin/group-schedule">
               <q-item-section avatar>
                 <q-icon name="o_today" />
@@ -172,6 +180,24 @@
                 <q-item-label>إعداد الإختبارات</q-item-label>
               </q-item-section>
             </q-item>
+                        <q-item class="q-ma-xs" clickable exact to="/admin/admin-message-page">
+              <q-item-section avatar>
+                <q-icon name="o_description" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>الرسائل</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item class="q-ma-xs" clickable exact to="/admin/add-entries-page">
+              <q-item-section avatar>
+                <q-icon name="o_menu_book" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>إعدادات المدخلات</q-item-label>
+              </q-item-section>
+            </q-item>
+            
+      
             <q-item
               class="q-ma-xs"
               clickable

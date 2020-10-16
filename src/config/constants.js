@@ -1,8 +1,12 @@
 // Firestore Collections
 const COLLECTIONS = {
+  MESSAGES : "messages",
+  ACTIVITIES : "activities",
+  MARKS: "marks",
   ADMINS: "admins",
   EXECUSES : "execuses",
   SUBJECTS : "subjects",
+  ENTRIES : "entries",
   PARENTS: "parents",
   TEACHERS: "teachers",
   STUDENTS: "students",
@@ -17,7 +21,8 @@ const COLLECTIONS = {
   SCHEDUALS : "Schedules",
   MEETINGS : "meetings",
   EXPANCE : "expense",
-  REPEATED_EXPANCE : "repeated_expense"
+  REPEATED_EXPANCE : "repeated_expense",
+  BEHAVIORS : "behaviors"
 };
 
 const STUDENT_GRADE = {
@@ -242,18 +247,24 @@ const GETTERS = {
     GET_METTINGS : "GET_METTINGS",
     GET_REPEATED_EXPENCE : "GET_REPEATED_EXPENCE",
     GET_EXPENCE : "GET_EXPENCE",
+    GET_ENTRIES : "GET_ENTRIES",
+    GET_EMAILS : "GET_EMAILS"
   },
   STUDNETS: {
+    GET_ACTIVITIES: "GET_ACTIVITIES",
+    GET_BEHAVIORS : "GET_BEHAVIORS",
     GET_STUDENTS: "GET_STUDENTS",
     GET_STUDENTS_MARKS: "GET_STUDENTS_MARKS",
     GET_STUDENT_ANSWERS: "GET_STUDENT_ANSWERS",
     GET_STUDENTS_AND_MARKS: "GET_STUDENTS_AND_MARKS",
     GET_ATTENDANCE : "GET_ATTENDANCE",
     GET_ATTENDANCE_RANGE_DATE : "GET_ATTENDANCE_RANGE_DATE",
-    GET_EXECUSES : "GET_EXECUSES"
+    GET_EXECUSES : "GET_EXECUSES",
+    GET_ATTENDANCE_BY_GRP : "GET_ATTENDANCE_BY_GRP"
   },
   SUBJECTS :{
-    GET_SUBJECTS : "GET_SUBJECTS"
+    GET_SUBJECTS : "GET_SUBJECTS",
+    GET_MARKS : "GET_MARKS"
   },
   TEACHERS: {
     GET_TEACHERS: "GET_TEACHERS",
@@ -287,9 +298,13 @@ const ACTIONS = {
     FETECH_MEMORIZATION_DETAILS_BY_ID: "FETECH_MEMORIZATION_DETAILS_BY_ID"
   },
   SUBJECTS: {
+    DELETE_SUBJECT : "DELETE_SUBJECT",
     REGISTER_SUBJECT : "REGISTER_SUBJECT",
     UPDATE_SUBJECT : "UPDATE_SUBJECT",
-    FETCH_SUBJECTS : "FETCH_SUBJECTS"
+    FETCH_SUBJECTS : "FETCH_SUBJECTS",
+    UPDATE_MARKS : "UPDATE_MARKS",
+    SAVE_MARKS : "SAVE_MARKS",
+    FETCH_MARKS : "FETCH_MARKS"
   },
   SETTINGS: {
     FETCH_YEAR_INFO: "FETCH_YEAR_INFO",
@@ -325,8 +340,21 @@ const ACTIONS = {
     FETCH_REPEATED_EXPANCE : "FETCH_REPEATED_EXPANCE",
     DELETE_EXPANCE : "DELETE_EXPANCE",
     EDIT_EXPANCE : "EDIT_EXPANCE",
+    UPDATE_SETTINGS : "UPDATE_SETTINGS",
+    REGISTER_ENTRY : "REGISTER_ENTRY",
+    UPDATE_ENTRY : "UPDATE_ENTRY",
+    FETCH_ENTRIES : "FETCH_ENTRIES",
+    DELETE_ENTRY : "DELETE_ENTRY",
+    FETCH_EMAILS : "FETCH_EMAILS",
+    ADD_MESSAGE : "ADD_MESSAGE"
   },
   STUDNETS: {
+    FETCH_ACTIVITIES : "FETCH_ACTIVITIES",
+    DELETE_ACTIVITY : "DELETE_ACTIVITY",
+    ADD_ACTIVITY : "ADD_ACTIVITY",
+    UPDATE_ACTIVITY : "UPDATE_ACTIVITY",
+    DELETE_BEHAVIOR : "DELETE_BEHAVIOR",
+    FETCH_BEHAVIOR : "FETCH_BEHAVIOR",
     FETCH_STUDENTS: "FETCH_STUDENTS",
     FETCH_STUDENTS_BY_PARENT_ID: "FETCH_STUDENTS_BY_PARENT_ID",
     REGISTER_STUDENT: "REGISTER_STUDENT",
@@ -344,7 +372,10 @@ const ACTIONS = {
     UPDATE_ATTENDANCE : "UPDATE_ATTENDANCE",
     ADD_EXECUSE : "ADD_EXECUSE",
     FETCH_EXECUSES : "FETCH_EXECUSES",
-    RESET_ATTENDANCE_RANGE_DATE : "RESET_ATTENDANCE_RANGE_DATE"
+    RESET_ATTENDANCE_RANGE_DATE : "RESET_ATTENDANCE_RANGE_DATE",
+    ADD_BEHAVIOR : "ADD_BEHAVIOR",
+    UPDATE_BEHAVIOR : "UPDATE_BEHAVIOR", 
+    FETCH_ATTENDANCE_BY_GROUP : "FETCH_ATTENDANCE_BY_GROUP"
   },
   TEACHERS: {
     ADD_TEACHER: "ADD_TEACHER",
@@ -372,9 +403,11 @@ const MUTATIONS = {
     SET_STUDENT_GROUP: "SET_STUDENT_GROUP"
   },
   SUBJECTS : {
+    SET_MARKS : "SET_MARKS",
     SET_SUBJECTS : "SET_SUBJECTS",
   },
   SETTINGS: {
+    SET_EMAILS : "SET_EMAILS",
     SET_YEAR_INFO: "SET_YEAR_INFO",
     SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
     SET_QUESTIONS: "SET_QUESTIONS",
@@ -384,9 +417,11 @@ const MUTATIONS = {
     SET_MEMORIZATION: "SET_MEMORIZATION",
     SET_MEETINGS : "SET_MEETINGS",
     SET_REPEATED_EXPENCE : "SET_REPEATED_EXPENCE",
-    SET_EXPENCE : "SET_EXPENCE"
-  },
+    SET_EXPENCE : "SET_EXPENCE",
+    SET_ENTRIES : "SET_ENTRIES"
+   },
   STUDNETS: {
+    SET_ACTIVITIES : "SET_ACTIVITIES",
     SET_STUDENTS: "SET_STUDENTS",
     SET_STUDENTS_MARKS: "SET_STUDENTS_MARKS",
     SET_STUDENT_ANSWERS: "SET_STUDENT_ANSWERS",
@@ -394,7 +429,9 @@ const MUTATIONS = {
     SET_ATTENDANCE : "SET_ATTENDANCE",
     SET_ATTENDANCE_RANGE_DATE : "SET_ATTENDANCE_RANGE_DATE",
     RESET_ATTENDANCE_RANGE_DATE : "RESET_ATTENDANCE_RANGE_DATE",
-    SET_EXECUSES : "SET_EXECUSES"
+    SET_EXECUSES : "SET_EXECUSES",
+    SET_BEHAVIORS : "SET_BEHAVIORS",
+    SET_ATTENDENACE_BY_GRP : "SET_ATTENDENACE_BY_GRP"
   },
   TEACHERS: {
     SET_TEACHERS: "SET_TEACHERS",
@@ -412,6 +449,19 @@ const MUTATIONS = {
 const MESSAGES = {
   AUTH: {},
   DATABASE: {
+    MESSAGE_ADDED : "database/message-added",
+    ENTRY_DELETED : "database/entry-deleted",
+    ENTRY_UPDATED : "database/entry-updated",
+    ENTRY_ADDED : "database/entry-added",
+    SUBJECT_UPDATED :  "database/subject-updated",
+    SUBJECT_SAVED : "database/subject-saved",
+    SUBJECT_DELETED : "database/subject-deleted",
+    ACTIVITY_UPDATED : "database/activity-updated",
+    ACTIVITY_ADDED : "database/activity-added",
+    STUDENT_BEHAVIOR_DELETED : "database/behavior-deleted",
+    STUDENT_ACTIVITY_DELETED : "database/activity-deleted",
+    MARKS_UPDATED : "database/marks-updated",
+    MARKS_SAVED : "database/marks-saved",
     EXPANCE_DELETED : "database/expance-added",
     EXECUSE_ADDED : "database/execuse-added",
     STUDENT_FORM_RECORD_DELETED: "database/student-form-record-deleted",
@@ -448,6 +498,8 @@ const MESSAGES = {
     REPEATED_EXPANCE_UPDATED : "database/REPEATED-expance-updated-successfully",
     EXPANCE_ADDED : "database/expance-added-successfully",
     EXPANCE_UPDATED : "database/expance-updated-successfully",
+    BEHAVIOR_UPDATED : "database/behavior-updated-successfully",
+    BEHAVIOR_ADDED : "database/behavior-added-successfully",
   }
 };
 
@@ -465,6 +517,20 @@ const ERRORS = {
     OTP_NOT_VERIFIED: "auth/otp-not-verified"
   },
   DATABASE: {
+    ADD_MESSAGE_ERROR : "database/add-message-error",
+    ENTRY_DELETE_ERROR  : "database/delete-entry-error",
+    ENTRY_UPDATE_RROR : "database/update-entry-error",
+    ADD_ENTRY_ERROR : "database/add-entry-error",
+    UPDATE_SUBJECT_FAIL : "database/update-subject-error",
+    DELETE_SUBJECT_ERROR : "database/delete-subject-error",
+    UPDATE_ACTIVITY_FAIL : "database/update-activity-error",
+    STUDENT_DELETE_ACTIVITY_ERROR : "database/delete-activity-error",
+    ADD_ACTIVITY_ERROR : "database/add-activity-error",
+    STUDENT_DELETE_BEHAVIOER_ERROR: "database/delete-behavior-error",
+    MARKS_UPDATE_FAIL :  "database/update-marks-error",
+    MARKS_SAVING_FAIL : "database/add-marks-error",
+    ADD_BEHAVIOR_FAIL : "database/add-behavior-error",
+    UPDATE_BEHAVIOR_FAIL : "database/update-behavior-error",
     DELETE_EXPANCE_ERROR : "database/delete-pexpense-error",
     EDIT_PEXPANCE_ERROR  : "database/edit-pexpense-error",
     EDIT_EXPANCE_ERROR  : "database/edit-expense-error",
