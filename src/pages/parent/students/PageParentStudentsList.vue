@@ -62,12 +62,13 @@
                     <q-avatar color="red" icon="fas fa-thumbs-down" text-color="white"> </q-avatar>
                     {{ student.badBehaviors }}
                   </q-chip>
-            <q-btn dense flat @click="selectedStudent=student.id,isPending = true , isActivitiesDialogOpen=true" >
+            <q-btn dense flat @click="selectedStudent=student.group,isPending = true , isActivitiesDialogOpen=true" 
+            >
                   <q-icon color="teal" name="o_note_add" />
                 </q-btn>
-              <q-btn dense flat @click="selectedStudent=student.id,isPending = false , isActivitiesDialogOpen=true" >
+              <!-- <q-btn dense flat @click="selectedStudent=student.id,isPending = false , isActivitiesDialogOpen=true" >
                   <q-icon color="red" name="o_note_add" />
-                </q-btn>
+                </q-btn> -->
           </q-card-actions>
         </q-card>
       </div>
@@ -88,7 +89,7 @@
 
     <ActivitiesDialog
     :isOpen="isActivitiesDialogOpen"
-    :studentId="selectedStudent"
+    :groupId="selectedStudent"
     :isPending="isPending"
     @close="isActivitiesDialogOpen = false,selectedStudent = ''"/>
 
@@ -167,11 +168,11 @@ export default {
     ...mapGetters({
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
       GET_LOADING: GETTERS.UI.GET_LOADING,
-      GET_BEHAVIORS : GETTERS.STUDNETS.GET_BEHAVIORS
+      GET_BEHAVIORS : GETTERS.STUDNETS.GET_BEHAVIORS,
+      GET_USER: GETTERS.AUTH.GET_USER,
     }),
       getStudents(){
-        // TODO change this filter to take students of the parent only
-      return this.GET_STUDENTS.filter(x => x.groupId != undefined).map(
+      return this.GET_STUDENTS.filter(x => x.parentId == this.GET_USER.id).map(
         s => ({
           id : s.id,
           name : s.name,

@@ -91,6 +91,10 @@ const routes = [
         component: () => import("pages/admin/groups/PageRegisteredGroups.vue")
       },
       {
+        path: "group-activities",
+        component: () => import("pages/admin/groups/PageEditGroupsActivites.vue")
+      },
+      {
         path: "group-schedule",
         component: () => import("pages/admin/groups/PageGroupSchedule.vue")
       },
@@ -146,6 +150,10 @@ const routes = [
         path: "student-sheduale",
         props: true,
         component: () => import("pages/parent/students/PageStudentSchedule.vue")
+      },
+      {
+        path: "parent-inbox",
+        component: () => import("pages/parent/students/PageParentInbox.vue")
       },
       {
         path: "register-student",

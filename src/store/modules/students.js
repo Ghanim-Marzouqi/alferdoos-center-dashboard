@@ -695,7 +695,7 @@ const actions = {
 
         await FirebaseDatabase.collection(COLLECTIONS.ACTIVITIES)
           .doc(payload.id)
-          .update(payload);
+          .update(payload.obj);
 
         commit(MUTATIONS.UI.SET_MESSAGE, {
           code: MESSAGES.DATABASE.ACTIVITY_UPDATED
@@ -875,9 +875,11 @@ const actions = {
         semester :doc.data().semester,
         title: doc.data().title,
         description: doc.data().description,
-        student: doc.data().student,
+        group: doc.data().group,
         createdBy : doc.data().createdBy,
+        createdAt: doc.data().createdAt,
       }));
+      activities = activities.sort((a,b) => a.createdAt - b.createdAt ) 
       commit(MUTATIONS.STUDNETS.SET_ACTIVITIES, activities);
       
     } catch (error) {

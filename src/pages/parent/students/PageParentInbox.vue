@@ -43,6 +43,13 @@
             </q-tr>
             <q-tr v-show="props.expand" :props="props">
               <q-td colspan="100%">
+                                <div class="text-left">
+                  <p>المرسل إليهم</p>
+                  <q-chip v-for="(rec, i) in getRecips(props.row)" :key="i">{{
+                    rec.label
+                  }}</q-chip>
+                </div>
+
                 <div class="text-left">
                   <p>المرفقات</p>
                   <q-chip
@@ -75,12 +82,13 @@
 <script>
 import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
-import { MESSAGES, ERRORS, GETTERS, ACTIONS } from "../../config/constants";
+import { MESSAGES, ERRORS, GETTERS, ACTIONS } from "../../../config/constants";
 
 export default {
   name: "PageAdminMessages",
   data() {
     return {
+      students : [],
       columns: [
         {
           name: "title",
@@ -108,10 +116,12 @@ export default {
     };
   },
   created() {
+    this.FETCH_STUDENTS({status : ""});
     this.FETCH_EMAILS();
   },
   computed: {
     ...mapGetters({
+      GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
       GET_USER: GETTERS.AUTH.GET_USER,
       GET_EMAILS: GETTERS.SETTINGS.GET_EMAILS,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
@@ -119,21 +129,40 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
     }),
     getEmails() {
-      return this.GET_EMAILS.filter((x) =>
-        x.recipients.some((rec) => rec.value == this.GET_USER.id)
+
+      let students = this.GET_STUDENTS.filter(x => x.parentId == this.GET_USER.id);
+      let grps = students.map(x => x.groupId);
+      let ids = students.map(x => x.id);
+      let emails = this.GET_EMAILS.filter((x) => 
+        x.recipients.map(x => x.value)
+       .filter((rec) => ids.some(v => v == rec)).length > 0       
+       || x.groups.map(x => x.value).filter(gr => grps.some(v=> v == gr)).length > 0
       );
+      return emails;
     },
   },
   filters: {
     formatDate(val) {
-      return `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`;
+      return `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm")}`;
     },
   },
   methods: {
     ...mapActions({
       FETCH_EMAILS: ACTIONS.SETTINGS.FETCH_EMAILS,
+      FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
+    getRecips(email)
+    {
+      return email.groups.length == 0 ? 
+      email.recipients : this.getStudentsOfGroups(email.groups);
+    },
+    getStudentsOfGroups(groups){
+      return this.GET_STUDENTS.filter(x => x.parentId == this.GET_USER.id && 
+      groups.some(g => g.value == x.groupId)).map(x => ({
+        label : x.name , value : x.id
+      }))
+    },
     downloadFile(file) {
       try {
         var xhr = new XMLHttpRequest();

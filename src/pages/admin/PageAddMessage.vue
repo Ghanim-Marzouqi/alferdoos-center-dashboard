@@ -227,7 +227,8 @@ export default {
   },
   watch: {
     selectedGroups: function (newState) {
-      let groupIds = this.selectedGroups.map((x) => x.id);
+      let groupIds = this.selectedGroups.map((x) => x.value);
+      console.log(groupIds);
       this.students = this.GET_STUDENTS.filter((s) =>
         groupIds.some((id) => id == s.groupId)
       ).map((s) => ({ label: s.name, value: s.id }));

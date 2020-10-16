@@ -1,10 +1,10 @@
 <template>
-  <q-dialog v-model="isOpen" width="600px" persistent>
-    <q-card>
-      <q-card-section class="row items-center q-pb-none">
+  <q-dialog v-model="isOpen" width="600px" @before-show="setTitle">
+    <q-card style="width:600px">
+      <q-card-section class="row q-pb-none">
         <div class="text-h6">إضافة نشاط</div>
         <q-space />
-        <q-btn icon="close" flat round dense @click="$emit('close')" />
+        <q-btn icon="close" flat round dense @click="closeDialog" />
       </q-card-section>
 
       <q-card-section class="q-pt-none">
@@ -13,18 +13,6 @@
             <q-card style="margin: 10px" class="full-height">
               <q-card-section>
                 <q-form ref="subjectForm">
-                  <div class="text-weight-bold">المجموعة</div>
-                  <div class="row justify-center q-pa-lg">
-                    <div class="col-12 col-md-4">
-                      <q-select
-                        filled
-                        @input="changeGroup"
-                        v-model="group"
-                        :options="groups"
-                        label="إختر مجموعة"
-                      />
-                    </div>
-                  </div>
                   <div class="text-weight-bold">نوع النشاط:</div>
                   <div class="row">
                     <div v-for="beh in titles" :key="beh.name">
@@ -38,6 +26,22 @@
                         :icon="beh.icon"
                         >{{ beh.name }}</q-chip
                       >
+                    </div>
+                  </div>
+                  <div class="text-weight-bold">
+                    <p v-if="!isValid" style="font-size:18px; color:red">
+                      يجب إختيار عنوان للنشاط
+                    </p>
+                  </div>
+                  <div class="text-weight-bold">المجموعة</div>
+                  <div class="row">
+                    <div class="col-12 col-md-12">
+                      <q-select
+                        outlined
+                        v-model="activity.group"
+                        :options="groups"
+                        label="إختر مجموعة"
+                      />
                     </div>
                   </div>
 
@@ -143,7 +147,10 @@ export default {
       type: Boolean,
       default: false,
     },
-
+    id :{
+      type : String,
+      default : ""
+    },
     isEdit: {
       type: Boolean,
       default: false,
@@ -157,6 +164,7 @@ export default {
     return {
       titles: [],
       groups: [],
+      isValid : true
     };
   },
   computed: {
@@ -188,7 +196,20 @@ export default {
       FETCH_ENTRIES: ACTIONS.SETTINGS.FETCH_ENTRIES,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
+    closeDialog(){
+      this.titles.forEach(t => t.selected = false);
+      this.$emit('close');
+    },
+    setTitle()
+    {
+      if (this.isEdit)
+      {
+        this.titles.find(tit => tit.name == this.activity.title).selected = true;
+      }
+    },
+
     changeType(title) {
+      this.isValid = true;
       this.titles.forEach((beh) =>
         beh.name == title.name ? (beh.selected = true) : (beh.selected = false)
       );
@@ -196,13 +217,17 @@ export default {
 
     async onSubmit() {
       if (!this.titles.some((beh) => beh.selected)) {
+        this.isValid = false;
         return;
       }
 
       this.activity.title = this.titles.find((beh) => beh.selected).name;
       if (this.isEdit) {
-        this.UPDATE_ACTIVITY(this.activity);
+        this.activity.feedback = "";
+        console.log(this.activity);
+        this.UPDATE_ACTIVITY({ id : this.id , obj : this.activity});
       } else {
+        this.activity.createdAt = Date.now();
         this.ADD_ACTIVITY(this.activity);
       }
       this.$emit("close");
@@ -215,13 +240,15 @@ export default {
         label: group.name,
         value: group.id,
       }));
-    
+
       this.titles = newState
         .filter((s) => s.type.val == "نشاط")
         .map((s) => ({
           selected: false,
           name: s.name,
         }));
+
+        
     },
   },
 };

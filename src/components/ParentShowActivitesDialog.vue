@@ -1,5 +1,6 @@
 <template>
     <q-dialog
+    @before-show="initValues"
       v-model="isOpen"
       persistent
       full-height
@@ -26,7 +27,7 @@
 
     <div class="row q-pa-md">
       <div class="col-12">
-        <q-table :data="getActivites" :columns="columns" row-key="id" :loading="GET_LOADING">
+        <q-table :data="activities" :columns="columns" row-key="id" :loading="GET_LOADING">
           <template v-slot:header="props">
             <q-tr :props="props">
               <q-th auto-width />
@@ -90,13 +91,11 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { GETTERS, ACTIONS, MESSAGES, ERRORS } from "../config/constants";
-import groups from "src/store/modules/groups";
-import { storage } from 'firebase';
+const moment = require("moment");
 export default {
   name: "ParentShowActivitesDialog",
-
   props : {
-    studentId : {
+    groupId : {
       type : String,
       default : ""
     },isOpen:{
@@ -112,6 +111,7 @@ export default {
     return {
       isEdit: true,
       activity : {},
+      activities :[],
       isCloseActivityDialogOpen : false,
       isActivityDialogOpen : false,
       title : "تعديل نشاط",
@@ -155,17 +155,22 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_ACTIVITIES : GETTERS.STUDNETS.GET_ACTIVITIES,
     }),
-    getActivites(){
-      console.log('Pending',this.studentId);
-     return this.isPending ? 
-     this.GET_ACTIVITIES.filter(b => b.student.id == this.studentId && b.isDone) : 
-     this.GET_ACTIVITIES.filter(b => b.student.id == this.studentId && !b.isDone)
-    }
   },
   methods: {
      ...mapActions({
       FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
     }),
+    initValues()
+    {
+      
+      this.activities = this.GET_ACTIVITIES.filter(b => {
+        let dates = b.endDate.split('/')
+        let endDate = moment(dates[2]+'-'+dates[1]+'-'+dates[0])
+        console.log(moment())
+      return  b.group.value == this.groupId
+      && moment(moment()).isBefore(endDate);
+      });
+    }
 
   },
 

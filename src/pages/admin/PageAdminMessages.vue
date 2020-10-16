@@ -131,7 +131,7 @@ export default {
   },
   filters: {
     formatDate(val) {
-      return `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm a")}`;
+      return `${date.formatDate(val, "DD/MMMM/YYYY - hh:mm")}`;
     },
   },
   methods: {

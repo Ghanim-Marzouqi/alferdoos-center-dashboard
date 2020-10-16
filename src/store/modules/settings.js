@@ -1029,6 +1029,8 @@ const actions = {
           files : [],
         }));
 
+        emails = emails.sort((a,b) => b.date - a.date ) 
+
         commit(MUTATIONS.SETTINGS.SET_EMAILS, emails);
       } else {
         commit(MUTATIONS.SETTINGS.SET_EXPENCE, []);

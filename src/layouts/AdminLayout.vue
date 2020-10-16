@@ -111,6 +111,14 @@
                 <q-item-label>المجموعات المسجلة</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item class="q-ma-xs" clickable exact to="group-activities">
+              <q-item-section avatar>
+                <q-icon name="o_today" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>الأنشطة</q-item-label>
+              </q-item-section>
+            </q-item>
             
             <q-item class="q-ma-xs" clickable exact to="/admin/group-schedule">
               <q-item-section avatar>
