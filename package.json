@@ -17,7 +17,7 @@
     "moment": "^2.27.0",
     "quasar": "^1.12.13",
     "vue-chartjs": "^3.5.1",
-    "xlsx": "^0.16.6"
+    "xlsx": "^0.16.7"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.6",

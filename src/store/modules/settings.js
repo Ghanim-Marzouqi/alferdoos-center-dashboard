@@ -191,6 +191,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async SET_SESSION_SETTINGS({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -224,6 +225,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async FETCH_REGISTRATION_PERIOD({ commit }) {
     try {
       let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS)
@@ -505,6 +507,7 @@ const actions = {
       )
         .orderBy("createdAt", "asc")
         .get();
+
       let docs = snapshot.docs;
 
       if (docs.length > 0) {
@@ -623,7 +626,8 @@ const actions = {
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
-  } ,
+  },
+
   async ADD_SCHEDUAL({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -664,6 +668,7 @@ const actions = {
     }
 
   },
+
   async FETCH_SCHEDUAL({ commit }) {
     try {
       let snapshot = await FirebaseDatabase.collection(COLLECTIONS.SCHEDUALS)
@@ -692,6 +697,7 @@ const actions = {
       console.log("FETCH_SCHADUALS ERROR", error);
     }
   },
+
   async FETCH_MEMORIZATIONS_BY_ID({ commit }, payload) {
     try {
       let doc = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS)
@@ -714,6 +720,7 @@ const actions = {
       console.log("FETCH_MEMORIZATIONS_BY_ID ERROR");
     }
   },
+
   async FETCH_MEETINGS({ commit }) {
     try {
       let snapshot = await FirebaseDatabase.collection(COLLECTIONS.MEETINGS)
@@ -741,6 +748,7 @@ const actions = {
       console.log("FETCH_MEETINGS ERROR", error);
     }
   },
+
   async SET_MEETINGS({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -778,6 +786,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async DELETE_MEETINGS({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -799,6 +808,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async EDIT_MEETING({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -840,6 +850,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async ADD_REPEATED_EXPANCE({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -856,7 +867,6 @@ const actions = {
 
       payload.files = await Promise.all(cerArr);
     }
-
 
     try {
       await FirebaseDatabase.collection(COLLECTIONS.REPEATED_EXPANCE)
@@ -875,6 +885,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async EDIT_REPEATED_EXPANCE({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -910,6 +921,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async ADD_EXPANCE({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -944,6 +956,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async EDIT_EXPANCE({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -978,6 +991,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async FETCH_EXPANCE({ commit }) {
     try {
       let snapshot = await FirebaseDatabase.collection(
@@ -1039,6 +1053,7 @@ const actions = {
       console.log("FETCH_EMAILS ERROR", error);
     }
   },
+
   async FETCH_REPEATED_EXPANCE({ commit }) {
     try {
       let snapshot = await FirebaseDatabase.collection(
@@ -1199,14 +1214,12 @@ const actions = {
 // Mutations
 const mutations = {
   SET_YEAR_INFO: (state, info) => (state.yearInfo = info),
-  SET_REGISTRATION_PERIOD: (state, period) =>
-    (state.registrationPeriod = period),
+  SET_REGISTRATION_PERIOD: (state, period) => (state.registrationPeriod = period),
   SET_QUESTIONS: (state, questions) => (state.questions = questions),
   SET_EXAM_MARKS: (state, marks) => (state.examMarks = marks),
-  SET_MEMORIZATIONS: (state, memorizations) =>
-    (state.memorizations = memorizations),
-    SET_SCHEDUALS : (state,schaduals) => state.schaduals = schaduals,
-    SET_MEETINGS : (state,meetings) => state.meetings = meetings,
+  SET_MEMORIZATIONS: (state, memorizations) => (state.memorizations = memorizations),
+  SET_SCHEDUALS : (state,schaduals) => state.schaduals = schaduals,
+  SET_MEETINGS : (state,meetings) => state.meetings = meetings,
   SET_MEMORIZATION: (state, memorization) => (state.memorization = memorization),
   SET_REPEATED_EXPENCE : (state, pexpance) => (state.repeatedExpense = pexpance),
   SET_EXPENCE : (state, expance) => (state.expense = expance),
