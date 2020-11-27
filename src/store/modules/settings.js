@@ -88,7 +88,12 @@ const actions = {
             id: date.getFullYear().toString(),
             name: payload,
             startPeriodDate: Date.now(),
-            endPeriodDate: Date.now()
+            endPeriodDate: Date.now(),
+            semesters: [],
+            session: {
+              start: "00:00",
+              break: 0
+            }
           });
 
         commit(MUTATIONS.UI.SET_MESSAGE, {
@@ -115,7 +120,6 @@ const actions = {
 
   async SET_YEAR_SEMESTERS({ commit }, payload) {
 
-    console.log("reach the point")
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     let date = new Date();
@@ -126,6 +130,9 @@ const actions = {
         .get();
 
       if (!doc.exists) {
+        let semesters = [];
+        semesters.push({ id: payload.id, isCurrent: payload.isCurrent, name: payload.name });
+
         await FirebaseDatabase.collection(COLLECTIONS.YEARS)
           .doc(date.getFullYear().toString())
           .set({
@@ -133,18 +140,31 @@ const actions = {
             name: payload,
             startPeriodDate: Date.now(),
             endPeriodDate: Date.now(),
-            semesters : payload,
+            semesters
           });
 
         commit(MUTATIONS.UI.SET_MESSAGE, {
           code: MESSAGES.DATABASE.YEAR_INFO_CREATED
         });
       } else {
-        await FirebaseDatabase.collection(COLLECTIONS.YEARS)
-          .doc(date.getFullYear().toString())
-          .update({
-            semesters : payload
-          });
+        // Check For Old Semesters
+        if (doc.data().semesters && doc.data().semesters.length > 0) {
+          let semesters = doc.data().semesters;
+          let newSemesters = [ ...semesters, { id: payload.id, isCurrent: payload.isCurrent, name: payload.name }];
+          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+            .doc(date.getFullYear().toString())
+            .update({
+              semesters: newSemesters
+            });
+        } else {
+          let semesters = [];
+          semesters.push({ id: payload.id, isCurrent: payload.isCurrent, name: payload.name });
+          await FirebaseDatabase.collection(COLLECTIONS.YEARS)
+            .doc(date.getFullYear().toString())
+            .update({
+              semesters
+            });
+        }
 
         commit(MUTATIONS.UI.SET_MESSAGE, {
           code: MESSAGES.DATABASE.YEAR_INFO_UPDATED
@@ -152,6 +172,30 @@ const actions = {
       }
     } catch (error) {
       console.log("SET_YEAR_SEMESTERS", error);
+      commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.DATABASE.YEAR_SEMESTERS_ERROR });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
+    }
+  },
+
+  async UPDATE_YEAR_SEMESTERS({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+      let doc = await FirebaseDatabase.collection(COLLECTIONS.YEARS).doc(payload.year).get();
+      if (doc.exists) {
+        await FirebaseDatabase.collection(COLLECTIONS.YEARS).doc(payload.year).update({
+          semesters: payload.semesters
+        });
+
+        commit(MUTATIONS.UI.SET_MESSAGE, {
+          code: MESSAGES.DATABASE.YEAR_INFO_UPDATED
+        });
+      } else {
+        commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.DATABASE.YEAR_SEMESTERS_ERROR });
+      }
+    } catch (error) {
+      console.log("UPDATE_YEAR_SEMESTERS", error);
       commit(MUTATIONS.UI.SET_ERROR, { code: ERRORS.DATABASE.YEAR_SEMESTERS_ERROR });
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
@@ -651,6 +695,7 @@ const actions = {
     }
 
   },
+
   async UPDATE_SETTINGS({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -1022,6 +1067,7 @@ const actions = {
       console.log("FETCH_EXPANCE ERROR", error);
     }
   },
+
   async FETCH_EMAILS({ commit }) {
     try {
       let snapshot = await FirebaseDatabase.collection(
@@ -1089,6 +1135,7 @@ const actions = {
       console.log("FETCH_REPEATED_EXPANCE ERROR", error);
     }
   },
+
   async REGISTER_ENTRY({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -1109,6 +1156,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async UPDATE_ENTRY({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -1129,6 +1177,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async FETCH_ENTRIES({ commit }) {
     try {
       let snapshot = await FirebaseDatabase.collection(
@@ -1155,6 +1204,7 @@ const actions = {
       console.log("FETCH_ENTRIES ERROR", error);
     }
   },
+
   async DELETE_ENTRY({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
@@ -1175,6 +1225,7 @@ const actions = {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
+
   async ADD_MESSAGE ({ commit }, payload) {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
