@@ -513,6 +513,7 @@ const actions = {
       if (docs.length > 0) {
         let memorizations = docs.map(doc => ({
           id: doc.id,
+          uid : doc.data().uid,
           name: doc.data().name,
           details: doc.data().details.length > 0 ? [...doc.data().details] : []
         }));

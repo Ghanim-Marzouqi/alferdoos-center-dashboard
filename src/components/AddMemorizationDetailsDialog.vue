@@ -159,7 +159,7 @@ export default {
     addMemorizationDetails() {
       if (Object.keys(this.memorization).length > 0) {
         this.ADD_MEMORIZATION_DETAILS({
-          id: this.memorization.id,
+          id: this.memorization.uid,
           uid: uid(),
           name: this.name,
           pageNumberFrom: Number.parseInt(this.pageNumberFrom),
