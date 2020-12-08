@@ -4,17 +4,25 @@
     <div class="row q-pa-md">
       <div class="fit row wrap justify-between items-center content-start">
         <div class="col-12 col-md-3">
-          <q-select v-model="group" :options="groups" label="إختر مجموعة" />
+          <q-select
+            filled
+            v-model="group"
+            :options="groups"
+            label="إختر مجموعة"
+          />
         </div>
 
         <div class="col-12 col-md-3">
           <q-input
             ref="date"
+            filled
             :disable="group == ''"
             v-model="fromDate"
             label="إختر تاريخ"
             lazy-rules
-            :rules="[ val => val !== null && val !== '' || 'الرجاء إختيار تاريخ']"
+            :rules="[
+              (val) => (val !== null && val !== '') || 'الرجاء إختيار تاريخ',
+            ]"
             @click="$refs.qDateProxyfrom.show()"
           >
             <template v-slot:append>
@@ -33,11 +41,14 @@
         <div class="col-12 col-md-3">
           <q-input
             ref="date"
+            filled
             :disable="fromDate == ''"
             v-model="toDate"
             label="إختر تاريخ"
             lazy-rules
-            :rules="[ val => val !== null && val !== '' || 'الرجاء إختيار تاريخ']"
+            :rules="[
+              (val) => (val !== null && val !== '') || 'الرجاء إختيار تاريخ',
+            ]"
             @click="$refs.qDateProxy.show()"
           >
             <template v-slot:append>
@@ -54,136 +65,189 @@
           </q-input>
         </div>
 
-        <q-btn class="q-mb-md" color="primary" @click="getAbsenceRecords">بحث</q-btn>
+        <q-btn class="q-mb-md" color="primary" @click="getAbsenceRecords"
+          >بحث</q-btn
+        >
       </div>
 
       <div class="col-12">
-      <q-tabs
-        v-model="tab"
-        align="left"
-        active-color="primary"
-        indicator-color="primary"
-        narrow-indicator
-      >
-        <q-tab name="all" label="الكل" />
-        <q-tab name="byStudent" label="ملخص" />
-      </q-tabs>
+        <q-tabs
+          filled
+          v-model="tab"
+          align="left"
+          active-color="primary"
+          indicator-color="primary"
+          narrow-indicator
+        >
+          <q-tab name="all" label="الكل" />
+          <q-tab name="byStudent" label="ملخص" />
+        </q-tabs>
 
-      <q-separator />
+        <q-separator />
 
-      <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="all">
-          <q-btn class="q-mb-md" color="primary" :disable="records.length == 0" @click="getExcelFile">حفظ الأكسل</q-btn>          
-          <div class="col-12">
-            <q-table :data="records" :columns="columns" row-key="id" :loading="GET_LOADING">
-              <template v-slot:body="props">
-                <q-tr :props="props">
-                  <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-                  <q-td key="date" :props="props">{{ props.row.date }}</q-td>
-                  <q-td key="session" :props="props">{{ props.row.session.name }}</q-td>
-                  <q-td key="absence" :props="props">
-                    <q-btn
-                      flat
-                      round
-                      :color="props.row.attend ? 'green' : 'red'"
-                      icon="how_to_reg"
-                    />
-                  </q-td>
-                  <q-td key="late" :props="props">
-                    <q-btn flat round :color="props.row.isLate ? 'red' :'green'" icon="alarm" />
-                    <p v-if="props.row.isLate ">{{ props.row.late }}</p>
-                  </q-td>
-                  <q-td key="leave" :props="props">
-                    <q-btn
-                      flat
-                      round
-                      :color="props.row.isLeave ? 'red' :'green'"
-                      icon="follow_the_signs"
-                    />
-                    <p v-if="props.row.isLeave">{{ props.row.leave }}</p>
-                  </q-td>
-                </q-tr>
-              </template>
-            </q-table>
-          </div>
-        </q-tab-panel>
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="all">
+            <q-btn
+              class="q-mb-md"
+              color="primary"
+              :disable="records.length == 0"
+              @click="getExcelFile"
+              >حفظ الأكسل</q-btn
+            >
+            <div class="col-12">
+              <q-table
+                :data="records"
+                :columns="columns"
+                row-key="id"
+                :loading="GET_LOADING"
+              >
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td key="name" :props="props">{{ props.row.name }}</q-td>
+                    <q-td key="date" :props="props">{{ props.row.date }}</q-td>
+                    <q-td key="session" :props="props">{{
+                      props.row.session.name
+                    }}</q-td>
+                    <q-td key="absence" :props="props">
+                      <q-btn
+                        flat
+                        round
+                        :color="props.row.attend ? 'green' : 'red'"
+                        icon="how_to_reg"
+                      />
+                    </q-td>
+                    <q-td key="late" :props="props">
+                      <q-btn
+                        flat
+                        round
+                        :color="props.row.isLate ? 'red' : 'green'"
+                        icon="alarm"
+                      />
+                      <p v-if="props.row.isLate">{{ props.row.late }}</p>
+                    </q-td>
+                    <q-td key="leave" :props="props">
+                      <q-btn
+                        flat
+                        round
+                        :color="props.row.isLeave ? 'red' : 'green'"
+                        icon="follow_the_signs"
+                      />
+                      <p v-if="props.row.isLeave">{{ props.row.leave }}</p>
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
+            </div>
+          </q-tab-panel>
 
-        <q-tab-panel name="byStudent">
-          <div class="col-12">
-            <q-table :data="data" :columns="columns2" row-key="id" :loading="GET_LOADING">
-              <template v-slot:header="props">
-                <q-tr :props="props">
-                  <q-th auto-width />
-                  <q-th v-for="col in props.cols" :key="col.name" :props="props">{{ col.label }}</q-th>
-                </q-tr>
-              </template>
-              <template v-slot:body="props">
-                <q-tr :props="props">
-                  <q-td auto-width>
-                    <q-btn
-                      size="sm"
-                      color="primary"
-                      round
-                      dense
-                      @click="props.expand = !props.expand"
-                      :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-                    />
-                  </q-td>
-                  <q-td key="name" :props="props">{{ props.row.data.name }}</q-td>
-                  <q-td key="absence" :props="props">{{ props.row.data.absence }}</q-td>
-                  <q-td key="late" :props="props">{{ props.row.data.late }}</q-td>
-                  <q-td key="leave" :props="props">{{ props.row.data.leave }}</q-td>
-                </q-tr>
-                <q-tr v-show="props.expand" :props="props">
-                  <q-td colspan="100%">
-                    <q-table
-                      :data="props.row.details"
-                      :columns="columns"
-                      row-key="id"
-                      :loading="GET_LOADING"
+          <q-tab-panel name="byStudent">
+            <div class="col-12">
+              <q-table
+                :data="data"
+                :columns="columns2"
+                row-key="id"
+                :loading="GET_LOADING"
+              >
+                <template v-slot:header="props">
+                  <q-tr :props="props">
+                    <q-th auto-width />
+                    <q-th
+                      v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props"
+                      >{{ col.label }}</q-th
                     >
-                      <template v-slot:body="props">
-                        <q-tr :props="props">
-                          <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-                          <q-td key="date" :props="props">{{ props.row.date }}</q-td>
-                          <q-td key="session" :props="props">{{ props.row.session.name }}</q-td>
-                          <q-td key="absence" :props="props">
-                            <q-btn
-                              flat
-                              round
-                              :color="props.row.attend ? 'green' : 'red'"
-                              icon="how_to_reg"
-                            />
-                          </q-td>
-                          <q-td key="late" :props="props">
-                            <q-btn
-                              flat
-                              round
-                              :color="props.row.isLate ? 'red' :'green'"
-                              icon="alarm"
-                            />
-                            <p v-if="props.row.isLate ">{{ props.row.late }}</p>
-                          </q-td>
-                          <q-td key="leave" :props="props">
-                            <q-btn
-                              flat
-                              round
-                              :color="props.row.isLeave ? 'red' :'green'"
-                              icon="follow_the_signs"
-                            />
-                            <p v-if="props.row.isLeave">{{ props.row.leave }}</p>
-                          </q-td>
-                        </q-tr>
-                      </template>
-                    </q-table>
-                  </q-td>
-                </q-tr>
-              </template>
-            </q-table>
-          </div>
-        </q-tab-panel>
-      </q-tab-panels>
-    </div>
+                  </q-tr>
+                </template>
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td auto-width>
+                      <q-btn
+                        size="sm"
+                        color="primary"
+                        round
+                        dense
+                        @click="props.expand = !props.expand"
+                        :icon="
+                          props.expand
+                            ? 'keyboard_arrow_up'
+                            : 'keyboard_arrow_down'
+                        "
+                      />
+                    </q-td>
+                    <q-td key="name" :props="props">{{
+                      props.row.data.name
+                    }}</q-td>
+                    <q-td key="absence" :props="props">{{
+                      props.row.data.absence
+                    }}</q-td>
+                    <q-td key="late" :props="props">{{
+                      props.row.data.late
+                    }}</q-td>
+                    <q-td key="leave" :props="props">{{
+                      props.row.data.leave
+                    }}</q-td>
+                  </q-tr>
+                  <q-tr v-show="props.expand" :props="props">
+                    <q-td colspan="100%">
+                      <q-table
+                        :data="props.row.details"
+                        :columns="columns"
+                        row-key="id"
+                        :loading="GET_LOADING"
+                      >
+                        <template v-slot:body="props">
+                          <q-tr :props="props">
+                            <q-td key="name" :props="props">{{
+                              props.row.name
+                            }}</q-td>
+                            <q-td key="date" :props="props">{{
+                              props.row.date
+                            }}</q-td>
+                            <q-td key="session" :props="props">{{
+                              props.row.session.name
+                            }}</q-td>
+                            <q-td key="absence" :props="props">
+                              <q-btn
+                                flat
+                                round
+                                :color="props.row.attend ? 'green' : 'red'"
+                                icon="how_to_reg"
+                              />
+                            </q-td>
+                            <q-td key="late" :props="props">
+                              <q-btn
+                                flat
+                                round
+                                :color="props.row.isLate ? 'red' : 'green'"
+                                icon="alarm"
+                              />
+                              <p v-if="props.row.isLate">
+                                {{ props.row.late }}
+                              </p>
+                            </q-td>
+                            <q-td key="leave" :props="props">
+                              <q-btn
+                                flat
+                                round
+                                :color="props.row.isLeave ? 'red' : 'green'"
+                                icon="follow_the_signs"
+                              />
+                              <p v-if="props.row.isLeave">
+                                {{ props.row.leave }}
+                              </p>
+                            </q-td>
+                          </q-tr>
+                        </template>
+                      </q-table>
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
+            </div>
+          </q-tab-panel>
+        </q-tab-panels>
+      </div>
     </div>
   </q-page>
 </template>
@@ -192,7 +256,7 @@
 import { mapGetters, mapActions } from "vuex";
 import { GETTERS, ACTIONS, MESSAGES, ERRORS } from "../../../config/constants";
 import groups from "src/store/modules/groups";
-import XLSX from 'xlsx';
+import XLSX from "xlsx";
 const moment = require("moment");
 export default {
   name: "PageStudentAbsenceRecords",
@@ -311,11 +375,11 @@ export default {
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
       RESET_ATTENDANCE_RANGE_DATE: ACTIONS.STUDNETS.RESET_ATTENDANCE_RANGE_DATE,
     }),
-    getExcelFile(){
-       const data = XLSX.utils.json_to_sheet(this.records)
-        const wb = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, data, 'data')
-        XLSX.writeFile(wb,'demo.xlsx')
+    getExcelFile() {
+      const data = XLSX.utils.json_to_sheet(this.records);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, data, "data");
+      XLSX.writeFile(wb, "demo.xlsx");
     },
     async getAbsenceRecords() {
       this.RESET_ATTENDANCE_RANGE_DATE();

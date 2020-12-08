@@ -40,27 +40,7 @@ module.exports = function(ctx) {
       //            (not treeshaking Quasar; biggest bundle size; convenient)
       all: "auto",
 
-      components: [
-        "QStepper",
-        "QStep",
-        "QStepperNavigation",
-        "QRadio",
-        "QSelect",
-        "QMarkupTable",
-        "QIcon",
-        "QFile",
-        "QTabPanels",
-        "QTabPanel",
-        "QTree",
-        "QExpansionItem",
-        "QTable",
-        "QTh",
-        "QTr",
-        "QTd",
-        "QImg",
-        "QDialog",
-        "QDate"
-      ],
+      components: [],
       directives: ["ClosePopup"],
 
       // Quasar plugins
@@ -107,43 +87,37 @@ module.exports = function(ctx) {
     // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
       workboxPluginMode: "GenerateSW", // 'GenerateSW' or 'InjectManifest'
-      workboxOptions: {}, // only for GenerateSW
+      workboxOptions: {
+        skipWaiting: true,
+        clientsClaim: true
+      }, // only for GenerateSW
       manifest: {
-        name: "Quasar App",
-        short_name: "Quasar App",
-        description: "A Quasar Framework app",
+        name: "مركز الفردوس الأعلى",
+        short_name: "مركز الفردوس الأعلى",
+        description: "مركز الفردوس الأعلى لتحفيظ القرآن الكريم",
         display: "standalone",
         orientation: "portrait",
         background_color: "#ffffff",
-        theme_color: "#027be3",
+        theme_color: "#ccae62",
         icons: [
           {
-            src: "statics/icons/icon-128x128.png",
-            sizes: "128x128",
-            type: "image/png"
-          },
-          {
-            src: "statics/icons/icon-192x192.png",
-            sizes: "192x192",
-            type: "image/png"
-          },
-          {
-            src: "statics/icons/icon-256x256.png",
+            src: "icons/logo.png",
             sizes: "256x256",
-            type: "image/png"
-          },
-          {
-            src: "statics/icons/icon-384x384.png",
-            sizes: "384x384",
-            type: "image/png"
-          },
-          {
-            src: "statics/icons/icon-512x512.png",
-            sizes: "512x512",
             type: "image/png"
           }
         ]
       }
+    },
+    metaVariables: {
+      appleMobileWebAppCapable: 'yes',
+      appleMobileWebAppStatusBarStyle: 'default',
+      appleTouchIcon120: 'icons/logo.png',
+      appleTouchIcon180: 'icons/logo.png',
+      appleTouchIcon152: 'icons/logo.png',
+      appleTouchIcon167: 'icons/logo.png',
+      appleSafariPinnedTab: 'icons/safari-pinned-tab.svg',
+      msapplicationTileImage: 'icons/logo.png',
+      msapplicationTileColor: '#000000'
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-cordova-apps/configuring-cordova
@@ -175,7 +149,7 @@ module.exports = function(ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: "alferdoos-center-dashboard"
+        appId: "alferdoos-center"
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

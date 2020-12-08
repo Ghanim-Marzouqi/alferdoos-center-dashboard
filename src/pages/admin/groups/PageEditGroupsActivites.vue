@@ -10,11 +10,18 @@
         >
       </div>
       <div class="col-12">
-                <q-table :data="GET_ACTIVITIES" :columns="columns" row-key="id" :loading="GET_LOADING">
+        <q-table
+          :data="GET_ACTIVITIES"
+          :columns="columns"
+          row-key="id"
+          :loading="GET_LOADING"
+        >
           <template v-slot:header="props">
             <q-tr :props="props">
               <q-th auto-width />
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">{{ col.label }}</q-th>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">{{
+                col.label
+              }}</q-th>
             </q-tr>
           </template>
           <template v-slot:body="props">
@@ -26,23 +33,29 @@
                   round
                   dense
                   @click="props.expand = !props.expand"
-                  :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                  :icon="
+                    props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                  "
                 />
               </q-td>
               <q-td key="title" :props="props">{{ props.row.title }}</q-td>
-              <q-td key="startDate" :props="props">{{ props.row.startDate }}</q-td>
+              <q-td key="startDate" :props="props">{{
+                props.row.startDate
+              }}</q-td>
               <q-td key="endDate" :props="props">{{ props.row.endDate }}</q-td>
-              <q-td key="semester" :props="props">{{ props.row.semester.name }}</q-td>
-              <q-td key="close" :props="props">               
-                 {{ props.row.group.label }}
+              <q-td key="semester" :props="props">{{
+                props.row.semester.name
+              }}</q-td>
+              <q-td key="close" :props="props">
+                {{ props.row.group.label }}
               </q-td>
-              <q-td key="edit" :props="props">               
-                 <q-btn  dense flat @click.stop="onEditClick(props.row)">
+              <q-td key="edit" :props="props">
+                <q-btn dense flat @click.stop="onEditClick(props.row)">
                   <q-icon color="teal" name="o_edit" />
                 </q-btn>
               </q-td>
               <q-td key="delete" :props="props">
-                <q-btn dense  flat @click.stop="onDeleteClick(props.row.id)">
+                <q-btn dense flat @click.stop="onDeleteClick(props.row.id)">
                   <q-icon color="red" name="o_delete" />
                 </q-btn>
               </q-td>
@@ -59,9 +72,11 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr> 
-                        <td class="text-left"><p style="color:red; font-size:22px">توصيف:</p>
-                        {{ props.row.description }}</td>
+                      <tr>
+                        <td class="text-left">
+                          <p style="color: red; font-size: 22px">توصيف:</p>
+                          {{ props.row.description }}
+                        </td>
                       </tr>
                       <!-- <tr>
                         <td class="text-left">
@@ -78,15 +93,13 @@
       </div>
     </div>
 
-        <ActivityDialog
+    <ActivityDialog
       :isOpen="isActivityDialogOpen"
       :activity="activity"
       :id="activityId"
       :isEdit="isEdit"
       @close="closeDialog"
     />
-
-
   </q-page>
 </template>
 
@@ -100,21 +113,21 @@ export default {
     return {
       isActivityDialogOpen: false,
       isEdit: false,
-      activityId : "",
+      activityId: "",
       activity: {
-        year : "",
-        isDone : false,
+        year: "",
+        isDone: false,
         endDate: "",
         startDate: "",
         semester: "",
         title: "",
         description: "",
-        feedback : "",
+        feedback: "",
         group: "",
         createdBy: "",
-        createdAt : "",
+        createdAt: "",
       },
-       columns: [
+      columns: [
         {
           name: "title",
           required: true,
@@ -170,12 +183,12 @@ export default {
   async created() {
     this.FETCH_GROUPS();
     await this.FETCH_YRAT_INFO();
-    await this.FETCH_ACTIVITIES({ year : this.GET_YEAR_INFO.name})
+    await this.FETCH_ACTIVITIES({ year: this.GET_YEAR_INFO.name });
   },
   computed: {
     ...mapGetters({
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
-      GET_ACTIVITIES : GETTERS.STUDNETS.GET_ACTIVITIES,
+      GET_ACTIVITIES: GETTERS.STUDNETS.GET_ACTIVITIES,
       GET_USER: GETTERS.AUTH.GET_USER,
       GET_GROUPS: GETTERS.GROUPS.GET_GROUPS,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
@@ -188,33 +201,32 @@ export default {
       FETCH_YRAT_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
       FETCH_ACTIVITIES: ACTIONS.STUDNETS.FETCH_ACTIVITIES,
-      DELETE_ACTIVITY : ACTIONS.STUDNETS.DELETE_ACTIVITY,
+      DELETE_ACTIVITY: ACTIONS.STUDNETS.DELETE_ACTIVITY,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
-    closeDialog(){
-      this.isActivityDialogOpen = false
+    closeDialog() {
+      this.isActivityDialogOpen = false;
       this.isEdit = false;
-      this.id = "",
-      this.activity = {
-        year : "",
-        isDone : false,
-        endDate: "",
-        startDate: "",
-        semester: "",
-        title: "",
-        description: "",
-        feedback : "",
-        group: "",
-        createdBy: "",
-        createdAt : "",
-      }
-
+      (this.id = ""),
+        (this.activity = {
+          year: "",
+          isDone: false,
+          endDate: "",
+          startDate: "",
+          semester: "",
+          title: "",
+          description: "",
+          feedback: "",
+          group: "",
+          createdBy: "",
+          createdAt: "",
+        });
     },
-    onDeleteClick(id){
-      this.DELETE_ACTIVITY(id)
+    onDeleteClick(id) {
+      this.DELETE_ACTIVITY(id);
     },
-    onEditClick(activity){
-      this.activityId = activity.id
+    onEditClick(activity) {
+      this.activityId = activity.id;
       this.isEdit = true;
       this.activity = activity;
       this.isActivityDialogOpen = true;
@@ -297,7 +309,7 @@ export default {
     },
   },
   components: {
-    ActivityDialog : () => import("components/GroupAddActivityDialog.vue"),   
+    ActivityDialog: () => import("components/GroupAddActivityDialog.vue"),
   },
 };
 </script>
