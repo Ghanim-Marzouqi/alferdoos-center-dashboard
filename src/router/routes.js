@@ -204,6 +204,10 @@ const routes = [
         component: () => import("pages/teacher/PageGroupAttendence.vue")
       },
       {
+        path: "memo-marks",
+        component: () => import("pages/teacher/PageEditStudentMemoMarks.vue")
+      },
+      {
         path: "student-behaviors",
         component: () => import("pages/teacher/PageEditStudentBehaviors.vue")
       },

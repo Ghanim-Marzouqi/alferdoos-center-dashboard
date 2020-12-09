@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="row justify-center q-pa-lg">
+    <div class="row q-pa-lg">
       <div class="col-12 col-md-4">
         <q-select
           filled
@@ -10,76 +10,69 @@
           label="إختر مجموعة"
         />
       </div>
+      <div class="col-12 col-md-4 q-m-lg">
+        <q-select
+          filled
+          @input="changeMemoDetails"
+          v-model="selectdMemo"
+          :options="memorizations"
+          :option-label="(i) => i.name"
+          label="اختر محفوظ"
+        />
+      </div>
     </div>
 
     <div class="row">
       <div v-for="student in students" :key="student.id" class="col-md-3">
         <q-card class="my-card q-ma-md" style="margin-top: 10px">
-          <div class="row justify-center q-mt-md">
-            <q-chip
-              :clickable="getTotal(Good, student.id) > 0"
-              @click="
-                (selectedStudent = student.id),
-                  (isShowBehaviorDialogOpened = true),
-                  (btype = Good)
-              "
-            >
-              <q-avatar color="green" text-color="white" />{{
-                getTotal(Good, student.id)
-              }}
-            </q-chip>
-            <q-chip
-              :clickable="getTotal(Bad, student.id) > 0"
-              @click="
-                (selectedStudent = student.id),
-                  (isShowBehaviorDialogOpened = true),
-                  (btype = Bad)
-              "
-            >
-              <q-avatar color="red" text-color="white" />{{
-                getTotal(Bad, student.id)
-              }}
-            </q-chip>
-          </div>
+          <div class="row justify-center q-mt-md"></div>
           <div class="row justify-center q-ma-md">
             <p style="font-size: 15px; margin-top: 10px">
               {{ student.name }}
               <br />
             </p>
           </div>
-          <q-card-actions align="right">
-            <q-btn
-              flat
-              @click="openDialog(Good, false, student)"
-              round
-              color="green"
-              icon="fas fa-thumbs-up"
-            />
-            <q-btn
-              @click="openDialog(Bad, false, student)"
-              flat
-              round
-              color="red"
-              icon="fas fa-thumbs-down"
-            />
-          </q-card-actions>
+
+          <q-list style="width: 100%">
+            <q-item v-for="(detail, i) in selectdMemo.details" :key="i">
+              <q-item-section class="justify-start" avatar>
+                <q-btn
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click="
+                    (isAddMemoMarksDialogOpen = true),
+                      (selectdStudent = student.id),
+                      (memoDetail = detail),
+                      (selectdMemoId = selectdMemo.id),
+                      (nextPage = setPageNext(student.id,selectdMemo.id,detail))
+                  "
+                >
+                  <q-icon name="o_add" />
+                </q-btn>
+              </q-item-section>
+              <q-item-section>
+                {{ detail.name }}
+              </q-item-section>
+              <q-item-section>
+              </q-item-section>
+              <q-item-section side>
+                {{ setPageNext(student.id,selectdMemo.id,detail) }}
+              </q-item-section>
+            </q-item>
+          </q-list>
         </q-card>
       </div>
     </div>
 
-    <BehaviorDialog
-      :isOpen="isBehaviorDialogOpen"
-      :behavior="behavior"
-      :isEdit="isEdit"
-      :title="title"
-      @close="isBehaviorDialogOpen = false"
-    />
-
-    <ShowBehaviorDialog
-      :isOpen="isShowBehaviorDialogOpened"
-      :studentId="selectedStudent"
-      :btype="btype"
-      @close="(isShowBehaviorDialogOpened = false), (selectedStudent = '')"
+    <AddMemoMarksDialog
+      @closeDialog="isAddMemoMarksDialogOpen = false"
+      :isDialogOpen="isAddMemoMarksDialogOpen"
+      :detail="memoDetail"
+      :memoId="selectdMemoId"
+      :student="selectdStudent"
+      :page="nextPage"
     />
   </q-page>
 </template>
@@ -93,43 +86,33 @@ const moment = require("moment");
 
 export default {
   components: {
-    BehaviorDialog: () => import("components/StudentAddPosBehaviorDialog.vue"),
-    ShowBehaviorDialog: () => import("components/StudentManageBehaviorsDialog"),
+    AddMemoMarksDialog: () => import("components/AddMemoMarksDialog.vue"),
   },
   data() {
     return {
       groups: [],
-      Good: "P",
-      Bad: "N",
-      title: "",
-      btype: "",
+      memoDetails: [],
+      memorizations: [],
+      memoDetail: {},
+      selectdMemoId: "",
+      selectdStudent: "",
+      isAddMemoMarksDialogOpen: false,
+      selectdMemo: "",
+      nextPage: 100,
       selectedStudent: "",
       date: moment(new Date()).format("DD/MM/YYYY"),
-      isEdit: false,
-      isBehaviorDialogOpen: false,
-      isShowBehaviorDialogOpened: false,
       allStudents: [],
       students: [],
       group: "",
-      behavior: {
-        type: "",
-        date: "",
-        reportingDate: "",
-        year: "",
-        semester: "",
-        title: "",
-        description: "",
-        student: {},
-        createdBy: "",
-      },
     };
   },
   async created() {
+    await this.FETCH_GROUPS();
+    await this.FETCH_MEMORIZATIONS();
     await this.FETCH_STUDENTS({ status: "" });
-    this.FETCH_ENTRIES();
-    this.FETCH_YRAT_INFO();
+    await this.FETCH_YRAT_INFO();
+    await this.FETCH_MEMO_MARKS();
     await this.FETCH_SCHEDUAL();
-    await this.FETCH_BEHAVIOR({ year: "2020" });
 
     this.GET_SCHADUALS.forEach((sch) => {
       Object.values(sch).forEach((day) => {
@@ -145,55 +128,77 @@ export default {
   },
   methods: {
     ...mapActions({
-      FETCH_BEHAVIOR: ACTIONS.STUDNETS.FETCH_BEHAVIOR,
+      FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
+      FETCH_MEMORIZATIONS: ACTIONS.SETTINGS.FETCH_MEMORIZATIONS,
       FETCH_SCHEDUAL: ACTIONS.SETTINGS.FETCH_SCHEDUAL,
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
+      FETCH_MEMO_MARKS: ACTIONS.SETTINGS.FETCH_MEMO_MARKS,
       FETCH_ENTRIES: ACTIONS.SETTINGS.FETCH_ENTRIES,
       FETCH_YRAT_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
-    showBehaviors(type, sid) {},
-    getTotal(type, sid) {
-      let behavior = this.GET_BEHAVIORS.filter(
-        (b) => b.behaviorType == type && b.student.id == sid
-      );
-      return behavior.length;
-    },
-    openDialog(beh, isEdit, student) {
-      // TODO add active semester and handle it here
-      this.title =
-        beh == "P"
-          ? isEdit
-            ? "تعديل سلوك إيجابي"
-            : "إضافة أسلوب إيجابي"
-          : isEdit
-          ? "تعديل سلوك سلبي"
-          : "إضافة سلوك سلبي";
+    setPageNext(sid,mid,detail)
+    {
 
-      let sem = this.GET_YEAR_INFO.semesters[0];
-      this.behavior.createdBy = {
-        id: this.GET_USER.id,
-        name: this.GET_USER.name,
-      };
-      this.behavior.semester = sem;
-      this.behavior.student = { id: student.id, name: student.name };
-      (this.behavior.type = beh), (this.behavior.year = this.GET_YEAR_INFO.id);
-      this.behavior.reportingDate = this.date;
-      this.isBehaviorDialogOpen = true;
+      let page = 0;
+      let marks = this.GET_MEMO_MARKS
+      .filter(x => x.studentId === sid && x.memoId === mid && detail.uid === x.detailsId);
+
+      if (marks.length > 0)
+         page = Math.max.apply(Math,marks.map(x => parseInt(x.page)))+1
+      else 
+         page = detail.pageNumberFrom;
+         
+      return page;
+
     },
-    changeGroup() {
+
+    // getTotalMark(sid,mid,detail)
+    // {
+    //   let marks = this.GET_MEMO_MARKS
+    //   .filter(x => x.studentId === sid && x.memoId === mid && detail.uid === x.detailsId);
+
+          
+         
+    //   return page;
+
+    // },
+    changeMemoDetails() {
+      console.log(this.selectdMemo);
+      this.memoDetails = this.memorizations.filter(
+        (x) => x.id === this.selectdMemo
+      ).details;
       this.students = this.GET_STUDENTS.filter(
         (student) =>
           student.groupId != undefined && student.groupId == this.group.value
       );
     },
+    changeGroup() {
+      let groupMemorizations = this.GET_GROUPS.find(
+        (x) => x.id == this.group.value
+      ).memorizations;
+      this.memorizations = groupMemorizations.map((memo) => {
+        let original = this.GET_MEMORIZATIONS.find(
+          (m) => m.id === memo.memorizationId
+        );
+        return {
+          id: original.id,
+          name: original.name,
+          details: original.details.filter((d) =>
+            memo.memorizationDetailsUID.includes(d.uid)
+          ),
+        };
+      });
+    },
   },
   computed: {
     ...mapGetters({
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
-      GET_BEHAVIORS: GETTERS.STUDNETS.GET_BEHAVIORS,
+      GET_MEMORIZATIONS: GETTERS.SETTINGS.GET_MEMORIZATIONS,
       GET_USER: GETTERS.AUTH.GET_USER,
+      GET_MEMO_MARKS: GETTERS.SETTINGS.GET_MEMO_MARKS,
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
+      GET_GROUPS: GETTERS.GROUPS.GET_GROUPS,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_SCHADUALS: GETTERS.SETTINGS.GET_SCHADUALS,
@@ -207,42 +212,13 @@ export default {
       if (newState.length > 0) {
         let messageCode = newState[0].code;
 
-        if (messageCode === MESSAGES.DATABASE.BEHAVIOR_UPDATED) {
+        if (messageCode === MESSAGES.DATABASE.MEMO_MARK_SAVED) {
           this.CLEAR_ERRORS_AND_MESSAGES();
 
-          this.FETCH_BEHAVIOR({ year: "2020" });
+          this.FETCH_MEMO_MARKS({ year: "2020" });
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تمت تحديث السلوك بنجاح",
-          });
-        }
-
-        if (messageCode === MESSAGES.DATABASE.STUDENT_BEHAVIOR_DELETED) {
-          this.CLEAR_ERRORS_AND_MESSAGES();
-
-          this.FETCH_BEHAVIOR({ year: "2020" });
-          this.$q.dialog({
-            title: "تمت العملية بنجاح",
-            message: "تم حذف السلوك بنجاح",
-          });
-        }
-
-        if (messageCode === MESSAGES.DATABASE.BEHAVIOR_ADDED) {
-          this.CLEAR_ERRORS_AND_MESSAGES();
-          this.FETCH_BEHAVIOR({ year: "2020" });
-          this.$q.dialog({
-            title: "تمت العملية بنجاح",
-            message: "تم إضافة السلوك بنجاح",
-          });
-        }
-
-        if (messageCode === MESSAGES.DATABASE.TEACHER_DELETED) {
-          this.CLEAR_ERRORS_AND_MESSAGES();
-          this.FETCH_TEACHERS();
-          this.isDeleteTeacherDialogOpen = false;
-          this.$q.dialog({
-            title: "تمت العملية بنجاح",
-            message: "تم حذف بيانات المعلم بنجاح",
+            message: "تم حفظ الدرجة بنجاح",
           });
         }
       }
@@ -251,26 +227,10 @@ export default {
       if (newState.length > 0) {
         let errorCode = newState[0].code;
 
-        if (errorCode === ERRORS.DATABASE.UPDATE_BEHAVIOR_FAIL) {
+        if (errorCode === ERRORS.DATABASE.ADD_MEMO_ERROR) {
           this.$q.dialog({
             title: "فشلت العملية",
-            message: "حدث خطأ أثناء محاولة تحديث سلوك",
-          });
-          this.CLEAR_ERRORS_AND_MESSAGES();
-        }
-
-        if (errorCode === ERRORS.DATABASE.STUDENT_DELETE_BEHAVIOER_ERROR) {
-          this.$q.dialog({
-            title: "فشلت العملية",
-            message: "حدث خطأ أثناء محاولة حذف سلوك",
-          });
-          this.CLEAR_ERRORS_AND_MESSAGES();
-        }
-
-        if (errorCode === ERRORS.DATABASE.ADD_BEHAVIOR_FAIL) {
-          this.$q.dialog({
-            title: "فشلت العملية",
-            message: "حدث خطأ أثناء إضافة سلوك جديد",
+            message: "حدث خطأ أثناءحفظ الدرجة",
           });
           this.CLEAR_ERRORS_AND_MESSAGES();
         }

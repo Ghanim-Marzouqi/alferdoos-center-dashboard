@@ -23,11 +23,13 @@ const state = {
   expense : [],
   entries : [],
   emails: [],
+  memoMarks : [],
 };
 
 // Getters
 const getters = {
   GET_YEAR_INFO: state => state.yearInfo,
+  GET_MEMO_MARKS : state => state.memoMarks,
   GET_REGISTRATION_PERIOD: state => state.registrationPeriod,
   GET_QUESTIONS: state => state.questions,
   GET_EXAM_MARKS: state => state.examMarks,
@@ -524,6 +526,61 @@ const actions = {
       }
     } catch (error) {
       console.log("FETCH_MEMORIZATIONS ERROR", error);
+    }
+  },
+
+  async FETCH_MEMO_MARKS({ commit }) {
+    try {
+      let snapshot = await FirebaseDatabase.collection(
+        COLLECTIONS.MEMO_MARKS
+      )
+        .get();
+
+      let docs = snapshot.docs;
+
+      if (docs.length > 0) {
+        let memoMarks = docs.map(doc => ({
+          uid: doc.data().uid,
+          studentId: doc.data().studentId,
+          detailsId : doc.data().detailsId,
+          memoId : doc.data().memoId,
+          page : doc.data().page,
+          mistakes : doc.data().mistakes,
+          notifications : doc.data().notifications,
+          result : doc.data().result
+        }));
+
+        commit(MUTATIONS.SETTINGS.SET_MEMO_MARKS, memoMarks);
+      } else {
+        commit(MUTATIONS.SETTINGS.SET_MEMO_MARKS, []);
+      }
+    } catch (error) {
+      console.log("FETCH_MEMO_MARK ERROR", error);
+    }
+  },
+
+
+
+  async   ADD_MEMORIZATION_MARK({ commit }, payload) {
+    commit(MUTATIONS.UI.SET_LOADING, true);
+
+    try {
+
+      
+      await FirebaseDatabase.collection(COLLECTIONS.MEMO_MARKS)
+        .doc()
+        .set(payload);
+
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.MEMO_MARK_SAVED
+      });
+    } catch (error) {
+      console.log("ADD_MEMO_MARK", error);
+      commit(MUTATIONS.UI.SET_ERROR, {
+        code: ERRORS.DATABASE.ADD_MEMO_ERROR
+      });
+    } finally {
+      commit(MUTATIONS.UI.SET_LOADING, false);
     }
   },
 
@@ -1217,6 +1274,7 @@ const mutations = {
   SET_YEAR_INFO: (state, info) => (state.yearInfo = info),
   SET_REGISTRATION_PERIOD: (state, period) => (state.registrationPeriod = period),
   SET_QUESTIONS: (state, questions) => (state.questions = questions),
+  SET_MEMO_MARKS :  (state, marks) => (state.memoMarks = marks),
   SET_EXAM_MARKS: (state, marks) => (state.examMarks = marks),
   SET_MEMORIZATIONS: (state, memorizations) => (state.memorizations = memorizations),
   SET_SCHEDUALS : (state,schaduals) => state.schaduals = schaduals,

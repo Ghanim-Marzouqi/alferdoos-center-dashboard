@@ -189,7 +189,6 @@ const actions = {
               ...filteredMemorizations
             ];
           } else {
-            let   = [];
 
             // Get Memorization By Id
             let memorization = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS).doc(payload.memorizationId).get();
