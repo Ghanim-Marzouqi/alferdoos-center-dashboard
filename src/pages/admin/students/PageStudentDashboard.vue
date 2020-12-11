@@ -7,7 +7,7 @@
       <p class="text-h6 text-weight-bold q-ma-sm">{{ student.name }}</p>
     </div>
     <div class="row">
-      <div class="col-8">
+      <div class="col-xl-8 col-md-8 col-sm-12 col-xs-12">
         <div
           class="row"
           style="
@@ -46,19 +46,20 @@
             </p>
           </div>
           <div class="col-6">
-            <p class="text-weight-bold">القرية / مكان الإقامة:</p>
+            <p class="text-weight-bold">رقم ولي الأمر:</p>
             <p class="text-blue" style="font-size: 20px">
-              {{ student.village }}
+              {{ student.firstPhoneNumber }}
             </p>
           </div>
         </div>
       </div>
-      <div class="col-4">
+      <div class="col-xl-4 col-md-4 col-sm-12 col-xs-12">
         <q-img
           :src="student.imageURL"
-          :ratio="1"
-          style="height: 200px; width: 200px"
-          class="q-ma-sm"
+          :ratio="4 / 3"
+          style="height: auto; width: 100%"
+          class="q-pa-md"
+          position="50% 30%"
         >
           <template v-slot:error>
             <div class="absolute-full flex flex-center bg-negative text-white">
@@ -81,10 +82,7 @@
 
             <q-card-actions align="center">
               <q-chip
-                @click="
-                    (isBehaviorDialogOpened = true),
-                    (btype = Good)
-                "
+                @click="(isBehaviorDialogOpened = true), (btype = Good)"
                 clickable
               >
                 <q-avatar
@@ -97,10 +95,7 @@
               </q-chip>
               <q-chip
                 clickable
-                @click="
-                  (btype = Bad),
-                    (isBehaviorDialogOpened = true)
-                "
+                @click="(btype = Bad), (isBehaviorDialogOpened = true)"
               >
                 <q-avatar
                   color="red"
@@ -142,7 +137,7 @@
         <div class="col-6">
           <q-card class="column justify-center items-center">
             <q-icon
-            clickable
+              clickable
               @click="isSchedualDialogOpen = true"
               style="font-size: 75px"
               color="primary"
@@ -160,22 +155,20 @@
       :isOpen="isBehaviorDialogOpened"
       :studentId="student.id"
       :btype="btype"
-      @close="(isBehaviorDialogOpened = false)"
+      @close="isBehaviorDialogOpened = false"
     />
 
-    
-
-        <SchedualDialog
-       :isOpen="isSchedualDialogOpen"
+    <SchedualDialog
+      :isOpen="isSchedualDialogOpen"
       :groupId="student.groupId"
-      @close="(isSchedualDialogOpen = false)"
+      @close="isSchedualDialogOpen = false"
     />
 
     <AbsenceDialog
-     :isOpen="isAbsenceRecordsDialogOpen"
+      :isOpen="isAbsenceRecordsDialogOpen"
       :studentId="student.id"
       :groupId="student.groupId"
-      @close="(isAbsenceRecordsDialogOpen = false)"
+      @close="isAbsenceRecordsDialogOpen = false"
     />
   </q-page>
 </template>
@@ -195,13 +188,12 @@ export default {
     BehaviorDialog: () => import("components/StudentShowBehaviorsDialog"),
     AbsenceDialog: () => import("components/StudentShowAbsenceRecordsDialog"),
     SchedualDialog: () => import("components/StudentShowSchedualDialog"),
-    
   },
   data() {
     return {
       isBehaviorDialogOpened: false,
-      isAbsenceRecordsDialogOpen : false,
-      isSchedualDialogOpen : false,
+      isAbsenceRecordsDialogOpen: false,
+      isSchedualDialogOpen: false,
       btype: "",
       Good: "P",
       Bad: "N",
@@ -209,11 +201,10 @@ export default {
       student: {},
     };
   },
- async created() {
+  async created() {
     this.studentId = this.$route.params.id;
     await this.FETCH_YEAR_INFO();
-    await this.FETCH_BEHAVIOR({ year : this.GET_YEAR_INFO.name });
-    
+    await this.FETCH_BEHAVIOR({ year: this.GET_YEAR_INFO.name });
   },
   mounted() {
     if (this.GET_STUDENTS && this.GET_STUDENTS.length > 0) {

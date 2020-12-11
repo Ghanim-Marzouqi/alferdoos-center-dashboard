@@ -22,7 +22,8 @@
   "devDependencies": {
     "@quasar/app": "^2.0.6",
     "@quasar/quasar-app-extension-dotenv": "^1.0.5",
-    "@quasar/quasar-app-extension-qcalendar": "^2.2.4"
+    "@quasar/quasar-app-extension-qcalendar": "^2.2.4",
+    "workbox-webpack-plugin": "^5.1.4"
   },
   "engines": {
     "node": ">= 10.18.1",
