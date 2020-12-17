@@ -126,7 +126,11 @@ export default {
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     getSemester(marks){
-      return marks.find(m => m.semester == this.semesterId)
+      console.log(this.semesterId);
+      console.log(marks.map(x => x.semester));
+      let mark = marks.find(m => m.semester == this.semesterId);
+      console.log("Marks",mark);
+      return mark;
     },
     saveMarks(status){
 
@@ -153,13 +157,15 @@ export default {
     let marks  = this.GET_MARKS.find(m => m.group.value == this.group.value 
     && m.subject.value == this.subject.value);
 
+     
     if(marks != undefined )
     {
       this.students = marks.students;
       this.documentId = marks.id;
-     this.isEdit = true;
+      this.isEdit = true;
       return;
     }
+
 
       let studentMarks = this.GET_SUBJECTS.find((s) => s.id == this.subject.value).marks;
       studentMarks = studentMarks.map(mark => ({
@@ -170,9 +176,13 @@ export default {
           text: m.text,
           max: m.mark }))
       }))
+
+    
+      
       this.students = this.allStudents.filter(
         (student) => student.group == this.group.value
       );
+      
       this.students.forEach((s) => s.semesters = Array.from(studentMarks) );
      
     },
@@ -208,7 +218,6 @@ export default {
       this.semesterId = newState.semesters.find(sem => sem.isCurrent).id;
     },
     GET_LOADING: function (newState) {
-      console.log("inside logging block");
       newState ? this.$q.loading.show() : this.$q.loading.hide();
     },
     GET_STUDENTS: function (oldState, newState) {

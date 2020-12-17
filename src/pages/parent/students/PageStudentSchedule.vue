@@ -1,16 +1,21 @@
 <template>
   <q-page>
-    {{ getGroupSchedual() }}
-    <div class="row justify-center q-pa-lg">
-      <!-- <div class="col-12 col-md-4">
-        <q-btn
-            @click="saveSchedual"
-            round
-            color="primary"
-            text-color="white"
-            icon="save"
-          />
-      </div> -->
+    <div class="row justify-center q-mt-xl q-pa-lg">
+      <q-btn
+        icon="fas fa-arrow-alt-circle-right"
+        flat
+        dense
+        round
+        @click="addDay(-1)"
+      />
+
+      <q-btn
+        icon="fas fa-arrow-alt-circle-left"
+        flat
+        dense
+        round
+        @click="addDay(1)"
+      />
     </div>
     <div class="row justify-center q-pa-lg">
       <q-calendar view="week-agenda" :weekdays="day" locale="ar" no-scroll>
@@ -43,6 +48,12 @@
                 <p
                   style="font-size: 20px; margin-bottom: -3px"
                   v-html="agenda.subject.name"
+                ></p>
+              </div>
+              <div class="row justify-center">
+                <p
+                  style="font-size: 15px; margin-bottom: -3px"
+                  v-html="agenda.teacher.name"
                 ></p>
               </div>
               <div class="row justify-center">
@@ -88,15 +99,15 @@ export default {
       FETCH_SUBJECTS: ACTIONS.SUBJECTS.FETCH_SUBJECTS,
     }),
     getFiles(id) {
-      return this.GET_SUBJECTS.find((x) => x.id == id).uplodedFiles;
+      return this.GET_SUBJECTS.find((x) => x.id == id)?.uplodedFiles;
     },
-    getGroupSchedual() {
-      console.log("group", this.group);
-      this.schedual = this.GET_SCHADUALS.find(
-        (s) => s.group.value == this.group
-      );
-      console.log("shedual", this.schedual);
+
+    addDay(num) {
+      if (num == -1)
+        this.day[0] == 0 ? (this.day = [6]) : (this.day = [this.day[0] - 1]);
+      else this.day[0] == 6 ? (this.day = [0]) : (this.day = [this.day[0] + 1]);
     },
+
     downloadFile(file) {
       try {
         var xhr = new XMLHttpRequest();
@@ -127,9 +138,12 @@ export default {
         }
       }
     },
-
     getSchedual(day) {
-      return this.schedual[parseInt(day.weekday, 10)];
+      let s = this.GET_SCHADUALS.find(
+        (s) => s.group.value == this.group
+      );
+      if (s != undefined)
+        return s[parseInt(day.weekday, 10)];
     },
   },
   computed: {
@@ -142,8 +156,8 @@ export default {
   },
 
   async created() {
-    await this.FETCH_SUBJECTS();
     await this.FETCH_SCHEDUAL();
+    await this.FETCH_SUBJECTS();
     await this.FETCH_YEAR_INFO();
   },
 };
