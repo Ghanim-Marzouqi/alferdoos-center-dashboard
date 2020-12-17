@@ -1,8 +1,8 @@
 <template>
   <q-page padding>
     <p class="text-h6 text-weight-bold">الإختبارات</p>
-    <div class="fit row wrap justify-center items-center q-gutter-xl">
-      <div class="col-auto justify-center items-center text-center">
+    <div class="fit row wrap justify-center items-center">
+      <div class="col-auto justify-center items-center text-center q-pa-xs">
         <q-card
           class="column justify-center items-center"
           @click="goToRoute('/admin/take-exam')"
@@ -15,7 +15,7 @@
           <h4>تقديم الإختبار</h4>
         </q-card>
       </div>
-      <div class="col-auto justify-center items-center text-center">
+      <div class="col-auto justify-center items-center text-center q-pa-xs">
         <q-card
           class="column justify-center items-center"
           @click="goToRoute('/admin/exam-results')"
@@ -38,8 +38,8 @@ export default {
   methods: {
     goToRoute(route) {
       this.$router.push(route);
-    }
-  }
+    },
+  },
 };
 </script>
 
