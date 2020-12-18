@@ -276,11 +276,11 @@ export default {
 
       // Get Group Memorization Details Only
       if (groupMemorizations && groupMemorizations.length > 0) {
-        memorizations = groupMemorizations.map((memo) => ({
-          name: this.GET_MEMORIZATIONS.find((m) => m.id === memo.memorizationId)
-            .name,
-          details: memo.memorizationDetails.map((d) => ({ ...d })),
-        }));
+        memorizations = groupMemorizations.map((memo) => {
+          let original = this.GET_MEMORIZATIONS.find((m) => m.id === memo.memorizationId);
+          return { name: original.name,
+          details: original.details.filter(d => memo.memorizationDetailsUID.includes(d.uid)),
+        }});
         return memorizations;
       } else {
         return [];

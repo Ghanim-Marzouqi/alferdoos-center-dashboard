@@ -173,7 +173,7 @@ const actions = {
             for (let i = 0; i < memorization.data().details.length; i++) {
               for (let j = 0; j < payload.memorizationDetails.length; j++) {
                 if (memorization.data().details[i].uid === payload.memorizationDetails[j]) {
-                  newMemorizationDetails.push(memorization.data().details[i]);
+                  newMemorizationDetails.push(memorization.data().details[i].uid);
                 }
               }
             }
@@ -184,12 +184,11 @@ const actions = {
             newMemorizations = [
               {
                 memorizationId: payload.memorizationId,
-                memorizationDetails: newMemorizationDetails
+                memorizationDetailsUID: newMemorizationDetails
               },
               ...filteredMemorizations
             ];
           } else {
-            let newMemorizationDetails = [];
 
             // Get Memorization By Id
             let memorization = await FirebaseDatabase.collection(COLLECTIONS.MEMORIZATIONS).doc(payload.memorizationId).get();
@@ -198,7 +197,7 @@ const actions = {
             for (let i = 0; i < memorization.data().details.length; i++) {
               for (let j = 0; j < payload.memorizationDetails.length; j++) {
                 if (memorization.data().details[i].uid === payload.memorizationDetails[j]) {
-                  newMemorizationDetails.push(memorization.data().details[i]);
+                  newMemorizationDetails.push(memorization.data().details[i].uid);
                 }
               }
             }
@@ -206,7 +205,7 @@ const actions = {
             newMemorizations = [
               {
                 memorizationId: payload.memorizationId,
-                memorizationDetails: newMemorizationDetails
+                memorizationDetailsUID: newMemorizationDetails
               },
               ...groupMemorization
             ];
@@ -233,7 +232,7 @@ const actions = {
             for (let i = 0; i < memorization.data().details.length; i++) {
               for (let j = 0; j < payload.memorizationDetails.length; j++) {
                 if (memorization.data().details[i].uid === payload.memorizationDetails[j]) {
-                  newMemorizationDetails.push(memorization.data().details[i]);
+                  newMemorizationDetails.push(memorization.data().details[i].uid);
                 }
               }
             }
@@ -243,7 +242,7 @@ const actions = {
             let newMemorizations = [
               {
                 memorizationId: payload.memorizationId,
-                memorizationDetails: newMemorizationDetails
+                memorizationDetailsUID: newMemorizationDetails
               }
             ];
     

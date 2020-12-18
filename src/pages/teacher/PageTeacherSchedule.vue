@@ -2,16 +2,9 @@
   <q-page>
 
     <div class="row justify-center q-pa-lg">
+      <q-btn icon="fas fa-arrow-alt-circle-right" flat dense round @click="addDay(-1)" />
 
-      <!-- <div class="col-12 col-md-4">
-        <q-btn
-            @click="saveSchedual"
-            round
-            color="primary"
-            text-color="white"
-            icon="save"
-          />
-      </div> -->
+      <q-btn icon="fas fa-arrow-alt-circle-left" flat dense round @click="addDay(1)" />
     </div>
     <div class="row justify-center q-pa-lg">
       <q-calendar
@@ -77,6 +70,7 @@ const moment = require("moment");
 export default {
   data() {
     return {
+            
       day : [new Date().getDay()],
       schedual: {
       },
@@ -89,16 +83,17 @@ export default {
       FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
        FETCH_SUBJECTS: ACTIONS.SUBJECTS.FETCH_SUBJECTS,
     }),
-    // getGroupSchedual(){
-    //   console.log('group',this.group);
-      
-    //    this.schedual = this.GET_SCHADUALS.find((s) => s.group.value == this.group);
-    //    console.log('shedual',this.schedual)
-    // },
+
         getFiles(id) {
-      return this.GET_SUBJECTS.find((x) => x.id == id).uplodedFiles;
+      return this.GET_SUBJECTS.find((x) => x.id == id)?.uplodedFiles;
     },
-        downloadFile(file) {
+    addDay(num){
+      if (num == -1)
+          this.day[0] == 0 ? this.day = [6] : this.day = [this.day[0] -1];
+      else
+         this.day[0] == 6 ? this.day = [0] : this.day = [this.day[0] +1];
+    },
+    downloadFile(file) {
       try {
         var xhr = new XMLHttpRequest();
         xhr.responseType = "blob";
@@ -136,10 +131,9 @@ export default {
        .filter(session => session.teacher.id == this.GET_USER.id)
         .map(session => ({ subject : session.subject, group : s.group.label, fromTime : session.fromTime 
         ,toTime : session.toTime }));
-        console.log('ses',ses)
+        
        Array.prototype.push.apply(sessios ,ses)
       });
-       console.log('sessions',sessios)
       return sessios;
     },
   },

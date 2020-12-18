@@ -1,5 +1,6 @@
 // Firestore Collections
 const COLLECTIONS = {
+  MEMO_MARKS : "memorizationMarks",
   MESSAGES : "messages",
   ACTIVITIES : "activities",
   MARKS: "marks",
@@ -240,6 +241,7 @@ const GETTERS = {
     GET_YEAR_INFO: "GET_YEAR_INFO",
     GET_REGISTRATION_PERIOD: "GET_REGISTRATION_PERIOD",
     GET_QUESTIONS: "GET_QUESTIONS",
+    GET_MEMO_MARKS : "GET_MEMO_MARKS",
     GET_EXAM_MARKS: "GET_EXAM_MARKS",
     GET_GROUPS: "GET_GROUPS",
     GET_MEMORIZATIONS: "GET_MEMORIZATIONS",
@@ -325,6 +327,8 @@ const ACTIONS = {
     DELETE_REPEATED_EXPANCE :"DELETE_REPEATED_EXPANCE",
     ADD_MEMORIZATION_DETAILS: "ADD_MEMORIZATION_DETAILS",
     DELETE_MEMORIZATION_DETAILS: "DELETE_MEMORIZATION_DETAILS",
+    ADD_MEMORIZATION_MARK : "ADD_MEMORIZATION_MARK",
+    FETCH_MEMO_MARKS : "FETCH_MEMO_MARKS",
     ADD_REPEATED_EXPANCE : "ADD_REPEATED_EXPANCE",
     ADD_EXPANCE : "ADD_EXPANCE",
     ADD_SCHEDUAL : "ADD_SCHEDUAL",
@@ -411,6 +415,7 @@ const MUTATIONS = {
   SETTINGS: {
     SET_EMAILS : "SET_EMAILS",
     SET_YEAR_INFO: "SET_YEAR_INFO",
+    SET_MEMO_MARKS : "SET_MEMO_MARKS",
     SET_REGISTRATION_PERIOD: "SET_REGISTRATION_PERIOD",
     SET_QUESTIONS: "SET_QUESTIONS",
     SET_EXAM_MARKS: "SET_EXAM_MARKS",
@@ -475,6 +480,7 @@ const MESSAGES = {
     YEAR_INFO_REGISTRATION_PERIOD_UPDATED:
       "database/year-info-registration-period-updated",
     EXAM_MARKS_UPDATED: "database/exam_marks_updated",
+    MEMO_MARK_SAVED : "database/memo_mark_saved",
     QUESTION_ADDED: "database/question-added",
     QUESTION_DELETED: "database/question-deleted",
     STUDENT_MARK_UPDATED: "database/student-mark-updated",
@@ -519,6 +525,7 @@ const ERRORS = {
     OTP_NOT_VERIFIED: "auth/otp-not-verified"
   },
   DATABASE: {
+    ADD_MEMO_ERROR : "database/add-memo-mark-error",
     ADD_MESSAGE_ERROR : "database/add-message-error",
     ENTRY_DELETE_ERROR  : "database/delete-entry-error",
     ENTRY_UPDATE_RROR : "database/update-entry-error",
