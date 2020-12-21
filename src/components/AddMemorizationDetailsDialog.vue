@@ -157,9 +157,10 @@ export default {
       this.$emit("closeDialog", false);
     },
     addMemorizationDetails() {
+      console.log(this.memorization);
       if (Object.keys(this.memorization).length > 0) {
         this.ADD_MEMORIZATION_DETAILS({
-          id: this.memorization.uid,
+          id: this.memorization.id,
           uid: uid(),
           name: this.name,
           pageNumberFrom: Number.parseInt(this.pageNumberFrom),

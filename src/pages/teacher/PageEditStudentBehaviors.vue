@@ -6,7 +6,9 @@
           filled
           @input="changeGroup"
           v-model="group"
-          :options="groups"
+          option-label="name"
+          option-value="id"
+          :options="GET_GROUPS"
           label="إختر مجموعة"
         />
       </div>
@@ -98,7 +100,6 @@ export default {
   },
   data() {
     return {
-      groups: [],
       Good: "P",
       Bad: "N",
       title: "",
@@ -125,29 +126,20 @@ export default {
     };
   },
   async created() {
+    await this.FETCH_GROUPS();
     await this.FETCH_STUDENTS({ status: "" });
     this.FETCH_ENTRIES();
     this.FETCH_YRAT_INFO();
     await this.FETCH_SCHEDUAL();
     await this.FETCH_BEHAVIOR({ year: "2020" });
 
-    this.GET_SCHADUALS.forEach((sch) => {
-      Object.values(sch).forEach((day) => {
-        if (Array.isArray(day)) {
-          !day.some((session) => session.teacher.id == this.GET_USER.id)
-            ? ""
-            : !this.groups.some((g) => g.value == sch.group.value)
-            ? this.groups.push(sch.group)
-            : "";
-        }
-      });
-    });
   },
   methods: {
     ...mapActions({
       FETCH_BEHAVIOR: ACTIONS.STUDNETS.FETCH_BEHAVIOR,
       FETCH_SCHEDUAL: ACTIONS.SETTINGS.FETCH_SCHEDUAL,
       FETCH_STUDENTS: ACTIONS.STUDNETS.FETCH_STUDENTS,
+      FETCH_GROUPS : ACTIONS.GROUPS.FETCH_GROUPS,
       FETCH_ENTRIES: ACTIONS.SETTINGS.FETCH_ENTRIES,
       FETCH_YRAT_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
@@ -184,12 +176,13 @@ export default {
     changeGroup() {
       this.students = this.GET_STUDENTS.filter(
         (student) =>
-          student.groupId != undefined && student.groupId == this.group.value
+          student.groupId != undefined && student.groupId == this.group.id
       );
     },
   },
   computed: {
     ...mapGetters({
+      GET_GROUPS : GETTERS.GROUPS.GET_GROUPS,
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
       GET_BEHAVIORS: GETTERS.STUDNETS.GET_BEHAVIORS,
       GET_USER: GETTERS.AUTH.GET_USER,
