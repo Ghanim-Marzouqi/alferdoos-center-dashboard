@@ -600,6 +600,9 @@ const ERRORS = {
 //  Admin Email
 const ADMIN_EMAIL = "altomohcompany1@gmail.com";
 
+// Default User Password
+const USER_DEFAULT_PASSWORD = "Oman@123";
+
 // Export Constants
 export {
   COLLECTIONS,
@@ -615,5 +618,6 @@ export {
   ACTIONS,
   MUTATIONS,
   ERRORS,
-  MESSAGES
+  MESSAGES,
+  USER_DEFAULT_PASSWORD
 };
