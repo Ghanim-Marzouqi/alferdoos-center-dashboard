@@ -6,10 +6,25 @@
         <q-form @submit.prevent="addMemorizationDetails">
           <q-card-section>
             <div class="text-h6">إضافة درجة المحفوظ</div>
-            <div class="text-h6">الدرجة : {{ result }}</div>
+            
+             
             <div class="q-ma-2">
               <div class="row">
                 <q-list style="width: 100%">
+                  
+                  <q-item>
+                    <q-item-section class="justify-start" avatar>
+                      <div class="text-h6">الدرجة : {{ result }}</div>
+                    </q-item-section>
+                    <q-item-section > 
+                      <div class="text-h6" :color="getStatus() ? 'red' : 'black'">الحالة : {{ getStatus() ? "ناجح" : "راسب"}}</div>
+                       </q-item-section>
+                    <q-item-section side>
+                     تكرار {{ repeat }}
+                    </q-item-section>
+                  </q-item>
+
+
                   <q-item>
                     <q-item-section class="justify-start" avatar>
                       <q-btn
@@ -114,6 +129,10 @@ export default {
       type: Number,
       required: true,
     },
+    repeat: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
@@ -146,6 +165,9 @@ export default {
       this.notifications = this.notifications + num;
       this.calculateTotal();
     },
+    getStatus(){
+      return this.result >= this.detail.failMarks;
+    },
     addMistake(num) {
       if (this.mistake == 0 && num < 0)
         return;
@@ -174,6 +196,8 @@ export default {
         mistakes: this.mistake,
         notifications: this.notifications,
         result: this.result,
+        status : this.getStatus(),
+        repeat : this.repeat
       });
 
       this.closeDialog();
