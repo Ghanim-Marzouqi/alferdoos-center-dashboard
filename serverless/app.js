@@ -4,39 +4,24 @@ const express = require("express");
 const firebase = require("firebase");
 const admin = require("firebase-admin");
 const emailValidator = require("email-validator");
+const { COLLECTIONS, USER_DEFAULT_PASSWORD } = require('./constants');
+const { DEV_FIREBASE_CONFIG, DEV_ADMIN_CONFIG, DEV_DATABASE_URL } = require('./config');
 
 // initialize app and set port
 const app = express();
 const port = process.env.PORT || 3000;
 
-// set defaults
-const userDefaultPassword = "Oman@123";
-
 // middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB7PsUXk19VoEXPCnY0XOoLHYAyUVPZT8s",
-    authDomain: "al-ferdoos-school.firebaseapp.com",
-    databaseURL: "https://al-ferdoos-school.firebaseio.com",
-    projectId: "al-ferdoos-school",
-    storageBucket: "al-ferdoos-school.appspot.com",
-    messagingSenderId: "765477839813",
-    appId: "1:765477839813:web:7c5f17d521d9baf7f4e1ac",
-    measurementId: "G-ZW16G2T3G7",
-};
-
 // initialize firebase
-firebase.initializeApp(firebaseConfig);
-
-// firebase admin configuration
-const adminConfig = require(path.join(__dirname, "service_account_key"));
+firebase.initializeApp(DEV_FIREBASE_CONFIG);
 
 // initialize firebase admin
 admin.initializeApp({
-    credential: admin.credential.cert(adminConfig),
-    databaseURL: "https://al-ferdoos-school.firebaseio.com",
+    credential: admin.credential.cert(DEV_ADMIN_CONFIG),
+    databaseURL: DEV_DATABASE_URL,
 });
 
 // firebase instances
@@ -45,7 +30,10 @@ const auth = admin.auth();
 
 // default route
 app.get('/', (req, res) => {
-    res.json({ status: 'success', message: 'مرحبا بك في نظام مركز الفردوس الأعلى' });
+    res.json({
+        status: 'success',
+        message: 'مرحبا بك في نظام مركز الفردوس الأعلى'
+    });
 });
 
 // register new teacher
@@ -83,7 +71,7 @@ app.post('/register-teacher', async (req, res) => {
 
     // check if teacher registered in auth
     auth.getUserByEmail(email).then(authUser => {
-        db.collection("teachers").doc(authUser.uid).set({
+        db.collection(COLLECTIONS.TEACHERS).doc(authUser.uid).set({
             id: authUser.uid,
             name,
             email: authUser.email,
@@ -112,10 +100,10 @@ app.post('/register-teacher', async (req, res) => {
             auth.createUser({
                 displayName: name,
                 email,
-                password: userDefaultPassword,
+                password: USER_DEFAULT_PASSWORD,
                 phoneNumber: `+968${phone}`
             }).then(creatdUser => {
-                db.collection("teachers").doc(creatdUser.uid).set({
+                db.collection(COLLECTIONS.TEACHERS).doc(creatdUser.uid).set({
                     id: creatdUser.uid,
                     name: creatdUser.displayName,
                     email: creatdUser.email,
