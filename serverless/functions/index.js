@@ -3,6 +3,7 @@ const path = require("path");
 const express = require("express");
 const firebase = require("firebase");
 const admin = require("firebase-admin");
+const functions = require('firebase-functions');
 const emailValidator = require("email-validator");
 const { COLLECTIONS, USER_DEFAULT_PASSWORD } = require('./constants');
 const { DEV_FIREBASE_CONFIG, DEV_ADMIN_CONFIG, DEV_DATABASE_URL } = require('./config');
@@ -199,5 +200,8 @@ app.post('/delete-teacher', (req, res) => {
     }
 });
 
-// serve app
-app.listen(port, () => console.log(`Listening on port ${port}`));
+// serve app locally
+// app.listen(port, () => console.log(`Listening on port ${port}`));
+
+// serve app using firebase functions
+exports.app = functions.https.onRequest(app);
