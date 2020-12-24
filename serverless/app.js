@@ -6,6 +6,7 @@ const admin = require("firebase-admin");
 const emailValidator = require("email-validator");
 const { COLLECTIONS, USER_DEFAULT_PASSWORD } = require('./constants');
 const { DEV_FIREBASE_CONFIG, DEV_ADMIN_CONFIG, DEV_DATABASE_URL } = require('./config');
+const { json } = require("express");
 
 // initialize app and set port
 const app = express();
@@ -37,7 +38,7 @@ app.get('/', (req, res) => {
 });
 
 // register new teacher
-app.post('/register-teacher', async (req, res) => {
+app.post('/register-teacher', (req, res) => {
     const { name, email, phone } = req.body;
 
     // validations
@@ -71,30 +72,47 @@ app.post('/register-teacher', async (req, res) => {
 
     // check if teacher registered in auth
     auth.getUserByEmail(email).then(authUser => {
-        db.collection(COLLECTIONS.TEACHERS).doc(authUser.uid).set({
-            id: authUser.uid,
-            name,
-            email: authUser.email,
-            phone: `+968${phone}`,
-            isActive: true
-        }).then(stored => {
-            res.json({
-                status: "success",
-                message: "تم إضافة المعلم بنجاح",
-                user: {
+
+        // check if teacher is registered in database
+        db.collection(COLLECTIONS.TEACHERS).doc(authUser.uid).get().then(user => {
+            if (typeof user.data() === "undefined") {
+                db.collection(COLLECTIONS.TEACHERS).doc(authUser.uid).set({
                     id: authUser.uid,
                     name,
                     email: authUser.email,
                     phone: `+968${phone}`,
                     isActive: true
-                }
-            });
+                }).then(stored => {
+                    res.json({
+                        status: "success",
+                        message: "تم إضافة المعلم بنجاح",
+                        user: {
+                            id: authUser.uid,
+                            name,
+                            email: authUser.email,
+                            phone: `+968${phone}`,
+                            isActive: true
+                        }
+                    });
+                }).catch(error => {
+                    res.json({
+                        status: "error",
+                        message: "حدث خطأ أثناء إضافة المعلم"
+                    });
+                });
+            } else {
+                res.json({
+                    status: 'error',
+                    message: 'المعلم مسجل بالفعل'
+                });
+            }
         }).catch(error => {
             res.json({
                 status: "error",
-                message: "حدث خطأ أثناء إضافة المعلم"
+                message: "حدث خطأ أثناء التحقق من بيانات المعلم"
             });
         });
+
     }).catch(authError => {
         if (authError && authError.code === "auth/user-not-found") {
             auth.createUser({
@@ -140,6 +158,45 @@ app.post('/register-teacher', async (req, res) => {
             });
         }
     });
+});
+
+// delete teacher
+app.post('/delete-teacher', (req, res) => {
+    const { id } = req.body;
+
+    if (!id || id === null || typeof id === "undefined") {
+        res.json({
+            status: 'error',
+            message: 'يوجد نقص في البيانات المرسلة'
+        });
+    } else {
+        // check if teacher exists in database
+        db.collection(COLLECTIONS.TEACHERS).doc(id).get().then(user => {
+            if (typeof user.data() === "undefined") {
+                res.json({
+                    status: 'error',
+                    message: 'لم يتم العثور على بيانات المعلم'
+                });
+            } else {
+                db.collection(COLLECTIONS.TEACHERS).doc(id).delete().then(result => {
+                    res.json({
+                        status: 'success',
+                        message: 'تم حذف المعلم بنجاح'
+                    });
+                }).catch(error => {
+                    res.json({
+                        status: 'success',
+                        message: 'حدث خطأ أثناء محاولة حذف المعلم'
+                    });
+                });
+            }
+        }).catch(error => {
+            res.json({
+                status: 'success',
+                message: 'حدث خطأ أثناء محاولة حذف المعلم'
+            });
+        });
+    }
 });
 
 // serve app
