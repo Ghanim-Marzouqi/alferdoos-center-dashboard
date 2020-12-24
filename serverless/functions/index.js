@@ -1,6 +1,7 @@
 // load libraries
 const path = require("path");
 const express = require("express");
+const cors = require('cors');
 const firebase = require("firebase");
 const admin = require("firebase-admin");
 const functions = require('firebase-functions');
@@ -14,6 +15,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // middlewares
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
