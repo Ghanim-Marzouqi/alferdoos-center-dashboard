@@ -1,0 +1,31 @@
+{
+  "name": "serverless",
+  "version": "1.0.0",
+  "author": "Ghanim Al-Marzouqi",
+  "description": "Serverless Function For Admin",
+  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start-firebase": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "12"
+  },
+  "dependencies": {
+    "email-validator": "^2.0.4",
+    "express": "^4.17.1",
+    "firebase": "^8.2.1",
+    "firebase-admin": "^9.4.2",
+    "firebase-functions": "^3.13.0",
+    "nodemon": "^2.0.6"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^0.2.3"
+  }
+}
