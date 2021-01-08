@@ -7,43 +7,64 @@
       <p class="text-h6 text-weight-bold q-ma-sm">{{ student.name }}</p>
     </div>
     <div class="row">
-      <div class="col-8">
+      <div class="col-xl-8 col-md-8 col-sm-12 col-xs-12">
         <div
           class="row"
-          style="height: 50%; display: flex; justify-content: center; align-items: center;"
+          style="
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
         >
           <div class="col-6">
             <p class="text-weight-bold">المجموعة:</p>
-            <p class="text-blue" style="font-size: 20px">{{ GET_STUDENT_GROUP.groupName }}</p>
+            <p class="text-blue" style="font-size: 20px">
+              {{ GET_STUDENT_GROUP.groupName }}
+            </p>
           </div>
           <div class="col-6">
             <p class="text-weight-bold">ولي الأمر:</p>
-            <p class="text-blue" style="font-size: 20px">{{ student.parentName }}</p>
+            <p class="text-blue" style="font-size: 20px">
+              {{ student.parentName }}
+            </p>
           </div>
         </div>
         <div
           class="row student-info-row"
-          style="height: 50%; display: flex; justify-content: center; align-items: center;"
+          style="
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
         >
           <div class="col-6">
             <p class="text-weight-bold">أنهى الصف:</p>
-            <p class="text-blue" style="font-size: 20px">{{ getStudentClass }}</p>
+            <p class="text-blue" style="font-size: 20px">
+              {{ getStudentClass }}
+            </p>
           </div>
           <div class="col-6">
-            <p class="text-weight-bold">القرية / مكان الإقامة:</p>
-            <p class="text-blue" style="font-size: 20px">{{ student.village }}</p>
+            <p class="text-weight-bold">رقم ولي الأمر:</p>
+            <p class="text-blue" style="font-size: 20px">
+              {{ student.firstPhoneNumber }}
+            </p>
           </div>
         </div>
       </div>
-      <div class="col-4">
+      <div class="col-xl-4 col-md-4 col-sm-12 col-xs-12">
         <q-img
           :src="student.imageURL"
-          :ratio="1"
-          style="height: 200px; width: 200px"
-          class="q-ma-sm"
+          :ratio="4 / 3"
+          style="height: auto; width: 100%"
+          class="q-pa-md"
+          position="50% 30%"
         >
           <template v-slot:error>
-            <div class="absolute-full flex flex-center bg-negative text-white">لا يمكن تحميل الصورة</div>
+            <div class="absolute-full flex flex-center bg-negative text-white">
+              لا يمكن تحميل الصورة
+            </div>
           </template>
         </q-img>
       </div>
@@ -52,13 +73,50 @@
       <div class="row wrap justify-center items-center">
         <div class="col-6">
           <q-card class="column justify-center items-center">
-            <q-icon style="font-size: 75px" color="primary" name="o_thumbs_up_down"></q-icon>
+            <q-icon
+              style="font-size: 75px"
+              color="primary"
+              name="o_thumbs_up_down"
+            ></q-icon>
             <p style="font-size: 30px; font-weight: bold">سلوكيات الطالب</p>
+
+            <q-card-actions align="center">
+              <q-chip
+                @click="(isBehaviorDialogOpened = true), (btype = Good)"
+                clickable
+              >
+                <q-avatar
+                  color="green"
+                  icon="fas fa-thumbs-up"
+                  text-color="white"
+                >
+                </q-avatar>
+                {{ student.goodBehaviors }}
+              </q-chip>
+              <q-chip
+                clickable
+                @click="(btype = Bad), (isBehaviorDialogOpened = true)"
+              >
+                <q-avatar
+                  color="red"
+                  icon="fas fa-thumbs-down"
+                  text-color="white"
+                >
+                </q-avatar>
+                {{ student.badBehaviors }}
+              </q-chip>
+            </q-card-actions>
           </q-card>
         </div>
         <div class="col-6">
           <q-card class="column justify-center items-center">
-            <q-icon style="font-size: 75px" color="primary" name="o_flaky"></q-icon>
+            <q-icon
+              clickable
+              @click="isAbsenceRecordsDialogOpen = true"
+              style="font-size: 75px"
+              color="primary"
+              name="o_flaky"
+            ></q-icon>
             <p style="font-size: 30px; font-weight: bold">الحضور والإنصراف</p>
           </q-card>
         </div>
@@ -68,18 +126,50 @@
       <div class="row wrap justify-center items-center">
         <div class="col-6">
           <q-card class="column justify-center items-center">
-            <q-icon style="font-size: 75px" color="primary" name="o_menu_book"></q-icon>
+            <q-icon
+              style="font-size: 75px"
+              color="primary"
+              name="o_menu_book"
+            ></q-icon>
             <p style="font-size: 30px; font-weight: bold">المحفوظات</p>
           </q-card>
         </div>
         <div class="col-6">
           <q-card class="column justify-center items-center">
-            <q-icon style="font-size: 75px" color="primary" name="o_book"></q-icon>
-            <p style="font-size: 30px; font-weight: bold">المواد والحصص الدراسية</p>
+            <q-icon
+              clickable
+              @click="isSchedualDialogOpen = true"
+              style="font-size: 75px"
+              color="primary"
+              name="o_book"
+            ></q-icon>
+            <p style="font-size: 30px; font-weight: bold">
+              المواد والحصص الدراسية
+            </p>
           </q-card>
         </div>
       </div>
     </div>
+
+    <BehaviorDialog
+      :isOpen="isBehaviorDialogOpened"
+      :studentId="student.id"
+      :btype="btype"
+      @close="isBehaviorDialogOpened = false"
+    />
+
+    <SchedualDialog
+      :isOpen="isSchedualDialogOpen"
+      :groupId="student.groupId"
+      @close="isSchedualDialogOpen = false"
+    />
+
+    <AbsenceDialog
+      :isOpen="isAbsenceRecordsDialogOpen"
+      :studentId="student.id"
+      :groupId="student.groupId"
+      @close="isAbsenceRecordsDialogOpen = false"
+    />
   </q-page>
 </template>
 
@@ -94,14 +184,27 @@ import {
 
 export default {
   name: "PageStudentDashboard",
+  components: {
+    BehaviorDialog: () => import("components/StudentShowBehaviorsDialog"),
+    AbsenceDialog: () => import("components/StudentShowAbsenceRecordsDialog"),
+    SchedualDialog: () => import("components/StudentShowSchedualDialog"),
+  },
   data() {
     return {
+      isBehaviorDialogOpened: false,
+      isAbsenceRecordsDialogOpen: false,
+      isSchedualDialogOpen: false,
+      btype: "",
+      Good: "P",
+      Bad: "N",
       studentId: "",
       student: {},
     };
   },
-  created() {
+  async created() {
     this.studentId = this.$route.params.id;
+    await this.FETCH_YEAR_INFO();
+    await this.FETCH_BEHAVIOR({ year: this.GET_YEAR_INFO.name });
   },
   mounted() {
     if (this.GET_STUDENTS && this.GET_STUDENTS.length > 0) {
@@ -116,6 +219,7 @@ export default {
   computed: {
     ...mapGetters({
       GET_STUDENTS: GETTERS.STUDNETS.GET_STUDENTS,
+      GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
       GET_STUDENT_GROUP: GETTERS.GROUPS.GET_STUDENT_GROUP,
     }),
     getStudentClass() {
@@ -134,6 +238,8 @@ export default {
   methods: {
     ...mapActions({
       FETECH_GROUP_BY_ID: ACTIONS.GROUPS.FETECH_GROUP_BY_ID,
+      FETCH_BEHAVIOR: ACTIONS.STUDNETS.FETCH_BEHAVIOR,
+      FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
     }),
   },
 };

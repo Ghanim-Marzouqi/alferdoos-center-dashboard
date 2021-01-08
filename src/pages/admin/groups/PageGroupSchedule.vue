@@ -60,7 +60,7 @@
                 </q-avatar>
               </div>
               <div class="row justify-center">
-                <p style="font-size: 20px; margin-bottom:-3px;" v-html="agenda.subject.label"></p>
+                <p style="font-size: 20px; margin-bottom:-3px;" v-html="agenda.subject.name"></p>
               </div>
               <div class="row justify-center">{{ agenda.fromTime }} - {{ agenda.toTime }}</div>
               <div class="row justify-center">
@@ -99,7 +99,8 @@
 <script>
 import subjects from "../../../store/modules/subjects";
 import { mapGetters, mapActions } from "vuex";
-import { GETTERS, ACTIONS } from "../../../config/constants";
+import { GETTERS, ACTIONS , MESSAGES, ERRORS } from "../../../config/constants";
+import groups from 'src/store/modules/groups';
 const moment = require("moment");
 
 export default {
@@ -138,8 +139,10 @@ export default {
     ...mapActions({
       FETCH_GROUPS: ACTIONS.GROUPS.FETCH_GROUPS,
       ADD_SCHEDUAL: ACTIONS.SETTINGS.ADD_SCHEDUAL,
+      UPDATE_SETTINGS : ACTIONS.SETTINGS.UPDATE_SETTINGS,
       FETCH_SCHEDUAL : ACTIONS.SETTINGS.FETCH_SCHEDUAL,
       FETCH_YEAR_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
+      CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     getSchedual(day) {
       return this.schedual[parseInt(day.weekday, 10)];
@@ -166,10 +169,15 @@ export default {
     },
     saveSchedual() {
       this.schedual.group = this.group;
+      this.schedual.settings = this.GET_YEAR_INFO.session;
       this.ADD_SCHEDUAL(this.schedual);
     },
+    updateAfterSettingsChanged() {
+      this.schedual.group = this.group;
+      this.schedual.settings = this.GET_YEAR_INFO.session;
+      this.UPDATE_SETTINGS(this.schedual);
+    },
     addSubject(subject) {
-      console.log(subject);
 
       if (this.isEdit) {
         let session = this.schedual[this.day][this.index];
@@ -223,7 +231,7 @@ export default {
       this.isEdit = true;
       this.isSelectSubjectOpen = true;
       },
-      updateFullDaySchedual(day){
+    updateFullDaySchedual(day){
         this.schedual[day].forEach((session,i) => {
           let fdate = i > 0 ?  moment("2020-03-02" + " " + this.schedual[day][i-1].toTime).add(this.GET_YEAR_INFO.session.break,"m")
                       :  moment("2020-03-02" + " " + this.GET_YEAR_INFO.session.start);
@@ -246,7 +254,63 @@ export default {
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_SCHADUALS : GETTERS.SETTINGS.GET_SCHADUALS,
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
+      GET_MESSAGES: GETTERS.UI.GET_MESSAGES, 
+      GET_ERRORS: GETTERS.UI.GET_ERRORS,
     }),
+  },
+  watch: {
+
+    GET_LOADING : function (newState) {
+     newState ? this.$q.loading.show() : this.$q.loading.hide();
+  },
+
+    GET_SCHADUALS : function(newState)
+    {
+
+      // here im checking if the sessions settings had been changed or not
+      newState.forEach(group =>{
+        if (group.settings.break != this.GET_YEAR_INFO.session.break
+            || group.settings.start != this.GET_YEAR_INFO.session.start)
+            {
+              this.group = group.group;
+              this.schedual = group;
+              for (let i = 0; i < 7; i++) {
+                this.updateFullDaySchedual(i)
+              }
+              this.saveSchedual();
+            }
+      })
+    },
+    GET_MESSAGES : function(newState){
+
+       if (newState.length > 0) {
+        let messageCode = newState[0].code;
+
+        if (messageCode === MESSAGES.DATABASE.SCHEDUAL_ADDED) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.FETCH_SCHEDUAL();
+          this.$q.dialog({
+            title: "تمت العملية بنجاح",
+            message: "تم تحديث الجدول بنجاح",
+          });
+        }
+       }
+    },
+
+    GET_ERRORS:  function(newState){
+       if (newState.length > 0) {
+        let errorCode = newState[0].code;
+
+        if (errorCode === ERRORS.DATABASE.ADD_EXECUSE_FAIL) {
+          this.CLEAR_ERRORS_AND_MESSAGES();
+          this.$q.dialog({
+            title: "خطأ",
+            message: "حدث خطأ أثناء تحديث الجدول",
+          });
+        }
+      }
+    }
+  
   },
   async created() {
     await this.FETCH_GROUPS();

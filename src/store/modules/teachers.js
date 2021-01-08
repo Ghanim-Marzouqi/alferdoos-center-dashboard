@@ -1,5 +1,6 @@
 // Import Needed Modules
 import { FirebaseAuth, FirebaseDatabase } from "boot/firebase";
+import { registerTeacher, deleteTeacher } from "../../services/teachers-service";
 import {
   COLLECTIONS,
   MUTATIONS,
@@ -25,46 +26,61 @@ const actions = {
     commit(MUTATIONS.UI.SET_LOADING, true);
 
     try {
-      // check if teacher not registered
-      let emailSnaphot = await FirebaseDatabase.collection(COLLECTIONS.TEACHERS)
-        .where("email", "==", payload.email)
-        .get();
-
-      let phoneSnapshot = await FirebaseDatabase.collection(
-        COLLECTIONS.TEACHERS
-      )
-        .where("phone", "==", `+968${payload.phone}`)
-        .get();
-
-      let emailDocs = emailSnaphot.docs;
-      let phoneDocs = phoneSnapshot.docs;
-
-      if (emailDocs.length === 0 && phoneDocs.length === 0) {
-        await FirebaseDatabase.collection(COLLECTIONS.TEACHERS)
-          .doc()
-          .set({
-            name: payload.name,
-            email: payload.email,
-            phone: `+968${payload.phone}`,
-            isActive: true
-          });
-
-        commit(MUTATIONS.UI.SET_MESSAGE, {
-          code: MESSAGES.DATABASE.TEACHER_ADDED
-        });
-      } else {
-        commit(MUTATIONS.UI.SET_ERROR, {
-          code: ERRORS.DATABASE.TEACHER_ALREADY_EXISTED
-        });
-      }
+      let results = await registerTeacher({ name: payload.name, email: payload.email, phone: payload.phone });
+      console.log("register teacher result", results);
+      commit(MUTATIONS.UI.SET_MESSAGE, {
+        code: MESSAGES.DATABASE.TEACHER_ADDED
+      });
     } catch (error) {
-      console.log("ADD_TEACHER ERROR", error);
+      console.log("register teacher error", error);
       commit(MUTATIONS.UI.SET_ERROR, {
-        code: ERRORS.DATABASE.ADD_TEACHER_ERROR
+        code: ERRORS.DATABASE.TEACHER_ALREADY_EXISTED
       });
     } finally {
       commit(MUTATIONS.UI.SET_LOADING, false);
     }
+
+    // try {
+    //   // check if teacher not registered
+    //   let emailSnaphot = await FirebaseDatabase.collection(COLLECTIONS.TEACHERS)
+    //     .where("email", "==", payload.email)
+    //     .get();
+
+    //   let phoneSnapshot = await FirebaseDatabase.collection(
+    //     COLLECTIONS.TEACHERS
+    //   )
+    //     .where("phone", "==", `+968${payload.phone}`)
+    //     .get();
+
+    //   let emailDocs = emailSnaphot.docs;
+    //   let phoneDocs = phoneSnapshot.docs;
+
+    //   if (emailDocs.length === 0 && phoneDocs.length === 0) {
+    //     await FirebaseDatabase.collection(COLLECTIONS.TEACHERS)
+    //       .doc()
+    //       .set({
+    //         name: payload.name,
+    //         email: payload.email,
+    //         phone: `+968${payload.phone}`,
+    //         isActive: true
+    //       });
+
+    //     commit(MUTATIONS.UI.SET_MESSAGE, {
+    //       code: MESSAGES.DATABASE.TEACHER_ADDED
+    //     });
+    //   } else {
+    //     commit(MUTATIONS.UI.SET_ERROR, {
+    //       code: ERRORS.DATABASE.TEACHER_ALREADY_EXISTED
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.log("ADD_TEACHER ERROR", error);
+    //   commit(MUTATIONS.UI.SET_ERROR, {
+    //     code: ERRORS.DATABASE.ADD_TEACHER_ERROR
+    //   });
+    // } finally {
+    //   commit(MUTATIONS.UI.SET_LOADING, false);
+    // }
   },
 
   async EDIT_TEACHER({ commit }, payload) {

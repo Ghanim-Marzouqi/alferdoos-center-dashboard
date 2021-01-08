@@ -38,11 +38,28 @@ const routes = [
           import("pages/admin/settings/PageEditMeetings.vue")
       },
       {
+        path:  "add-entries-page",
+        component: () =>
+          import("pages/admin/settings/PageEditEntries.vue")
+      },
+      {
         name : "add-meetings-page",
         path: "add-meetings-page",
         props: true,
         component: () =>
           import("pages/admin/settings/PageAddMeetingsDetails.vue")
+      },
+      {
+        name : "add-message-page",
+        path: "add-message-page",
+        props: true,
+        component: () =>
+          import("pages/admin/PageAddMessage.vue")
+      },
+      {
+        path: "admin-message-page",
+        component: () =>
+          import("pages/admin/PageAdminMessages.vue")
       },
       {
         path: "exams-dashboard",
@@ -72,6 +89,10 @@ const routes = [
       {
         path: "groups",
         component: () => import("pages/admin/groups/PageRegisteredGroups.vue")
+      },
+      {
+        path: "group-activities",
+        component: () => import("pages/admin/groups/PageEditGroupsActivites.vue")
       },
       {
         path: "group-schedule",
@@ -125,6 +146,16 @@ const routes = [
         redirect: "/parent/register-student"
       },
       {
+        name: "student-sheduale",
+        path: "student-sheduale",
+        props: true,
+        component: () => import("pages/parent/students/PageStudentSchedule.vue")
+      },
+      {
+        path: "parent-inbox",
+        component: () => import("pages/parent/students/PageParentInbox.vue")
+      },
+      {
         path: "register-student",
         component: () => import("pages/parent/students/PageStudentRegister.vue")
       },
@@ -132,6 +163,11 @@ const routes = [
         path: "registration-applications",
         component: () =>
           import("pages/parent/students/PageRegistrationApplications.vue")
+      },
+      {
+        path: "students-list",
+        component: () =>
+          import("pages/parent/students/PageParentStudentsList.vue")
       }
     ]
   },
@@ -153,9 +189,36 @@ const routes = [
         component: () => import("pages/teacher/PageHome.vue")
       },
       {
+        name: "teacher-sheduale",
+        path: "teacher-sheduale",
+        props: true,
+        component: () => import("pages/teacher/PageTeacherSchedule.vue")
+      },
+      
+      {
+        path: "teacher-inbox",
+        component: () => import("pages/teacher/PageTeacherInbox.vue")
+      },
+      {
         path: "group-attendence",
         component: () => import("pages/teacher/PageGroupAttendence.vue")
       },
+      {
+        path: "memo-marks",
+        component: () => import("pages/teacher/PageEditStudentMemoMarks.vue")
+      },
+      {
+        path: "student-behaviors",
+        component: () => import("pages/teacher/PageEditStudentBehaviors.vue")
+      },
+      {
+        path: "student-activities",
+        component: () => import("pages/teacher/PageEditStudentActivities.vue")
+      },
+      {
+        path: "subject-marks",
+        component: () => import("pages/teacher/PageSetSubjectMarks.vue")
+      }
     ]
   }
 ];

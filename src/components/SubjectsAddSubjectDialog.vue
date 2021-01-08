@@ -36,7 +36,7 @@
                     clearable
                     type="number"
                     disable
-                    :label="getTotal(0)"
+                    :label="getTotal(0)+''"
                     lazy-rules
                     :rules="[ val => (val && val < 100) || 'الرجاء إضافة الدرجات']"
                   />
@@ -88,6 +88,15 @@
                       <q-icon name="attach_file" />
                     </template>
                   </q-file>
+                  <div>
+                    <q-chip
+                      v-for="(file, i) in subject.uplodedFiles"
+                      :key="i"
+                      clickable
+                      :icon-right="action == 'view' ? 'o_get_app' : 'delete'"
+                      @click="action == 'edit' ?  removeFile(i) : downloadFile(file)"
+                    >{{ file.name }}</q-chip>
+                  </div>
                 </q-form>
               </q-card-section>
             </q-card>
@@ -195,6 +204,8 @@ export default {
       type: Array,
       default: [],
     },
+    action: {type : String,
+    default : "add"}
   },
   data() {
     return {};
@@ -214,6 +225,40 @@ export default {
       UPDATE_SUBJECT: ACTIONS.SUBJECTS.UPDATE_SUBJECT,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
+    emoveFile(index){
+      this.subject.uplodedFiles.splice(index,1);
+    },
+    downloadFile(file) {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = "blob";
+        xhr.onload = function (event) {
+          var blob = xhr.response;
+          let link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = file.name;
+          link.click();
+        };
+        xhr.open("GET", file.fileUrl);
+        xhr.send();
+      } catch (error) {
+        switch (error.code) {
+          case ERRORS.STORAGE.OBJECT_NOT_FOUND:
+            this.SET_ERROR(ERRORS.STORAGE.OBJECT_NOT_FOUND);
+            break;
+          case ERRORS.STORAGE.UNAUTHORIZED:
+            this.SET_ERROR(ERRORS.STORAGE.UNAUTHORIZED);
+            break;
+          case ERRORS.STORAGE.CANCELED:
+            this.SET_ERROR(ERRORS.STORAGE.CANCELED);
+            break;
+          case ERRORS.STORAGE.UNKNOWN:
+            this.SET_ERROR(ERRORS.STORAGE.UNKNOWN);
+            break;
+        }
+      }
+    },
+    
     getTotal(val){
       let total = this.marks.length > 1 ? this.marks.reduce((a,b) => ({totalMarks :a.totalMarks+ b.totalMarks })).totalMarks
       : this.marks.length > 0 ? this.marks[0].totalMarks : 0;
@@ -253,6 +298,7 @@ export default {
           name: this.subject.name,
           description: this.subject.description,
           files: this.subject.files,
+          uplodedFiles : this.subject.uplodedFiles,
           teachers : this.subject.teachers.map(teacher => ({ id : teacher.id, name : teacher.name })),
           status: "Active",
           createdAt: "",
@@ -264,9 +310,10 @@ export default {
         
         
         if (valid){
-          if (this.subject.id === "") 
+          if (this.subject.id === "") {
+              this.subject.year = this.GET_YEAR_INFO.name;
               this.REGISTER_SUBJECT(subject);
-          else {
+          }else {
             subject.id = this.subject.id;
             this.UPDATE_SUBJECT(subject);
           }

@@ -1,6 +1,7 @@
 <template>
   <q-dialog v-model="isOpen">
     <q-card style="width: 500px">
+     
       <q-card-section>
         <q-time
         v-model="time"
@@ -10,7 +11,7 @@
       <q-card-actions>
         <q-space></q-space>
         <q-btn dense flat color="primary" @click="$emit('cancel', false)">إلغاء</q-btn>
-        <q-btn dense flat color="primary" :loading="GET_LOADING" @click="$emit('saveTime')">حفظ</q-btn>
+        <q-btn dense flat color="primary" :loading="GET_LOADING" @click="saveNewTime">حفظ</q-btn>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -32,6 +33,18 @@ export default {
       required: true,
     },
   },
+  data () {
+    return {
+      
+    }
+  },
   computed: mapGetters({ GET_LOADING: GETTERS.UI.GET_LOADING }),
+  methods : {
+    saveNewTime()
+    {
+      this.$emit('saveTime',this.time);
+      this.$emit('cancel');
+    }
+  },
 };
 </script>

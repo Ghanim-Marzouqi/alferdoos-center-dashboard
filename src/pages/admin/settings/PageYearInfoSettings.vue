@@ -53,7 +53,8 @@
       </div>
     </div>
 
-        <div class="row q-pa-md">
+    <!-- Seesion Time And Break Period Table -->
+    <div class="row q-pa-md">
       <div class="col-12">
         <q-markup-table>
           <thead>
@@ -64,9 +65,7 @@
           </thead>
           <tbody>
             <tr>
-              <td class="text-left">
-                توقيت بداية الحصص : {{ session.start }}
-              </td>
+              <td class="text-left">توقيت بداية الحصص : {{ session.start }}</td>
               <td class="text-right">
                 <q-btn dense flat @click="isTimeDialogOpen = true">
                   <q-icon name="o_edit" color="teal" />
@@ -75,7 +74,7 @@
             </tr>
             <tr>
               <td class="text-left">
-               إستراحة بين الحصص (دقائق)  : {{ session.break }}
+                إستراحة بين الحصص (دقائق) : {{ session.break }}
               </td>
               <td class="text-right">
                 <q-btn dense flat @click="isBreakDialogOpen = true">
@@ -88,35 +87,58 @@
       </div>
     </div>
 
-        <div class="row q-pa-md">
+    <!-- Semesters Table -->
+    <div class="row q-pa-md">
       <div class="col-12">
         <q-markup-table>
           <thead>
             <tr>
               <th class="text-left">الفصول الدراسية</th>
               <th class="text-right">
-                <q-btn dense round size="sm" @click="isAddSemesterDialogOpen = true" color="primary">
-                        <q-icon name="o_add" />
-                </q-btn>
-                <q-btn dense round size="sm" @click="saveSemestersIntoDb" color="primary" type="submit">
-                        <q-icon name="o_save" />
+                <q-btn
+                  dense
+                  round
+                  size="sm"
+                  @click="isAddSemesterDialogOpen = true"
+                  color="primary"
+                >
+                  <q-icon name="o_add" />
                 </q-btn>
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="sem in semesters" :key="sem.id">
+            <tr v-for="(sem, i) in semesters" :key="sem.id">
               <td class="text-left">
                 {{ sem.name }}
               </td>
               <td class="text-right">
-                <q-btn dense flat @click="
-                isAddSemesterDialogOpen = true , 
-                selectedSemId = sem.id,
-                semesterTitle = sem.name">
+                <q-btn
+                  dense
+                  flat
+                  :disable="sem.isCurrent"
+                  @click="updateCurrentSemester(sem.id)"
+                >
+                  <q-icon
+                    :color="sem.isCurrent ? 'primary' : 'black'"
+                    size="xs"
+                    :name="
+                      sem.isCurrent ? 'check_circle' : 'check_circle_outline'
+                    "
+                  />
+                </q-btn>
+                <q-btn
+                  dense
+                  flat
+                  @click="
+                    (isAddSemesterDialogOpen = true),
+                      (selectedSemId = sem.id),
+                      (semesterTitle = sem.name)
+                  "
+                >
                   <q-icon name="o_edit" color="teal" />
                 </q-btn>
-                <q-btn dense flat color="red" @click="onDeleteSemeter(sem.id)">
+                <q-btn dense flat color="red" @click="onDeleteSemeter(i)">
                   <q-icon name="o_delete"></q-icon>
                 </q-btn>
               </td>
@@ -145,30 +167,12 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn flat label="حفظ" @click="saveCurrentYear" :loading="GET_LOADING" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <q-dialog v-model="isBreakDialogOpen" persistent>
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">الإستراحة بين الحصص</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-input
-            dense
-            outlined
-            v-model="session.break"
-            autofocus
-            @keyup.enter="isBreakDialogOpen = false"
+          <q-btn
+            flat
+            label="حفظ"
+            @click="saveCurrentYear"
+            :loading="GET_LOADING"
           />
-        </q-card-section>
-
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn flat label="حفظ" @click="updateSessionSettings" :loading="GET_LOADING" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -198,10 +202,20 @@
               </q-icon>
             </template>
           </q-input>
-          <q-input v-model="endPeriodDate" outlined readonly mask="date" class="q-mt-md">
+          <q-input
+            v-model="endPeriodDate"
+            outlined
+            readonly
+            mask="date"
+            class="q-mt-md"
+          >
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qEndDateProxy" transition-show="scale" transition-hide="scale">
+                <q-popup-proxy
+                  ref="qEndDateProxy"
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
                   <q-date
                     v-model="endPeriodDate"
                     mask="YYYY/MM/DD"
@@ -215,13 +229,86 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn flat label="حفظ" @click="onPeriodFormSubmit" :loading="GET_LOADING" />
+          <q-btn
+            flat
+            label="حفظ"
+            @click="onPeriodFormSubmit"
+            :loading="GET_LOADING"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="isAddSemesterDialogOpen" persistent>
+    <!-- Seesion Start Dialog -->
+    <q-dialog
+      v-model="isTimeDialogOpen"
+      @before-show="onSessionStartTimeDialogShown"
+    >
       <q-card>
+        <q-card-section>
+          <div class="text-h6">وقت بداية الحصة</div>
+        </q-card-section>
+        <q-card-section>
+          <q-time v-model="sesstionStartTime" landscape />
+        </q-card-section>
+        <q-card-actions align="right" class="text-primary">
+          <q-btn
+            flat
+            label="إلغاء"
+            v-close-popup
+            @click="isTimeDialogOpen = false"
+          />
+          <q-btn
+            flat
+            label="حفظ"
+            @click="updateSessionStartTime"
+            :loading="GET_LOADING"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Break Dialog -->
+    <q-dialog
+      v-model="isBreakDialogOpen"
+      @before-show="onSessionBreakDialogShown"
+      persistent
+    >
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">الإستراحة بين الحصص</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            dense
+            outlined
+            v-model="sessionBreak"
+            autofocus
+            @keyup.enter="isBreakDialogOpen = false"
+          />
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn
+            flat
+            label="إلغاء"
+            v-close-popup
+            @click="isBreakDialogOpen = false"
+          />
+          <q-btn
+            flat
+            label="حفظ"
+            @click="updateSessionBreak"
+            :loading="GET_LOADING"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Add Semester Dialog -->
+    <q-dialog v-model="isAddSemesterDialogOpen" persistent>
+      <q-card style="width: 400px">
         <q-card-section>
           <div class="text-h6">اسم الفصل</div>
         </q-card-section>
@@ -233,24 +320,33 @@
             v-model="semesterTitle"
             autofocus
             @keyup.enter="isAddSemesterDialogOpen = false"
+            :rules="[
+              (val) => val.length > 0 || 'الرجاء كتابة أسم الفصل الدراسي',
+            ]"
           />
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="إلغاء" v-close-popup />
-          <q-btn flat label="حفظ" @click="addNewSemester" :loading="GET_LOADING" />
+          <q-btn
+            flat
+            label="إلغاء"
+            v-close-popup
+            @click="isAddSemesterDialogOpen = false"
+          />
+          <q-btn
+            flat
+            label="حفظ"
+            @click="addNewSemester"
+            :loading="GET_LOADING"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
-
-    <TimePicker :isOpen="isTimeDialogOpen" :time="session.start"
-     @cancel="isTimeDialogOpen = false"
-     @saveTime="updateSessionSettings" />
   </q-page>
 </template>
 
 <script>
-import { date } from "quasar";
+import { date, uid } from "quasar";
 import { mapGetters, mapActions } from "vuex";
 import { GETTERS, ACTIONS, MESSAGES, ERRORS } from "../../../config/constants";
 
@@ -259,24 +355,23 @@ const today = new Date();
 
 export default {
   name: "PageYearInfoSettings",
-  components : {
-    TimePicker : ()=> import('components/TimePicker.vue')
-  },
   data() {
     return {
-      isTimeDialogOpen : false,
-      isBreakDialogOpen  :false,
-      session : { break : 0 , start : "8:00"},
+      isTimeDialogOpen: false,
+      isBreakDialogOpen: false,
+      sesstionStartTime: "",
+      sessionBreak: "",
+      session: { break: 0, start: "" },
       yearInfo: {},
       currentYear: "",
-      semesterTitle : "",
-      selectedSemId : -1,
-      semesters : [],    
+      semesterTitle: "",
+      selectedSemId: -1,
+      semesters: [],
       startPeriodDate: date.formatDate(today, "YYYY/MM/DD"),
       endPeriodDate: date.formatDate(today, "YYYY/MM/DD"),
       isYearDialogOpen: false,
       isDateDialogOpen: false,
-      isAddSemesterDialogOpen : false,
+      isAddSemesterDialogOpen: false,
     };
   },
   created() {
@@ -288,14 +383,11 @@ export default {
       GET_YEAR_INFO: GETTERS.SETTINGS.GET_YEAR_INFO,
       GET_LOADING: GETTERS.UI.GET_LOADING,
       GET_MESSAGES: GETTERS.UI.GET_MESSAGES,
-      GET_ERRORS: GETTERS.UI.GET_ERRORS
+      GET_ERRORS: GETTERS.UI.GET_ERRORS,
     }),
     getTodayDate() {
-      return date.toISOString
-        .split("T")[0]
-        .split("-")
-        .join("/");
-    }
+      return date.toISOString.split("T")[0].split("-").join("/");
+    },
   },
   methods: {
     ...mapActions({
@@ -303,36 +395,59 @@ export default {
       SET_YEAR_NAME: ACTIONS.SETTINGS.SET_YEAR_NAME,
       SET_REGISTRATION_PERIOD: ACTIONS.SETTINGS.SET_REGISTRATION_PERIOD,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
-      SET_YEAR_SEMESTERS : ACTIONS.SETTINGS.SET_YEAR_SEMESTERS,
-      SET_SESSION_SETTINGS : ACTIONS.SETTINGS.SET_SESSION_SETTINGS,
+      SET_YEAR_SEMESTERS: ACTIONS.SETTINGS.SET_YEAR_SEMESTERS,
+      SET_SESSION_SETTINGS: ACTIONS.SETTINGS.SET_SESSION_SETTINGS,
+      UPDATE_YEAR_SEMESTERS: ACTIONS.SETTINGS.UPDATE_YEAR_SEMESTERS,
     }),
-    updateSessionSettings(){
-      console.log(this.SET_SESSION_SETTINGS);
-      this.SET_SESSION_SETTINGS({ session : this.session});
+    updateCurrentSemester(id) {
+      let updatedSemesters = this.GET_YEAR_INFO.semesters.map((s) => {
+        return {
+          isCurrent: s.id === id ? true : false,
+          id: s.id,
+          name: s.name,
+        };
+      });
+
+      // console.log("Updated Semesters", updatedSemesters);
+
+      this.UPDATE_YEAR_SEMESTERS({
+        year: this.GET_YEAR_INFO.id,
+        semesters: updatedSemesters,
+      });
     },
-    saveSemestersIntoDb()
-    {
+    onSessionStartTimeDialogShown() {
+      this.sesstionStartTime = this.GET_YEAR_INFO.session.start;
+    },
+    updateSessionStartTime() {
+      this.session = { ...this.session, start: this.sesstionStartTime };
+      this.SET_SESSION_SETTINGS({ session: this.session });
+    },
+    onSessionBreakDialogShown() {
+      this.sessionBreak = this.GET_YEAR_INFO.session.break;
+    },
+    updateSessionBreak() {
+      this.session = { ...this.session, break: this.sessionBreak };
+      this.SET_SESSION_SETTINGS({ session: this.session });
+    },
+    saveSemestersIntoDb() {
       this.SET_YEAR_SEMESTERS(this.semesters);
     },
-    onDeleteSemeter(id){
-      this.semesters.splice(id-1,1);
+    // TODO add validation not allowing to delte while there is subjects using that semester
+    onDeleteSemeter(index) {
+      this.semesters.splice(index, 1);
+      this.saveSemestersIntoDb();
     },
     addNewSemester() {
-      if (this.selectedSemId > -1)
-      {
-        this.semesters
-        .find(sem => sem.id == this.selectedSemId)
-        .name = this.semesterTitle;
-        this.selectedSemId = -1;
-      }else{
-        this.semesters.push({
-        id : this.semesters.length + 1,
-        name : this.semesterTitle,
-      });
+      if (this.semesterTitle !== "") {
+        // Get Length of Semeter Array
+        if (Object.keys(this.GET_YEAR_INFO).length > 0) {
+          this.SET_YEAR_SEMESTERS({
+            id: uid(),
+            isCurrent: false,
+            name: this.semesterTitle,
+          });
+        }
       }
-      
-      this.semesterTitle = "";
-      this.isAddSemesterDialogOpen = false;
     },
     saveCurrentYear() {
       if (this.currentYear === "") return;
@@ -349,7 +464,7 @@ export default {
         this.$q.dialog({
           title: "تنبيه",
           message:
-            "يجب أن يكون تاريخ بداية التسجيل أصغر من أو يساوي تاريخ إنتهاء التسجيل"
+            "يجب أن يكون تاريخ بداية التسجيل أصغر من أو يساوي تاريخ إنتهاء التسجيل",
         });
         return;
       }
@@ -357,22 +472,26 @@ export default {
       // Set Registration Period Dates
       this.SET_REGISTRATION_PERIOD({
         startPeriodDate: startDateTimestamp,
-        endPeriodDate: endDateTimestamp
+        endPeriodDate: endDateTimestamp,
       });
-    }
+    },
   },
   filters: {
     getDate(val) {
       return date.formatDate(val, "YYYY/MM/DD");
-    }
+    },
   },
   watch: {
-    GET_YEAR_INFO: function(newState, oldState) {
+    GET_YEAR_INFO: function (newState, oldState) {
       if (Object.keys(newState).length > 0) {
         console.log(newState);
         this.currentYear = newState.name;
         this.semesters = newState.semesters;
         this.session = newState.session;
+        let time = this.session.start.split(":");
+        if (time[0].length == 1) {
+          this.session.start = "0" + time[0] + ":" + time[1];
+        }
         (this.startPeriodDate = date.formatDate(
           newState.startPeriodDate,
           "YYYY/MM/DD"
@@ -383,7 +502,7 @@ export default {
           ));
       }
     },
-    GET_MESSAGES: function(newState, oldState) {
+    GET_MESSAGES: function (newState, oldState) {
       if (newState.length > 0) {
         // Get Message Code
         let messageCode = newState[0].code;
@@ -398,11 +517,12 @@ export default {
           // Display Success Dialog
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم إضافة بيانات السنة الدراسية بنجاح"
+            message: "تم إضافة بيانات السنة الدراسية بنجاح",
           });
 
           // Dismiss Dialog
           this.isYearDialogOpen = false;
+          this.isAddSemesterDialogOpen = false;
         }
 
         if (messageCode === MESSAGES.DATABASE.YEAR_INFO_UPDATED) {
@@ -415,11 +535,13 @@ export default {
           // Display Success Dialog
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم تحديث بيانات السنة الدراسية بنجاح"
+            message: "تم تحديث بيانات السنة الدراسية بنجاح",
           });
 
           // Dismiss Dialog
           this.isYearDialogOpen = false;
+          this.isAddSemesterDialogOpen = false;
+          this.semesterTitle = "";
         }
 
         if (
@@ -435,15 +557,17 @@ export default {
           // Display Success Dialog
           this.$q.dialog({
             title: "تمت العملية بنجاح",
-            message: "تم تحديث بيانات السنة الدراسية بنجاح"
+            message: "تم تحديث بيانات السنة الدراسية بنجاح",
           });
 
           // Dismiss Dialog
           this.isDateDialogOpen = false;
+          this.isTimeDialogOpen = false;
+          this.isBreakDialogOpen = false;
         }
       }
     },
-    GET_ERRORS: function(newState, oldState) {
+    GET_ERRORS: function (newState, oldState) {
       if (newState.length > 0) {
         // Get Message Code
         let errorCode = newState[0].code;
@@ -455,12 +579,12 @@ export default {
           // Display Success Dialog
           this.$q.dialog({
             title: "خطأ",
-            message: "حدث خطأ اثناء إضافة / تحديث بيانات السنة الدراسية"
+            message: "حدث خطأ اثناء إضافة / تحديث بيانات السنة الدراسية",
           });
         }
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

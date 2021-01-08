@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { uid } from "quasar";
 import { mapGetters, mapActions } from "vuex";
 import { GETTERS, ACTIONS } from "../config/constants";
 
@@ -72,6 +73,7 @@ export default {
         });
       } else {
         this.ADD_MEMORIZATION({
+          uid: uid(),
           name: this.name,
         });
       }

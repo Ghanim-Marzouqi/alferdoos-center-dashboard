@@ -34,3 +34,6 @@ yarn-error.log*
 
 .env
 .firebase
+
+/serverless/node_modules
+/serverless/functions/node_modules

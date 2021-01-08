@@ -16,7 +16,7 @@
 
             <q-select filled v-model="session.teacher" :options="teachers"
           :option-label="teacher => teacher.name"
-          :rules="[val => val && val.length > 0 || 'اخر معلم']"
+          :rules="[val => val && val.length > 0 || 'اختر معلم']"
            label="إختر معلم" />
            <div class="text-h6">الوقت (بالدقائق)</div>
           <q-input
