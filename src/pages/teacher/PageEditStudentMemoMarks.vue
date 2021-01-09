@@ -150,10 +150,10 @@ export default {
          let currentPage = Math.max.apply(Math, marks.map(x => parseInt(x.page)));
          let currentRecords = marks.filter(x => x.page == currentPage);
          let lastRecordNum = Math.max.apply(Math, currentRecords.map(x => parseInt(x.repeat)));
-         let currentRecord = currentRecords.find(x => x.repeat == lastRecordNum);
+         let currentRecord = currentRecords?.find(x => x.repeat == lastRecordNum);
          console.log(currentRecord);
          if (!currentRecord.status)
-            repeat = currentRecord.repeat + 1;
+            repeat = currentRecord?.repeat + 1;
         }
         
       return repeat;
@@ -169,9 +169,9 @@ export default {
          let currentPage = Math.max.apply(Math, marks.map(x => parseInt(x.page)));
          let currentRecords = marks.filter(x => x.page == currentPage);
          let lastRecordNum = Math.max.apply(Math, currentRecords.map(x => parseInt(x.repeat)));
-         let currentRecord = currentRecords.find(x => x.repeat == lastRecordNum);
+         let currentRecord = currentRecords?.find(x => x.repeat == lastRecordNum);
          console.log(currentRecord);
-         if (currentRecord.status)
+         if (currentRecord?.status)
            page  = currentPage +1;
         else{
           page = currentPage;
