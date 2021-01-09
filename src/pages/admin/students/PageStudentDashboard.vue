@@ -127,6 +127,7 @@
         <div class="col-6">
           <q-card class="column justify-center items-center">
             <q-icon
+            @click="isMemoMarksDialogOpen = true"
               style="font-size: 75px"
               color="primary"
               name="o_menu_book"
@@ -164,6 +165,12 @@
       @close="isSchedualDialogOpen = false"
     />
 
+<MemoMarksDialog
+      :isOpen="isMemoMarksDialogOpen"
+      :studentId="student.id"
+      :groupId="student.groupId"
+      @close="isMemoMarksDialogOpen = false"
+    />
     <AbsenceDialog
       :isOpen="isAbsenceRecordsDialogOpen"
       :studentId="student.id"
@@ -188,9 +195,12 @@ export default {
     BehaviorDialog: () => import("components/StudentShowBehaviorsDialog"),
     AbsenceDialog: () => import("components/StudentShowAbsenceRecordsDialog"),
     SchedualDialog: () => import("components/StudentShowSchedualDialog"),
+    MemoMarksDialog: () => import("components/StudentShowMemoMarksDialog"),
+    
   },
   data() {
     return {
+      isMemoMarksDialogOpen : false,
       isBehaviorDialogOpened: false,
       isAbsenceRecordsDialogOpen: false,
       isSchedualDialogOpen: false,
