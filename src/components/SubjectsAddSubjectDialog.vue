@@ -16,7 +16,7 @@
                   <div class="text-weight-bold">إسم المادة:</div>
                   <div class="row">
                     <div class="col-8">
-                                        <q-input
+                  <q-input
                     dense
                     square
                     outlined
@@ -45,6 +45,7 @@
 
 
                   <div class="text-weight-bold">المعلمين</div>
+                  <q-checkbox v-model="allTeachers" label="الكل ؟" @input="setAllTeachers"/>
                   <q-select
                     v-model="subject.teachers"
                     multiple
@@ -208,7 +209,9 @@ export default {
     default : "add"}
   },
   data() {
-    return {};
+    return {
+      allTeachers  : false,
+    };
   },
   computed: {
     ...mapGetters({
@@ -225,6 +228,9 @@ export default {
       UPDATE_SUBJECT: ACTIONS.SUBJECTS.UPDATE_SUBJECT,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
+    setAllTeachers(){
+     this.subject.teachers =  this.allTeachers ? this.GET_TEACHERS : [];
+    },
     emoveFile(index){
       this.subject.uplodedFiles.splice(index,1);
     },

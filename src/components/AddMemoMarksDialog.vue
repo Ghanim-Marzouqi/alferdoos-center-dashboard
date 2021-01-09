@@ -174,6 +174,7 @@ export default {
         mistakes: this.mistake,
         notifications: this.notifications,
         result: this.result,
+        date : Date.now()
       });
 
       this.closeDialog();

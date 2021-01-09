@@ -126,12 +126,12 @@ export default {
     };
   },
   async created() {
+    await this.FETCH_YRAT_INFO();
     await this.FETCH_GROUPS();
     await this.FETCH_STUDENTS({ status: "" });
-    this.FETCH_ENTRIES();
-    this.FETCH_YRAT_INFO();
+    await this.FETCH_ENTRIES();
     await this.FETCH_SCHEDUAL();
-    await this.FETCH_BEHAVIOR({ year: "2020" });
+    await this.FETCH_BEHAVIOR({ year: this.GET_YEAR_INFO.name });
 
   },
   methods: {
@@ -149,6 +149,7 @@ export default {
       let behavior = this.GET_BEHAVIORS.filter(
         (b) => b.behaviorType == type && b.student.id == sid
       );
+      console.log(type);
       return behavior.length;
     },
     openDialog(beh, isEdit, student) {
@@ -222,7 +223,7 @@ export default {
 
         if (messageCode === MESSAGES.DATABASE.BEHAVIOR_ADDED) {
           this.CLEAR_ERRORS_AND_MESSAGES();
-          this.FETCH_BEHAVIOR({ year: "2020" });
+          this.FETCH_BEHAVIOR({ year: this.GET_YEAR_INFO.name });
           this.$q.dialog({
             title: "تمت العملية بنجاح",
             message: "تم إضافة السلوك بنجاح",

@@ -6,7 +6,9 @@
           filled
           @input="changeGroup"
           v-model="group"
-          :options="groups"
+          :option-label="(obj) => obj.name"
+          :option-value="(obj) => obj.id"
+          :options="GET_GROUPS"
           label="إختر مجموعة"
         />
       </div>
@@ -23,45 +25,82 @@
     </div>
 
     <div class="row">
-      <div v-for="student in students" :key="student.id" class="col-md-3">
-        <q-card class="my-card q-ma-md" style="margin-top: 10px">
-          <div class="row justify-center q-mt-md"></div>
-          <div class="row justify-center q-ma-md">
-            <p style="font-size: 15px; margin-top: 10px">
-              {{ student.name }}
-              <br />
-            </p>
-          </div>
+      <div v-for="student in students" :key="student.id" class="col-md-6">
+        <q-card class="q-ma-md full-height" style="margin-top: 10px">
+          <q-card-section>
+            <div class="row justify-center q-mt-md"></div>
+            <div class="row justify-center q-ma-md">
+              <p style="font-size: 15px; margin-top: 10px">
+                {{ student.name }}
+                <br />
+              </p>
+            </div>
 
-          <q-list style="width: 100%">
-            <q-item v-for="(detail, i) in selectdMemo.details" :key="i">
-              <q-item-section class="justify-start" avatar>
-                <q-btn
-                  dense
-                  round
-                  size="sm"
-                  color="primary"
-                  @click="
-                    (isAddMemoMarksDialogOpen = true),
-                      (selectdStudent = student.id),
-                      (memoDetail = detail),
-                      (selectdMemoId = selectdMemo.id),
-                      (nextPage = setPageNext(student.id,selectdMemo.id,detail))
-                  "
-                >
-                  <q-icon name="o_add" />
-                </q-btn>
-              </q-item-section>
-              <q-item-section>
-                {{ detail.name }}
-              </q-item-section>
-              <q-item-section>
-              </q-item-section>
-              <q-item-section side>
-                {{ setPageNext(student.id,selectdMemo.id,detail) }}
-              </q-item-section>
-            </q-item>
-          </q-list>
+            <q-markup-table flat bordered>
+              <tbody>
+                <tr dense v-for="(detail, i) in selectdMemo.details" :key="i">
+                  <td>
+                    <q-btn
+                      dense
+                      round
+                      size="sm"
+                      color="primary"
+                      @click="
+                        (isAddMemoMarksDialogOpen = true),
+                          (selectdStudent = student.id),
+                          (memoDetail = detail),
+                          (selectdMemoId = selectdMemo.id),
+                          (nextPage = setPageNext(
+                            student.id,
+                            selectdMemo.id,
+                            detail
+                          ))
+                      "
+                    >
+                      <q-icon name="o_add" />
+                    </q-btn>
+                  </td>
+                  <td>{{ detail.name }}<br>
+                    {{ detail.date }}
+                  </td>
+                  <td></td>
+                  <td>{{ setPageNext(student.id, selectdMemo.id, detail) }}</td>
+                  
+                </tr>
+              </tbody>
+            </q-markup-table>
+
+            <!-- <q-list style="width: 100%">
+              <q-item v-for="(detail, i) in selectdMemo.details" :key="i">
+                <q-item-section class="justify-start" avatar>
+                  <q-btn
+                    dense
+                    round
+                    size="sm"
+                    color="primary"
+                    @click="
+                      (isAddMemoMarksDialogOpen = true),
+                        (selectdStudent = student.id),
+                        (memoDetail = detail),
+                        (selectdMemoId = selectdMemo.id),
+                        (nextPage = setPageNext(
+                          student.id,
+                          selectdMemo.id,
+                          detail
+                        ))
+                    "
+                  >
+                    <q-icon name="o_add" />
+                  </q-btn>
+                </q-item-section>
+                <q-item-section> </q-item-section>
+                <q-item-section> </q-item-section>
+                <q-item-section side>
+                  {{ setPageNext(student.id, selectdMemo.id, detail) }}
+                </q-item-section>
+              </q-item>
+            </q-list> -->
+          </q-card-section>
         </q-card>
       </div>
     </div>
@@ -113,18 +152,6 @@ export default {
     await this.FETCH_YRAT_INFO();
     await this.FETCH_MEMO_MARKS();
     await this.FETCH_SCHEDUAL();
-
-    this.GET_SCHADUALS.forEach((sch) => {
-      Object.values(sch).forEach((day) => {
-        if (Array.isArray(day)) {
-          !day.some((session) => session.teacher.id == this.GET_USER.id)
-            ? ""
-            : !this.groups.some((g) => g.value == sch.group.value)
-            ? this.groups.push(sch.group)
-            : "";
-        }
-      });
-    });
   },
   methods: {
     ...mapActions({
@@ -137,32 +164,23 @@ export default {
       FETCH_YRAT_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
-    setPageNext(sid,mid,detail)
-    {
-
+    setPageNext(sid, mid, detail) {
       let page = 0;
-      let marks = this.GET_MEMO_MARKS
-      .filter(x => x.studentId === sid && x.memoId === mid && detail.uid === x.detailsId);
+      let marks = this.GET_MEMO_MARKS.filter(
+        (x) =>
+          x.studentId === sid && x.memoId === mid && detail.uid === x.detailsId
+      );
 
       if (marks.length > 0)
-         page = Math.max.apply(Math,marks.map(x => parseInt(x.page)))+1
-      else 
-         page = detail.pageNumberFrom;
-         
+        page =
+          Math.max.apply(
+            Math,
+            marks.map((x) => parseInt(x.page))
+          ) + 1;
+      else page = detail.pageNumberFrom;
       return page;
-
     },
 
-    // getTotalMark(sid,mid,detail)
-    // {
-    //   let marks = this.GET_MEMO_MARKS
-    //   .filter(x => x.studentId === sid && x.memoId === mid && detail.uid === x.detailsId);
-
-          
-         
-    //   return page;
-
-    // },
     changeMemoDetails() {
       console.log(this.selectdMemo);
       this.memoDetails = this.memorizations.filter(
@@ -170,14 +188,14 @@ export default {
       ).details;
       this.students = this.GET_STUDENTS.filter(
         (student) =>
-          student.groupId != undefined && student.groupId == this.group.value
+          student.groupId != undefined && student.groupId == this.group.id
       );
     },
     changeGroup() {
       let groupMemorizations = this.GET_GROUPS.find(
-        (x) => x.id == this.group.value
+        (x) => x.id == this.group.id
       ).memorizations;
-      this.memorizations = groupMemorizations.map((memo) => {
+      this.memorizations = groupMemorizations?.map((memo) => {
         let original = this.GET_MEMORIZATIONS.find(
           (m) => m.id === memo.memorizationId
         );
