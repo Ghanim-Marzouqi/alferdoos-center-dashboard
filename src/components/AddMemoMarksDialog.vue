@@ -196,6 +196,7 @@ export default {
         mistakes: this.mistake,
         notifications: this.notifications,
         result: this.result,
+        date : Date.now(),
         status : this.getStatus(),
         repeat : this.repeat
       });

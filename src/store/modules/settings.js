@@ -593,7 +593,8 @@ const actions = {
                     page: doc.data().page,
                     mistakes: doc.data().mistakes,
                     notifications: doc.data().notifications,
-                    result: doc.data().result
+                    result: doc.data().result,
+                    date : doc.data().date
                 }));
 
                 commit(MUTATIONS.SETTINGS.SET_MEMO_MARKS, memoMarks);

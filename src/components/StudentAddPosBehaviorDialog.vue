@@ -1,7 +1,6 @@
 <template>
   <q-dialog v-model="isOpen" width="400px" persistent>
     <q-card>
-      {{ behaviors }}
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">{{ title }}</div>
         <q-space />

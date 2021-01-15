@@ -60,6 +60,9 @@
                 </q-avatar>
               </div>
               <div class="row justify-center">
+                <p style="font-size: 10px; margin-bottom:-3px;" v-html="agenda.teacher.name"></p>
+              </div>
+              <div class="row justify-center">
                 <p style="font-size: 20px; margin-bottom:-3px;" v-html="agenda.subject.name"></p>
               </div>
               <div class="row justify-center">{{ agenda.fromTime }} - {{ agenda.toTime }}</div>
