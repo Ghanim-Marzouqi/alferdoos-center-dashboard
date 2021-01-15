@@ -46,6 +46,7 @@
                       (selectdStudent = student.id),
                       (memoDetail = detail),
                       (selectdMemoId = selectdMemo.id),
+                      (repeat = setRepeat(student.id,selectdMemo.id,detail)),
                       (nextPage = setPageNext(student.id,selectdMemo.id,detail))
                   "
                 >
@@ -67,12 +68,13 @@
     </div>
 
     <AddMemoMarksDialog
-      @closeDialog="isAddMemoMarksDialogOpen = false"
+      @closeDialog="isAddMemoMarksDialogOpen = false,repeat = 0"
       :isDialogOpen="isAddMemoMarksDialogOpen"
       :detail="memoDetail"
       :memoId="selectdMemoId"
       :student="selectdStudent"
       :page="nextPage"
+      :repeat="repeat"
     />
   </q-page>
 </template>
@@ -90,6 +92,7 @@ export default {
   },
   data() {
     return {
+      repeat : 0,
       groups: [],
       memoDetails: [],
       memorizations: [],
@@ -137,6 +140,24 @@ export default {
       FETCH_YRAT_INFO: ACTIONS.SETTINGS.FETCH_YEAR_INFO,
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
+    setRepeat(sid,mid,detail)
+    {
+      let repeat = 0;
+      let marks = this.GET_MEMO_MARKS
+      .filter(x => x.studentId === sid && x.memoId === mid && detail.uid === x.detailsId);
+
+      if (marks.length > 0){
+         let currentPage = Math.max.apply(Math, marks.map(x => parseInt(x.page)));
+         let currentRecords = marks.filter(x => x.page == currentPage);
+         let lastRecordNum = Math.max.apply(Math, currentRecords.map(x => parseInt(x.repeat)));
+         let currentRecord = currentRecords?.find(x => x.repeat == lastRecordNum);
+         console.log(currentRecord);
+         if (!currentRecord.status)
+            repeat = currentRecord?.repeat + 1;
+        }
+        
+      return repeat;
+    },
     setPageNext(sid,mid,detail)
     {
 
@@ -144,8 +165,19 @@ export default {
       let marks = this.GET_MEMO_MARKS
       .filter(x => x.studentId === sid && x.memoId === mid && detail.uid === x.detailsId);
 
-      if (marks.length > 0)
-         page = Math.max.apply(Math,marks.map(x => parseInt(x.page)))+1
+      if (marks.length > 0){
+         let currentPage = Math.max.apply(Math, marks.map(x => parseInt(x.page)));
+         let currentRecords = marks.filter(x => x.page == currentPage);
+         let lastRecordNum = Math.max.apply(Math, currentRecords.map(x => parseInt(x.repeat)));
+         let currentRecord = currentRecords?.find(x => x.repeat == lastRecordNum);
+         console.log(currentRecord);
+         if (currentRecord?.status)
+           page  = currentPage +1;
+        else{
+          page = currentPage;
+        }
+        
+      }
       else 
          page = detail.pageNumberFrom;
          
@@ -153,16 +185,6 @@ export default {
 
     },
 
-    // getTotalMark(sid,mid,detail)
-    // {
-    //   let marks = this.GET_MEMO_MARKS
-    //   .filter(x => x.studentId === sid && x.memoId === mid && detail.uid === x.detailsId);
-
-          
-         
-    //   return page;
-
-    // },
     changeMemoDetails() {
       console.log(this.selectdMemo);
       this.memoDetails = this.memorizations.filter(
@@ -174,10 +196,12 @@ export default {
       );
     },
     changeGroup() {
+      this.memorizations = [];
+      this.students = [];
       let groupMemorizations = this.GET_GROUPS.find(
         (x) => x.id == this.group.value
       ).memorizations;
-      this.memorizations = groupMemorizations.map((memo) => {
+      this.memorizations = groupMemorizations?.map((memo) => {
         let original = this.GET_MEMORIZATIONS.find(
           (m) => m.id === memo.memorizationId
         );

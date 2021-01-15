@@ -586,6 +586,8 @@ const actions = {
                 let memoMarks = docs.map(doc => ({
                     uid: doc.data().uid,
                     studentId: doc.data().studentId,
+                    status : doc.data().status,
+                    repeat : doc.data().repeat,
                     detailsId: doc.data().detailsId,
                     memoId: doc.data().memoId,
                     page: doc.data().page,
