@@ -66,7 +66,7 @@
                     :key="i"
                     clickable
                     icon-right="o_get_app"
-                    @click=" downloadFile(file)"
+                    @click="downloadFile(file)"
                     >{{ file.name }}</q-chip
                   >
                 </div>
@@ -89,9 +89,9 @@
 </template>
 
 <script>
-import { date } from "quasar";
 import { mapGetters, mapActions } from "vuex";
 import { MESSAGES, ERRORS, GETTERS, ACTIONS } from "../../config/constants";
+import { downloadDocument } from "../../services/document-service";
 
 export default {
   name: "PageAdminMessages",
@@ -151,34 +151,40 @@ export default {
       CLEAR_ERRORS_AND_MESSAGES: ACTIONS.UI.CLEAR_ERRORS_AND_MESSAGES,
     }),
     downloadFile(file) {
-      try {
-        var xhr = new XMLHttpRequest();
-        xhr.responseType = "blob";
-        xhr.onload = function (event) {
-          var blob = xhr.response;
-          let link = document.createElement("a");
-          link.href = window.URL.createObjectURL(blob);
-          link.download = file.name;
-          link.click();
-        };
-        xhr.open("GET", file.fileUrl);
-        xhr.send();
-      } catch (error) {
-        switch (error.code) {
-          case ERRORS.STORAGE.OBJECT_NOT_FOUND:
-            this.SET_ERROR(ERRORS.STORAGE.OBJECT_NOT_FOUND);
-            break;
-          case ERRORS.STORAGE.UNAUTHORIZED:
-            this.SET_ERROR(ERRORS.STORAGE.UNAUTHORIZED);
-            break;
-          case ERRORS.STORAGE.CANCELED:
-            this.SET_ERROR(ERRORS.STORAGE.CANCELED);
-            break;
-          case ERRORS.STORAGE.UNKNOWN:
-            this.SET_ERROR(ERRORS.STORAGE.UNKNOWN);
-            break;
-        }
+      let { status, isError } = downloadDocument(file.name, file.fileUrl);
+
+      if (isError) {
+        this.SET_ERROR(status);
       }
+
+      // try {
+      //   var xhr = new XMLHttpRequest();
+      //   xhr.responseType = "blob";
+      //   xhr.onload = function (event) {
+      //     var blob = xhr.response;
+      //     let link = document.createElement("a");
+      //     link.href = window.URL.createObjectURL(blob);
+      //     link.download = file.name;
+      //     link.click();
+      //   };
+      //   xhr.open("GET", file.fileUrl);
+      //   xhr.send();
+      // } catch (error) {
+      //   switch (error.code) {
+      //     case ERRORS.STORAGE.OBJECT_NOT_FOUND:
+      //       this.SET_ERROR(ERRORS.STORAGE.OBJECT_NOT_FOUND);
+      //       break;
+      //     case ERRORS.STORAGE.UNAUTHORIZED:
+      //       this.SET_ERROR(ERRORS.STORAGE.UNAUTHORIZED);
+      //       break;
+      //     case ERRORS.STORAGE.CANCELED:
+      //       this.SET_ERROR(ERRORS.STORAGE.CANCELED);
+      //       break;
+      //     case ERRORS.STORAGE.UNKNOWN:
+      //       this.SET_ERROR(ERRORS.STORAGE.UNKNOWN);
+      //       break;
+      //   }
+      // }
     },
     onAddNewMessage() {
       this.$router.push({

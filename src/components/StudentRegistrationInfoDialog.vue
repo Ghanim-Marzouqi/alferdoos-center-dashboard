@@ -10,7 +10,13 @@
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">{{ registeredStudent.name }}</div>
         <q-space />
-        <q-btn icon="close" flat round dense @click="$emit('closeStudentRegistrationInfoDialog')" />
+        <q-btn
+          icon="close"
+          flat
+          round
+          dense
+          @click="$emit('closeStudentRegistrationInfoDialog')"
+        />
       </q-card-section>
 
       <q-card-section class="q-pt-none">
@@ -20,25 +26,25 @@
             <div class="col-xs-12 col-md-8">
               <p class="text-weight-bold">
                 انهى الصف:
-                <span class="text-weight-bold text-blue">{{ getStudentGrade }}</span>
+                <span class="text-weight-bold text-blue">{{
+                  getStudentGrade
+                }}</span>
               </p>
               <div class="row">
                 <div class="col-xs-12 col-md-6">
                   <p class="text-weight-bold">
                     عدد المواد بتقدير (أ):
                     <strong class="text-blue">
-                      {{
-                      registeredStudent.subjectANumber
-                      }}
+                      {{ registeredStudent.subjectANumber }}
                     </strong>
                   </p>
                 </div>
                 <div class="col-xs-12 col-md-6">
                   <p class="text-weight-bold">
                     عدد المواد بتقدير (ب):
-                    <strong
-                      class="text-blue"
-                    >{{ registeredStudent.subjectBNumber }}</strong>
+                    <strong class="text-blue">{{
+                      registeredStudent.subjectBNumber
+                    }}</strong>
                   </p>
                 </div>
               </div>
@@ -49,13 +55,20 @@
                     <li
                       v-for="(chapter, i) in registeredStudent.savedChapters"
                       :key="i"
-                    >{{ chapter }}</li>
+                    >
+                      {{ chapter }}
+                    </li>
                   </ul>
                 </div>
                 <div class="col-xs-12 col-md-6">
                   <strong>السور المحفوظة:</strong>
                   <ul>
-                    <li v-for="(surah, i) in registeredStudent.savedSurahs" :key="i">{{ surah }}</li>
+                    <li
+                      v-for="(surah, i) in registeredStudent.savedSurahs"
+                      :key="i"
+                    >
+                      {{ surah }}
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -67,7 +80,8 @@
                   clickable
                   icon-right="o_get_app"
                   @click="downloadFile(certificate)"
-                >شهادة {{ i + 1 }}</q-chip>
+                  >شهادة {{ i + 1 }}</q-chip
+                >
               </div>
             </div>
             <div class="col-xs-12 col-md-4 text-center">
@@ -80,7 +94,9 @@
                 <template v-slot:error>
                   <div
                     class="absolute-full flex flex-center bg-negative text-white"
-                  >لا يمكن تحميل الصورة</div>
+                  >
+                    لا يمكن تحميل الصورة
+                  </div>
                 </template>
               </q-img>
             </div>
@@ -90,17 +106,17 @@
               <p class="text-weight-bold">معلومات الحالة الصحية للطالب:</p>
               <p>
                 هل يعاني الطالب أي مرض:
-                <strong
-                  class="text-blue"
-                >{{ registeredStudent.studentState === "healthy" ? "لا" : "نعم" }}</strong>
+                <strong class="text-blue">{{
+                  registeredStudent.studentState === "healthy" ? "لا" : "نعم"
+                }}</strong>
               </p>
               <p>
                 الأعراض والأمراض التي يعاني منها الطالب:
                 <span class="text-weight-bold">
                   {{
-                  registeredStudent.diseases === ""
-                  ? "لا يوجد"
-                  : registeredStudent.diseases
+                    registeredStudent.diseases === ""
+                      ? "لا يوجد"
+                      : registeredStudent.diseases
                   }}
                 </span>
               </p>
@@ -111,9 +127,9 @@
                 هل سبق للطالب التعلم في مركز لحفظ القرآن الكريم:
                 <strong class="text-blue">
                   {{
-                  registeredStudent.isLearntInCenterBefore === "yes"
-                  ? "نعم"
-                  : "لا"
+                    registeredStudent.isLearntInCenterBefore === "yes"
+                      ? "نعم"
+                      : "لا"
                   }}
                 </strong>
               </p>
@@ -121,40 +137,38 @@
                 المكان:
                 <span class="text-weight-bold">
                   {{
-                  registeredStudent.oldCenterName === ""
-                  ? "لم يسبق للطالب التعلم في مدرسة لتحفيظ القرآن"
-                  : registeredStudent.oldCenterName
+                    registeredStudent.oldCenterName === ""
+                      ? "لم يسبق للطالب التعلم في مدرسة لتحفيظ القرآن"
+                      : registeredStudent.oldCenterName
                   }}
                 </span>
               </p>
             </div>
             <div class="col-xs-12 col-md-4"></div>
           </div>
-          <p class="text-weight-bold text-indigo q-mt-md">معلومات إضافية عن الطالب:</p>
+          <p class="text-weight-bold text-indigo q-mt-md">
+            معلومات إضافية عن الطالب:
+          </p>
           <div class="row q-ma-md">
             <div class="col-xs-12 col-md-4">
               <P class="text-weight-bold">معلومات ولي الأمر:</P>
               <p>
                 أسم ولي الأمر:
                 <span class="text-weight-bold text-blue">
-                  {{
-                  registeredStudent.parentName
-                  }}
+                  {{ registeredStudent.parentName }}
                 </span>
               </p>
               <p>
                 ارقام الهواتف:
                 <span class="text-weight-bold text-blue">
-                  {{
-                  registeredStudent.firstPhoneNumber
-                  }}
+                  {{ registeredStudent.firstPhoneNumber }}
                 </span>
                 -
                 <span class="text-weight-bold text-blue">
                   {{
-                  registeredStudent.secondPhoneNumber === ""
-                  ? "لا يوجد"
-                  : registeredStudent.secondPhoneNumber
+                    registeredStudent.secondPhoneNumber === ""
+                      ? "لا يوجد"
+                      : registeredStudent.secondPhoneNumber
                   }}
                 </span>
               </p>
@@ -164,22 +178,26 @@
               <p>
                 كيف عرفت عن المركز:
                 <span class="text-weight-bold text-blue">
-                  {{
-                  registeredStudent.centerKnownBy
-                  }}
+                  {{ registeredStudent.centerKnownBy }}
                 </span>
               </p>
             </div>
             <div class="col-xs-12 col-md-4">
               <p class="text-weight-bold">القرية / مكان الإقامة:</p>
-              <span class="text-weight-bold text-blue">{{ registeredStudent.village }}</span>
+              <span class="text-weight-bold text-blue">{{
+                registeredStudent.village
+              }}</span>
             </div>
           </div>
         </div>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="حسنا" @click="$emit('closeStudentRegistrationInfoDialog')" />
+        <q-btn
+          flat
+          label="حسنا"
+          @click="$emit('closeStudentRegistrationInfoDialog')"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -188,6 +206,7 @@
 <script>
 import { mapActions } from "vuex";
 import { ACTIONS, ERRORS, STUDENT_GRADE } from "../config/constants";
+import { downloadDocument } from "../services/document-service";
 
 export default {
   name: "StudentRegistrationInfoDialog",
@@ -240,36 +259,10 @@ export default {
       }
     },
     downloadFile(fileURL) {
-      try {
-        var xhr = new XMLHttpRequest();
-        xhr.responseType = "blob";
-        xhr.onload = function (event) {
-          var blob = xhr.response;
-          let link = document.createElement("a");
-          link.href = window.URL.createObjectURL(blob);
-          link.download = `certificate_${date.formatDate(
-            Date.now(),
-            "YYYY_MM_DD_HH_mm_ss_a"
-          )}`;
-          link.click();
-        };
-        xhr.open("GET", fileURL);
-        xhr.send();
-      } catch (error) {
-        switch (error.code) {
-          case ERRORS.STORAGE.OBJECT_NOT_FOUND:
-            this.SET_ERROR(ERRORS.STORAGE.OBJECT_NOT_FOUND);
-            break;
-          case ERRORS.STORAGE.UNAUTHORIZED:
-            this.SET_ERROR(ERRORS.STORAGE.UNAUTHORIZED);
-            break;
-          case ERRORS.STORAGE.CANCELED:
-            this.SET_ERROR(ERRORS.STORAGE.CANCELED);
-            break;
-          case ERRORS.STORAGE.UNKNOWN:
-            this.SET_ERROR(ERRORS.STORAGE.UNKNOWN);
-            break;
-        }
+      let { status, isError } = downloadDocument("certificate", fileURL);
+
+      if (isError) {
+        this.SET_ERROR(status);
       }
     },
     resetStudntData() {
