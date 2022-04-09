@@ -16,7 +16,7 @@
     "chart.js": "^2.9.3",
     "firebase": "^7.16.1",
     "firebase-admin": "^9.4.2",
-    "moment": "^2.27.0",
+    "moment": "^2.29.2",
     "quasar": "^1.12.13",
     "vue-chartjs": "^3.5.1",
     "xlsx": "^0.16.7"
