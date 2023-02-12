@@ -21,7 +21,7 @@
     "firebase": "^8.2.1",
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.0",
-    "nodemon": "^2.0.6"
+    "nodemon": "^2.0.20"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.2.0"
